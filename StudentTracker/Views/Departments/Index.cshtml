@@ -1,0 +1,41 @@
+﻿@model IEnumerable<StudentTracker.Controllers.DepartmentView>
+
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<h2>Departments</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">+ New Department</a>
+</p>
+
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-success">@TempData["Msg"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Created At</th>
+            <th style="width: 150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.DepartmentID</td>
+                <td>@d.DepartmentName</td>
+                <td>@d.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@d.DepartmentID" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,19 @@
+﻿@model StudentTracker.Controllers.DepartmentView
+@{
+    ViewData["Title"] = "Create Department";
+}
+<h2>Create Department</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Department Name</label>
+        <input asp-for="DepartmentName" class="form-control" />
+        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary" type="submit">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
