@@ -1,0 +1,8 @@
+﻿@model StudentTracker.Models.AcademicYearView
+<h2>Delete Academic Year</h2>
+<div class="alert alert-warning">Delete <strong>@Model.Name</strong> (@Model.StartDate.ToShortDateString() - @Model.EndDate.ToShortDateString()) ?</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="AcademicYearID" />
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

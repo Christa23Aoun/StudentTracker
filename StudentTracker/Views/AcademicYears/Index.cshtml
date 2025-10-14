@@ -1,0 +1,34 @@
+﻿@model IEnumerable<StudentTracker.Models.AcademicYearView>
+<h2>Academic Years</h2>
+<p><a asp-action="Create" class="btn btn-success">+ New Academic Year</a></p>
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-info">@TempData["Msg"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var y in Model)
+        {
+            <tr>
+                <td>@y.AcademicYearID</td>
+                <td>@y.Name</td>
+                <td>@y.StartDate.ToShortDateString()</td>
+                <td>@y.EndDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@y.AcademicYearID" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@y.AcademicYearID" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

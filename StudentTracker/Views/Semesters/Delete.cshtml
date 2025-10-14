@@ -1,0 +1,10 @@
+﻿@model StudentTracker.Models.SemesterView
+<h2>Delete Semester</h2>
+<div class="alert alert-warning">
+    Delete <strong>@Model.Name</strong> (AY: @Model.AcademicYearID, #@Model.SemesterNb)?
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="SemesterID" />
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
