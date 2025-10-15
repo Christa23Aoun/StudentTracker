@@ -1,0 +1,60 @@
+﻿@model StudentTracker.Models.CourseView
+<h2>Edit Course</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="CourseID" />
+
+    <!-- same blocks as Create, but with current values -->
+    <!-- Department & Semester selects use the same asp-items lists -->
+
+    <div class="mb-3">
+        <label class="form-label">Course Code</label>
+        <input asp-for="CourseCode" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Course Name</label>
+        <input asp-for="CourseName" class="form-control" />
+        <span asp-validation-for="CourseName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Credit Hours</label>
+        <input asp-for="CreditHours" type="number" class="form-control" />
+        <span asp-validation-for="CreditHours" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Department</label>
+        <select asp-for="DepartmentID" class="form-select"
+                asp-items="@(new SelectList(Model.Departments, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name), Model.DepartmentID))">
+        </select>
+        <span asp-validation-for="DepartmentID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Semester</label>
+        <select asp-for="SemesterID" class="form-select"
+                asp-items="@(new SelectList(Model.Semesters, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name), Model.SemesterID))">
+        </select>
+        <span asp-validation-for="SemesterID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Teacher ID (temp)</label>
+        <input asp-for="TeacherID" type="number" class="form-control" />
+        <span asp-validation-for="TeacherID" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IsActive" />
+        <label class="form-check-label" asp-for="IsActive">Active</label>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
