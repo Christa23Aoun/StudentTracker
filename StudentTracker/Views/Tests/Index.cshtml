@@ -1,0 +1,34 @@
+﻿@model List<StudentTrackerCOMMON.Models.Test>
+
+<h2>Tests</h2>
+<a class="btn btn-primary" href="/Tests/Create">+ Add Test</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>CourseID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Weight</th>
+            <th>Max Score</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TestID</td>
+                <td>@item.CourseID</td>
+                <td>@item.TestName</td>
+                <td>@item.TestDate.ToShortDateString()</td>
+                <td>@item.Weight</td>
+                <td>@item.MaxScore</td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="/Tests/Delete/@item.TestID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
