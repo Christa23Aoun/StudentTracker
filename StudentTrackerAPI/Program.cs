@@ -15,7 +15,8 @@ builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
-
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
 builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();

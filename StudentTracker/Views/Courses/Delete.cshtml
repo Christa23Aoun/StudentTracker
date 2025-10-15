@@ -1,0 +1,10 @@
+﻿@model StudentTracker.Models.CourseView
+<h2>Delete Course</h2>
+<div class="alert alert-warning">
+    Delete <strong>@Model.CourseName</strong> (Code: @Model.CourseCode)?
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CourseID" />
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
