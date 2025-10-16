@@ -1,0 +1,34 @@
+﻿@model List<StudentTrackerCOMMON.Models.TestGrade>
+
+<h2>Test Grades</h2>
+<a class="btn btn-primary" href="/TestGrades/Create">+ Add Grade</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>TestID</th>
+            <th>StudentID</th>
+            <th>Score</th>
+            <th>Validated</th>
+            <th>Validation Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>@g.TestGradeID</td>
+                <td>@g.TestID</td>
+                <td>@g.StudentID</td>
+                <td>@g.Score</td>
+                <td>@(g.IsValidated ? "Yes" : "No")</td>
+                <td>@(g.ValidationDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="/TestGrades/Delete/@g.TestGradeID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
