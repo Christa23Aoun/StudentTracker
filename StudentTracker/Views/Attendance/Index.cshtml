@@ -1,0 +1,35 @@
+﻿@model List<StudentTrackerCOMMON.Models.Attendance>
+
+<h2>Attendance Records</h2>
+
+<a class="btn btn-primary" href="/Attendance/Create">+ Add Attendance</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Course ID</th>
+            <th>Date</th>
+            <th>Present</th>
+            <th>Validated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.AttendanceID</td>
+                <td>@item.StudentID</td>
+                <td>@item.CourseID</td>
+                <td>@item.AttendanceDate.ToShortDateString()</td>
+                <td>@(item.IsPresent ? "Yes" : "No")</td>
+                <td>@(item.IsValidated ? "Yes" : "No")</td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="/Attendance/Delete/@item.AttendanceID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

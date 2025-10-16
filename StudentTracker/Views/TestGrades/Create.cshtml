@@ -1,0 +1,23 @@
+﻿@model StudentTrackerCOMMON.Models.TestGrade
+
+<h2>Add Test Grade</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label>Test ID</label>
+        <input asp-for="TestID" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Student ID</label>
+        <input asp-for="StudentID" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Score</label>
+        <input asp-for="Score" class="form-control" />
+    </div>
+    <div class="form-group mt-2">
+        <label>Is Validated</label>
+        <input asp-for="IsValidated" type="checkbox" />
+    </div>
+    <button type="submit" class="btn btn-success mt-2">Save</button>
+</form>
