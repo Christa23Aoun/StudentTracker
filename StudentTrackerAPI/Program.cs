@@ -1,12 +1,14 @@
-using StudentTrackerCOMMON.Interfaces.Repositories;
+﻿using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 using StudentTrackerDAL.Infrastructure;
 using StudentTrackerDAL.Repositories;
 using StudentTrackerBLL.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,6 +24,7 @@ builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
 builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 var app = builder.Build();

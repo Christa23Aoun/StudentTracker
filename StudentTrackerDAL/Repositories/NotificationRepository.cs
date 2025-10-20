@@ -20,6 +20,9 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> CreateAsync(Notification notification)
         {
             using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
+
+            // 1️⃣ create the notification
             var id = await con.ExecuteScalarAsync<int>(
                 "dbo.sp_Notification_Create",
                 new
@@ -29,17 +32,42 @@ namespace StudentTrackerDAL.Repositories
                     notification.Type
                 },
                 commandType: CommandType.StoredProcedure);
+
+            // 2️⃣ insert an AuditLog entry for tracking
+            await con.ExecuteAsync(
+                "dbo.sp_AuditLog_Add",
+                new
+                {
+                    UserID = notification.UserID,
+                    Action = "INSERT",
+                    TableName = "Notifications",
+                    RecordID = id.ToString(),
+                    OldValue = (string?)null,
+                    NewValue = notification.Message
+                },
+                commandType: CommandType.StoredProcedure);
+
+            // 3️⃣ return the new notification ID
             return id;
         }
+
 
         public async Task<IEnumerable<Notification>> GetForUserAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.QueryAsync<Notification>(
+            var notifications = await con.QueryAsync<Notification>(
                 "dbo.sp_Notification_GetForUser",
                 new { UserID = userId },
                 commandType: CommandType.StoredProcedure);
+
+            // mark all as read
+            await con.ExecuteAsync(
+                "UPDATE dbo.Notifications SET IsRead = 1 WHERE UserID = @UserID AND IsRead = 0",
+                new { UserID = userId });
+
+            return notifications;
         }
+
 
         public async Task<bool> MarkAsReadAsync(int notificationId)
         {
