@@ -19,7 +19,17 @@ namespace StudentTrackerAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(User user)
         {
-            var id = await _userRepository.CreateAsync(user);
+            if (user == null)
+                return BadRequest("Invalid user data.");
+
+            // ✅ Adjusted to match repository signature
+            var id = await _userRepository.CreateAsync(
+                user.FullName,
+                user.Email,
+                user.PasswordHash,
+                user.RoleID
+            );
+
             return Ok(new { Message = "User created successfully", UserID = id });
         }
 

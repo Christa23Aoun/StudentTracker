@@ -17,25 +17,22 @@ namespace StudentTrackerDAL.Repositories
                  ?? throw new ArgumentNullException(nameof(config), "Missing database connection string");
         }
 
-        // 🟢 Create user + AuditLog
-        public async Task<int> CreateAsync(User user)
+      public async Task<int> CreateAsync(string fullName, string email, string passwordHash, int roleId)
         {
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
 
-            // 1️⃣ Create the user through stored procedure
             var id = await con.ExecuteScalarAsync<int>(
                 "dbo.sp_User_Create",
                 new
                 {
-                    user.FullName,
-                    user.Email,
-                    user.PasswordHash,
-                    user.RoleID
+                    FullName = fullName,
+                    Email = email,
+                    PasswordHash = passwordHash,
+                    RoleID = roleId
                 },
                 commandType: CommandType.StoredProcedure);
 
-            // 2️⃣ Log the creation in AuditLog
             await con.ExecuteAsync(
                 "dbo.sp_AuditLog_Add",
                 new
@@ -45,14 +42,14 @@ namespace StudentTrackerDAL.Repositories
                     TableName = "Users",
                     RecordID = id.ToString(),
                     OldValue = (string?)null,
-                    NewValue = user.Email
+                    NewValue = email
                 },
                 commandType: CommandType.StoredProcedure);
 
             return id;
         }
 
-        // 🟢 Get user by email
+
         public async Task<User?> GetByEmailAsync(string email)
         {
             using var con = new SqlConnection(_connectionString);
@@ -62,7 +59,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // 🟢 Activate user + AuditLog
         public async Task<bool> ActivateAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -92,7 +88,6 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-        // 🟢 Set role + AuditLog
         public async Task<bool> SetRoleAsync(int userId, int roleId)
         {
             using var con = new SqlConnection(_connectionString);
