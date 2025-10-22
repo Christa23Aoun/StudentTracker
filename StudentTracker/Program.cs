@@ -1,12 +1,12 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// MVC services
+
 builder.Services.AddControllersWithViews();
 
-// Register HttpClient
+
 builder.Services.AddHttpClient();
 
-// Bind API base URL for easy use later
+
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
@@ -29,7 +29,7 @@ app.MapControllerRoute(
 
 app.Run();
 
-// Small POCO class
+
 public class ApiSettings
 {
     public string BaseUrl { get; set; } = string.Empty;
