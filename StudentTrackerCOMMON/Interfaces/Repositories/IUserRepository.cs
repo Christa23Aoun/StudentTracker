@@ -4,9 +4,14 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
 {
     public interface IUserRepository
     {
+        Task<int> CreateAsync(User user);
         Task<User?> GetByEmailAsync(string email);
-        Task<int> CreateAsync(string fullName, string email, string passwordHash, int roleId);
         Task<bool> ActivateAsync(int userId);
         Task<bool> SetRoleAsync(int userId, int roleId);
+
+        // If you added these for the MVC list/edit/delete views:
+        Task<IEnumerable<User>> GetAllAsync();
+        Task<bool> UpdateAsync(User user);
+        Task<bool> DeleteAsync(int userId);
     }
 }

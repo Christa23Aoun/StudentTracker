@@ -1,0 +1,25 @@
+﻿@model IEnumerable<StudentTrackerCOMMON.Models.User>
+
+<h2>All Users</h2>
+<a asp-action="Create" class="btn btn-primary">Add User</a>
+<table class="table">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.UserID</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.RoleID</td>
+                <td>@u.IsActive</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@u.UserID">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@u.UserID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

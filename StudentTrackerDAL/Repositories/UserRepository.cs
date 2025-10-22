@@ -17,7 +17,8 @@ namespace StudentTrackerDAL.Repositories
                  ?? throw new ArgumentNullException(nameof(config), "Missing database connection string");
         }
 
-      public async Task<int> CreateAsync(string fullName, string email, string passwordHash, int roleId)
+        // ✅ Create new user
+        public async Task<int> CreateAsync(User user)
         {
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
@@ -26,10 +27,10 @@ namespace StudentTrackerDAL.Repositories
                 "dbo.sp_User_Create",
                 new
                 {
-                    FullName = fullName,
-                    Email = email,
-                    PasswordHash = passwordHash,
-                    RoleID = roleId
+                    user.FullName,
+                    user.Email,
+                    user.PasswordHash,
+                    user.RoleID
                 },
                 commandType: CommandType.StoredProcedure);
 
@@ -42,14 +43,22 @@ namespace StudentTrackerDAL.Repositories
                     TableName = "Users",
                     RecordID = id.ToString(),
                     OldValue = (string?)null,
-                    NewValue = email
+                    NewValue = user.Email
                 },
                 commandType: CommandType.StoredProcedure);
 
             return id;
         }
 
+        // ✅ Retrieve all users (for MVC list)
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync<User>(
+                "SELECT * FROM Users ORDER BY UserID DESC");
+        }
 
+        // ✅ Retrieve user by email
         public async Task<User?> GetByEmailAsync(string email)
         {
             using var con = new SqlConnection(_connectionString);
@@ -59,6 +68,7 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
+        // ✅ Activate user account
         public async Task<bool> ActivateAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -88,6 +98,7 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
+        // ✅ Change role
         public async Task<bool> SetRoleAsync(int userId, int roleId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -110,6 +121,71 @@ namespace StudentTrackerDAL.Repositories
                         RecordID = userId.ToString(),
                         OldValue = "Role changed",
                         NewValue = $"RoleID={roleId}"
+                    },
+                    commandType: CommandType.StoredProcedure);
+            }
+
+            return rows > 0;
+        }
+
+        // ✅ Update existing user
+        public async Task<bool> UpdateAsync(User user)
+        {
+            using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
+
+            var rows = await con.ExecuteAsync(
+                "UPDATE Users SET FullName=@FullName, Email=@Email, RoleID=@RoleID, IsActive=@IsActive WHERE UserID=@UserID",
+                new
+                {
+                    user.FullName,
+                    user.Email,
+                    user.RoleID,
+                    user.IsActive,
+                    user.UserID
+                });
+
+            if (rows > 0)
+            {
+                await con.ExecuteAsync(
+                    "dbo.sp_AuditLog_Add",
+                    new
+                    {
+                        UserID = user.UserID,
+                        Action = "UPDATE",
+                        TableName = "Users",
+                        RecordID = user.UserID.ToString(),
+                        OldValue = "User data modified",
+                        NewValue = $"{user.FullName}, {user.Email}"
+                    },
+                    commandType: CommandType.StoredProcedure);
+            }
+
+            return rows > 0;
+        }
+
+        // ✅ Delete user
+        public async Task<bool> DeleteAsync(int userId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
+
+            var rows = await con.ExecuteAsync(
+                "DELETE FROM Users WHERE UserID = @UserID",
+                new { UserID = userId });
+
+            if (rows > 0)
+            {
+                await con.ExecuteAsync(
+                    "dbo.sp_AuditLog_Add",
+                    new
+                    {
+                        UserID = userId,
+                        Action = "DELETE",
+                        TableName = "Users",
+                        RecordID = userId.ToString(),
+                        OldValue = "User deleted",
+                        NewValue = (string?)null
                     },
                     commandType: CommandType.StoredProcedure);
             }

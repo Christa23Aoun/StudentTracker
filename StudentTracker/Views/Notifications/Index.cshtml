@@ -1,0 +1,12 @@
+﻿@model IEnumerable<StudentTrackerCOMMON.Models.Notification>
+
+<h2>Notifications</h2>
+<ul class="list-group">
+    @foreach (var n in Model)
+    {
+        <li class="list-group-item @(n.IsRead ? "text-muted" : "fw-bold")">
+            @n.Message
+            <span class="float-end">@n.CreatedAt.ToLocalTime()</span>
+        </li>
+    }
+</ul>
