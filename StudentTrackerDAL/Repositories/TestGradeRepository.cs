@@ -21,7 +21,8 @@ namespace StudentTrackerDAL.Repositories
             {
                 grade.TestID,
                 grade.StudentID,
-                grade.Score
+                grade.Score,
+                grade.IsValidated
             };
             return await con.ExecuteAsync("sp_CreateTestGrade", parameters, commandType: CommandType.StoredProcedure);
         }
