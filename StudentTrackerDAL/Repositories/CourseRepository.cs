@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Infrastructure;
@@ -72,4 +73,25 @@ public class CourseRepository : ICourseRepository
             new { CourseID = id },
             commandType: System.Data.CommandType.StoredProcedure);
     }
+    public async Task<List<Course>> GetByTeacherIdAsync(int teacherId)
+    {
+        using var con = _factory.Create();
+        var result = await con.QueryAsync<Course>(
+            "SELECT * FROM Courses WHERE TeacherID = @TeacherID",
+            new { TeacherID = teacherId });
+        return result.ToList();
+    }
+
+    public async Task<List<User>> GetEnrolledStudentsAsync(int courseId)
+    {
+        using var con = _factory.Create();
+        var result = await con.QueryAsync<User>(
+            @"SELECT u.* 
+          FROM StudentCourses sc
+          INNER JOIN Users u ON sc.StudentID = u.UserID
+          WHERE sc.CourseID = @CourseID",
+            new { CourseID = courseId });
+        return result.ToList();
+    }
+
 }

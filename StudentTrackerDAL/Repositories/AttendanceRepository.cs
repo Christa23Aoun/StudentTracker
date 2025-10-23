@@ -1,13 +1,14 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace StudentTrackerDAL.Repositories
 {
-    public class AttendanceRepository
+    public class AttendanceRepository : IAttendanceRepository
     {
         private readonly string _connectionString;
 
@@ -16,7 +17,6 @@ namespace StudentTrackerDAL.Repositories
             _connectionString = connectionString;
         }
 
-        // ✅ CREATE
         public async Task<int> CreateAsync(Attendance att)
         {
             using var con = new SqlConnection(_connectionString);
@@ -33,7 +33,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ READ ALL
         public async Task<IEnumerable<Attendance>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
@@ -42,7 +41,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ READ ONE
         public async Task<Attendance?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -52,7 +50,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ UPDATE
         public async Task<int> UpdateAsync(Attendance att)
         {
             using var con = new SqlConnection(_connectionString);
@@ -67,7 +64,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ DELETE
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -75,6 +71,26 @@ namespace StudentTrackerDAL.Repositories
                 "sp_DeleteAttendance",
                 new { AttendanceID = id },
                 commandType: CommandType.StoredProcedure);
+        }
+
+        // ✅ Add this new method
+        public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync<Attendance>(
+                "SELECT * FROM Attendance WHERE CourseID = @CourseID",
+                new { CourseID = courseId });
+        }
+
+        // ✅ Add this new method
+        public async Task<decimal> GetAverageAttendanceByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            var result = await con.ExecuteScalarAsync<decimal?>(
+                "SELECT AVG(CAST(IsPresent AS DECIMAL(5,2))) FROM Attendance WHERE CourseID = @CourseID",
+                new { CourseID = courseId });
+
+            return result ?? 0;
         }
     }
 }

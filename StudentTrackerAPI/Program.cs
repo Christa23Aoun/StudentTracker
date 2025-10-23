@@ -6,14 +6,16 @@ using StudentTrackerBLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ✅ Add essential services
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+// ✅ SQL connection factory (singleton is correct here)
 builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+
+// ✅ Repository and Service registrations
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
@@ -26,8 +28,15 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IAttendanceRepository>(provider =>
+    new AttendanceRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITestGradeRepository>(provider =>
+    new TestGradeRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
+// ✅ Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,7 +44,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 app.MapControllers();
 

@@ -1,11 +1,13 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+
 using StudentTrackerCOMMON.Models;
 using System.Data;
 
 namespace StudentTrackerDAL.Repositories
 {
-    public class TestGradeRepository
+    public class TestGradeRepository : ITestGradeRepository
     {
         private readonly string _connectionString;
 
@@ -56,5 +58,26 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
             return await con.ExecuteAsync("sp_DeleteTestGrade", new { TestGradeID = id }, commandType: CommandType.StoredProcedure);
         }
+        public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync<Attendance>(
+                "SELECT * FROM Attendance WHERE CourseID = @CourseID",
+                new { CourseID = courseId });
+        }
+
+        public async Task<decimal> GetAverageGradeByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            var result = await con.ExecuteScalarAsync<decimal?>(
+                @"SELECT AVG(Score) 
+          FROM TestGrades tg
+          INNER JOIN Tests t ON tg.TestID = t.TestID
+          WHERE t.CourseID = @CourseID AND tg.IsValidated = 1",
+                new { CourseID = courseId });
+
+            return result ?? 0;
+        }
+
     }
 }
