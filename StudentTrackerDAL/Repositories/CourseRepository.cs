@@ -93,5 +93,27 @@ public class CourseRepository : ICourseRepository
             new { CourseID = courseId });
         return result.ToList();
     }
+    public async Task<int> CountActiveAsync()
+    {
+        using var conn = _factory.Create();
+        return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Courses WHERE IsActive = 1");
+    }
+    public async Task<IEnumerable<dynamic>> GetCourseSummaryAsync()
+    {
+        using var conn = _factory.Create();
+        var sql = @"
+        SELECT 
+            c.CourseID,
+            c.CourseName,
+            d.DepartmentName,
+            u.FullName AS TeacherName,
+            c.IsActive
+        FROM Courses c
+        INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
+        INNER JOIN Users u ON u.UserID = c.TeacherID
+        ORDER BY c.CourseName;";
+        return await conn.QueryAsync(sql);
+    }
+
 
 }

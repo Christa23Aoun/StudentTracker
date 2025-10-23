@@ -9,7 +9,7 @@ builder.Services.AddHttpClient("API", client =>
     client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
 });
 
-
+builder.Services.AddControllersWithViews();
 
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));

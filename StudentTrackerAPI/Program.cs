@@ -6,16 +6,14 @@ using StudentTrackerBLL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Add essential services
+
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ✅ SQL connection factory (singleton is correct here)
 builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 
-// ✅ Repository and Service registrations
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
@@ -27,6 +25,8 @@ builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<DashboardService>();
+
 
 builder.Services.AddScoped<IAttendanceRepository>(provider =>
     new AttendanceRepository(builder.Configuration.GetConnectionString("DefaultConnection")));

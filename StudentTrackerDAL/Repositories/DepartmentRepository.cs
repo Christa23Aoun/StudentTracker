@@ -54,4 +54,27 @@ public class DepartmentRepository : IDepartmentRepository
             new { DepartmentID = id },
             commandType: System.Data.CommandType.StoredProcedure);
     }
+  
+    public async Task<int> CountAsync()
+    {
+        using var conn = _factory.Create();
+        return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Departments");
+    }
+
+   
+    public async Task<IEnumerable<dynamic>> GetDepartmentSummaryAsync()
+    {
+        using var conn = _factory.Create();
+        var sql = @"
+        SELECT d.DepartmentID AS DepartmentId,
+               d.DepartmentName,
+               COUNT(c.CourseID) AS CourseCount
+        FROM Departments d
+        LEFT JOIN Courses c ON c.DepartmentID = d.DepartmentID
+        GROUP BY d.DepartmentID, d.DepartmentName
+        ORDER BY d.DepartmentName;";
+        return await conn.QueryAsync(sql);
+    }
+
+
 }

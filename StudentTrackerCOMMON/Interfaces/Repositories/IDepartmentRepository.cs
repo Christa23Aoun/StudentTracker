@@ -15,4 +15,7 @@ public interface IDepartmentRepository
     Task<int> CreateAsync(string departmentName);
     Task<int> UpdateAsync(int id, string departmentName);
     Task<int> DeleteAsync(int id);
+    Task<int> CountAsync();
+    Task<IEnumerable<dynamic>> GetDepartmentSummaryAsync();
+
 }

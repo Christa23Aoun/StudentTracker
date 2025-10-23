@@ -192,5 +192,22 @@ namespace StudentTrackerDAL.Repositories
 
             return rows > 0;
         }
+        public async Task<int> CountByRoleAsync(string roleName)
+        {
+            using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
+
+            var sql = @"
+        SELECT COUNT(*)
+        FROM Users u
+        INNER JOIN Roles r ON u.RoleID = r.RoleID
+        WHERE r.RoleName = @roleName AND u.IsActive = 1;";
+
+            return await con.ExecuteScalarAsync<int>(sql, new { roleName });
+        }
+
+
+
     }
 }
+   
