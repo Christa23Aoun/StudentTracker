@@ -13,5 +13,8 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<IEnumerable<User>> GetAllAsync();
         Task<bool> UpdateAsync(User user);
         Task<bool> DeleteAsync(int userId);
+
+        Task<int> CountByRoleAsync(string roleName);
+
     }
 }

@@ -1,0 +1,113 @@
+﻿@model StudentTrackerCOMMON.DTOs.TeacherDashboard.TeacherDashboardDto
+
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">👨‍🏫 Teacher Dashboard</h2>
+
+    <!-- Teacher Info -->
+    <div class="alert alert-light border text-center">
+        <strong>@ViewBag.TeacherName</strong>
+        <br />
+        <small class="text-muted">@ViewBag.TeacherEmail</small>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">My Courses</h6>
+                    <h4 class="fw-bold text-primary">@Model?.CourseCount ?? 0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Students Enrolled</h6>
+                    <h4 class="fw-bold text-success">@Model?.StudentCount ?? 0</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Average Grade</h6>
+                    <h4 class="fw-bold text-warning">@((Model?.AverageGrade ?? 0).ToString("0"))%</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Attendance Rate</h6>
+                    <h4 class="fw-bold text-info">@((Model?.AttendanceRate ?? 0).ToString("0"))%</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📚 My Courses</h5>
+        </div>
+        <div class="card-body">
+            @if (Model?.Courses?.Any() == true)
+            {
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Course</th>
+                            <th>Semester</th>
+                            <th>Students</th>
+                            <th>Average</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Courses)
+                        {
+                            <tr>
+                                <td>@c.CourseName</td>
+                                <td>@c.SemesterName</td>
+                                <td>@c.StudentCount</td>
+                                <td>@c.AverageGrade%</td>
+                                <td>@c.AttendanceRate%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No courses found for this teacher.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">🕒 Recent Activities</h5>
+        </div>
+        <div class="card-body">
+            @if (Model?.RecentActivities?.Any() == true)
+            {
+                <ul class="list-group">
+                    @foreach (var activity in Model.RecentActivities)
+                    {
+                        <li class="list-group-item">@activity.Description</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">No recent activity yet.</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@{
+    // role comes from query string or ViewBag (default to "Student")
+    var role = (string?)ViewBag.Role
+               ?? Context.Request.Query["role"].ToString()
+               ?? "Student";
+
+    ViewData["Title"] = $"Login - {role}";
+}
+
+<div class="container mt-5" style="max-width:400px;">
+    <h3 class="text-center text-primary mb-4">Login – @role</h3>
+
+    <form asp-action="Login" method="post">
+        <!-- send the role to the POST action -->
+        <input type="hidden" name="Role" value="@role" />
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="Email" class="form-control" placeholder="Enter your email" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="Password" class="form-control" placeholder="Enter your password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+
+        <div class="text-center mt-3">
+            <a asp-action="Register" class="text-decoration-none">Don’t have an account? Register here</a>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+    </form>
+</div>
