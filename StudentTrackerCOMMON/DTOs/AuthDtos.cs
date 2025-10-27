@@ -3,9 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+namespace StudentTrackerCOMMON.DTOs
+{
+    public class RegisterDto
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public int RoleID { get; set; }
+    }
 
-namespace StudentTrackerCOMMON.DTOs;
-
-public record RegisterDto(string FullName, string Email, string Password, int RoleID);
-public record LoginDto(string Email, string Password);
-
+    public class LoginDto
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

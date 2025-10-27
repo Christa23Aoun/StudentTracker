@@ -7,13 +7,20 @@
 <div class="container mt-4">
     <h2 class="mb-4 text-primary">👨‍🏫 Teacher Dashboard</h2>
 
+    <!-- Teacher Info -->
+    <div class="alert alert-light border text-center">
+        <strong>@ViewBag.TeacherName</strong>
+        <br />
+        <small class="text-muted">@ViewBag.TeacherEmail</small>
+    </div>
+
     <!-- Summary Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body text-center">
                     <h6 class="text-muted">My Courses</h6>
-                    <h4 class="fw-bold text-primary">@Model.CourseCount</h4>
+                    <h4 class="fw-bold text-primary">@Model?.CourseCount ?? 0</h4>
                 </div>
             </div>
         </div>
@@ -21,7 +28,7 @@
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Students Enrolled</h6>
-                    <h4 class="fw-bold text-success">@Model.StudentCount</h4>
+                    <h4 class="fw-bold text-success">@Model?.StudentCount ?? 0</h4>
                 </div>
             </div>
         </div>
@@ -29,7 +36,7 @@
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Average Grade</h6>
-                    <h4 class="fw-bold text-warning">@Model.AverageGrade %</h4>
+                    <h4 class="fw-bold text-warning">@((Model?.AverageGrade ?? 0).ToString("0"))%</h4>
                 </div>
             </div>
         </div>
@@ -37,7 +44,7 @@
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Attendance Rate</h6>
-                    <h4 class="fw-bold text-info">@Model.AttendanceRate %</h4>
+                    <h4 class="fw-bold text-info">@((Model?.AttendanceRate ?? 0).ToString("0"))%</h4>
                 </div>
             </div>
         </div>
@@ -49,9 +56,9 @@
             <h5 class="mb-0">📚 My Courses</h5>
         </div>
         <div class="card-body">
-            @if (Model.Courses?.Any() == true)
+            @if (Model?.Courses?.Any() == true)
             {
-                <table class="table table-striped">
+                <table class="table table-striped align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>Course</th>
@@ -68,8 +75,8 @@
                                 <td>@c.CourseName</td>
                                 <td>@c.SemesterName</td>
                                 <td>@c.StudentCount</td>
-                                <td>@c.AverageGrade %</td>
-                                <td>@c.AttendanceRate %</td>
+                                <td>@c.AverageGrade%</td>
+                                <td>@c.AttendanceRate%</td>
                             </tr>
                         }
                     </tbody>
@@ -77,7 +84,7 @@
             }
             else
             {
-                <p class="text-muted">No courses found.</p>
+                <p class="text-muted">No courses found for this teacher.</p>
             }
         </div>
     </div>
@@ -88,7 +95,7 @@
             <h5 class="mb-0">🕒 Recent Activities</h5>
         </div>
         <div class="card-body">
-            @if (Model.RecentActivities?.Any() == true)
+            @if (Model?.RecentActivities?.Any() == true)
             {
                 <ul class="list-group">
                     @foreach (var activity in Model.RecentActivities)

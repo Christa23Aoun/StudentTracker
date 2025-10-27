@@ -8,29 +8,76 @@ namespace StudentTracker.Controllers
     {
         private readonly HttpClient _http;
 
-        public TeacherController(IHttpClientFactory factory, IConfiguration config)
+        public TeacherController(IHttpClientFactory factory)
         {
-            // Create named HttpClient
             _http = factory.CreateClient("API");
         }
 
-        // ✅ GET: Teacher Dashboard
-        public async Task<IActionResult> Dashboard(int teacherId = 2) // temporary ID until login integration
+        public async Task<IActionResult> Dashboard()
         {
+            // ✅ 1. Get teacher info from session
+            var teacherId = HttpContext.Session.GetInt32("UserID");
+            var teacherName = HttpContext.Session.GetString("UserName");
+            var teacherEmail = HttpContext.Session.GetString("UserEmail");
+
+            ViewBag.TeacherName = teacherName ?? "Unknown Teacher";
+            ViewBag.TeacherEmail = teacherEmail ?? "unknown@mail.com";
+
+            if (teacherId == null)
+            {
+                // If no session, redirect to login
+                return RedirectToAction("LoginTeacher", "Auth");
+            }
+
+            // ✅ 2. Fetch teacher's courses from API
+            var courses = new List<TeacherCourseRowDto>();
+
             try
             {
-                // 1️⃣ Call the unified API endpoint
-                var dashboard = await _http.GetFromJsonAsync<TeacherDashboardDto>(
-                    $"api/TeacherDashboard/Teacher/{teacherId}");
+                var response = await _http.GetAsync($"api/Courses/byTeacher/{teacherId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var dbCourses = await response.Content.ReadFromJsonAsync<List<StudentTrackerCOMMON.Models.Course>>();
 
-                // 2️⃣ Send data to the View
-                return View(dashboard);
+                    if (dbCourses != null)
+                    {
+                        foreach (var c in dbCourses)
+                        {
+                            courses.Add(new TeacherCourseRowDto
+                            {
+                                CourseName = c.CourseName,
+                                SemesterName = "Fall 2025", // temporary placeholder
+                                StudentCount = 25,          // placeholder
+                                AverageGrade = 85,          // placeholder
+                                AttendanceRate = 90         // placeholder
+                            });
+                        }
+                    }
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                ViewBag.Error = $"⚠️ Could not load dashboard: {ex.Message}";
-                return View(new TeacherDashboardDto());
+                ViewBag.Error = "Could not load courses from API.";
             }
+
+            // ✅ 3. Build the TeacherDashboardDto model
+            var dashboard = new TeacherDashboardDto
+            {
+                CourseCount = courses?.Count ?? 0,
+                StudentCount = courses?.Sum(c => c.StudentCount) ?? 0,
+                AverageGrade = (courses != null && courses.Any()) ? (int)courses.Average(c => c.AverageGrade) : 0,
+                AttendanceRate = (courses != null && courses.Any()) ? (int)courses.Average(c => c.AttendanceRate) : 0,
+                Courses = courses ?? new List<TeacherCourseRowDto>(),
+                RecentActivities = new List<RecentActivityDto>
+                {
+                    new() { Description = "Added new test" },
+                    new() { Description = "Updated grades" },
+                    new() { Description = "Recorded attendance" }
+                }
+            };
+
+            // ✅ 4. Return dashboard object to the view
+            return View(dashboard);
         }
     }
 }

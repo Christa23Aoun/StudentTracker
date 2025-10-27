@@ -1,0 +1,47 @@
+﻿@model StudentTrackerCOMMON.DTOs.RegisterDto
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5" style="max-width:450px;">
+    <h3 class="text-center text-primary mb-4">Create Account</h3>
+
+    <form asp-action="Register" method="post">
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input asp-for="FullName" class="form-control" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input asp-for="Password" type="password" class="form-control" placeholder="Create a password" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select asp-for="RoleID" class="form-select" required>
+                <option value="">Select Role</option>
+                <option value="1">Admin</option>
+                <option value="2">Teacher</option>
+                <option value="3">Student</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+
+        <div class="text-center mt-3">
+            <a asp-action="Login" class="text-decoration-none">Already have an account? Login</a>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+    </form>
+</div>

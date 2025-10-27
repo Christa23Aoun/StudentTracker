@@ -12,7 +12,6 @@ namespace StudentTrackerCOMMON.DTOs.TeacherDashboard
         public string SemesterName { get; set; } = string.Empty;
 
         public int StudentCount { get; set; }
-
         // Percentages 0–100 (store as decimal to avoid rounding issues)
         public decimal AverageGrade { get; set; }
         public decimal AttendanceRate { get; set; }
