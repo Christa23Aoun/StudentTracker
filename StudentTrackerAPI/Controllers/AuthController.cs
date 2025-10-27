@@ -16,14 +16,15 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var id = await _auth.RegisterAsync(dto);
-            return Created(string.Empty, new { id, message = "User registered" });
+            var id = await _auth.RegisterAsync(dto);  // ✅ goes through AuthService (hashes automatically)
+            return Ok(new { Message = "User registered successfully", UserID = id });
         }
-        catch (ArgumentException ex)
+        catch (Exception ex)
         {
-            return Conflict(new { message = ex.Message });
+            return BadRequest(ex.Message);
         }
     }
+
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)

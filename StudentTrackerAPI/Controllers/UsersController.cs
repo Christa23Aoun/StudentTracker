@@ -15,15 +15,24 @@ namespace StudentTrackerAPI.Controllers
             _userRepository = userRepository;
         }
 
+        // UsersController.cs
         [HttpPost("create")]
         public async Task<IActionResult> Create(User user)
         {
-            if (user == null)
-                return BadRequest("Invalid user data.");
+            if (user == null) return BadRequest("Invalid user data.");
+
+            // If PasswordHash looks like plain text (no bcrypt prefix), hash it
+            if (string.IsNullOrWhiteSpace(user.PasswordHash) || !user.PasswordHash.StartsWith("$2"))
+            {
+                // Expecting caller to send plain password in PasswordHash or a separate field you add (e.g., PlainPassword)
+                // Best: change the DTO. Quick workaround:
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash ?? "");
+            }
 
             var id = await _userRepository.CreateAsync(user);
             return Ok(new { Message = "User created successfully", UserID = id });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
