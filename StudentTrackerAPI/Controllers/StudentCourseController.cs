@@ -16,6 +16,7 @@ namespace StudentTrackerAPI.Controllers
             _service = new StudentCourseService(conn);
         }
 
+        // ✅ Get all records
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -23,6 +24,7 @@ namespace StudentTrackerAPI.Controllers
             return Ok(data);
         }
 
+        // ✅ Get record by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -31,6 +33,7 @@ namespace StudentTrackerAPI.Controllers
             return Ok(item);
         }
 
+        // ✅ Create record
         [HttpPost]
         public async Task<IActionResult> Create(StudentCourse model)
         {
@@ -38,6 +41,7 @@ namespace StudentTrackerAPI.Controllers
             return Ok("Student course created successfully");
         }
 
+        // ✅ Update record
         [HttpPut]
         public async Task<IActionResult> Update(StudentCourse model)
         {
@@ -45,11 +49,31 @@ namespace StudentTrackerAPI.Controllers
             return Ok("Student course updated successfully");
         }
 
+        // ✅ Delete record
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
             return Ok("Student course deleted successfully");
+        }
+
+        // ✅ Get all courses for a student (Dashboard)
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetByUserId(int userId)
+        {
+            var data = await _service.GetCoursesByStudentAsync(userId);
+            return Ok(data);
+        }
+
+        // ✅ Enroll student in a course
+        [HttpPost("enroll")]
+        public async Task<IActionResult> Enroll([FromQuery] int userId, [FromQuery] int courseId)
+        {
+            var success = await _service.EnrollAsync(userId, courseId);
+            if (!success)
+                return BadRequest("Enrollment failed (already enrolled or invalid IDs)");
+
+            return Ok("Student enrolled successfully");
         }
     }
 }

@@ -114,6 +114,27 @@ public class CourseRepository : ICourseRepository
         ORDER BY c.CourseName;";
         return await conn.QueryAsync(sql);
     }
+    public async Task<List<dynamic>> GetCoursesByStudentAsync(int studentId)
+    {
+        using var conn = _factory.Create();
+        var sql = @"
+        SELECT 
+            c.CourseID,
+            c.CourseName,
+            u.FullName AS TeacherName,
+            d.DepartmentName AS Department,
+            s.SemesterName AS Semester
+        FROM StudentCourses sc
+        INNER JOIN Courses c ON sc.CourseID = c.CourseID
+        INNER JOIN Users u ON c.TeacherID = u.UserID
+        INNER JOIN Departments d ON c.DepartmentID = d.DepartmentID
+        INNER JOIN Semesters s ON c.SemesterID = s.SemesterID
+        WHERE sc.StudentID = @StudentID";
+
+        var result = await conn.QueryAsync(sql, new { StudentID = studentId });
+        return result.ToList();
+    }
+
 
 
 }

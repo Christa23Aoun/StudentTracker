@@ -13,5 +13,7 @@ public interface ICourseRepository
     Task<List<User>> GetEnrolledStudentsAsync(int courseId);
     Task<int> CountActiveAsync();
     Task<IEnumerable<dynamic>> GetCourseSummaryAsync();
+    Task<List<dynamic>> GetCoursesByStudentAsync(int studentId);
+
 
 }
