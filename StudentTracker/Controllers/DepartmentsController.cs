@@ -1,116 +1,108 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Text;
-using StudentTracker.Models;
+using StudentTrackerCOMMON.Models;
+using System.Net.Http.Json;
 
-namespace StudentTracker.Controllers;
-
-public class DepartmentsController : Controller
+namespace StudentTracker.Controllers
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _apiBase;
-
-    public DepartmentsController(IHttpClientFactory factory, IConfiguration config)
+    public class DepartmentsController : Controller
     {
-        _httpClient = factory.CreateClient();
-        _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
-    }
+        private readonly HttpClient _httpClient;
 
-    // GET: Departments
-    public async Task<IActionResult> Index()
-    {
-        var response = await _httpClient.GetAsync($"{_apiBase}Departments");
-        if (!response.IsSuccessStatusCode)
-            return View(new List<dynamic>());
-
-        var json = await response.Content.ReadAsStringAsync();
-        var list = JsonConvert.DeserializeObject<List<DepartmentView>>(json);
-        return View(list);
-    }
-    // GET: Departments/Create
-    public IActionResult Create() => View();
-
-    // POST: Departments/Create
-    [HttpPost]
-    public async Task<IActionResult> Create(DepartmentView model)
-    {
-        if (!ModelState.IsValid) return View(model);
-
-        var payload = JsonConvert.SerializeObject(new { departmentName = model.DepartmentName });
-        var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.PostAsync($"{_apiBase}Departments", content);
-        if (!response.IsSuccessStatusCode)
+        public DepartmentsController(IHttpClientFactory clientFactory)
         {
-            ModelState.AddModelError("", "Failed to create department.");
-            return View(model);
+            _httpClient = clientFactory.CreateClient("API");
         }
 
-        TempData["Msg"] = "Department created successfully.";
-        return RedirectToAction(nameof(Index));
-    }
-    // GET: Departments/Edit/5
-    public async Task<IActionResult> Edit(int id)
-    {
-        var res = await _httpClient.GetAsync($"{_apiBase}Departments/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
-
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<DepartmentView>(json);
-        return View(item);
-    }
-
-    // POST: Departments/Edit/5
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, DepartmentView model)
-    {
-        if (id != model.DepartmentID) return BadRequest();
-        if (!ModelState.IsValid) return View(model);
-
-        var payload = JsonConvert.SerializeObject(new { departmentID = model.DepartmentID, departmentName = model.DepartmentName });
-        var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-        var res = await _httpClient.PutAsync($"{_apiBase}Departments/{id}", content);
-        if (!res.IsSuccessStatusCode)
+        // ✅ List all
+        public async Task<IActionResult> Index()
         {
-            ModelState.AddModelError("", "Failed to update department.");
-            return View(model);
+            var departments = await _httpClient.GetFromJsonAsync<List<Department>>("api/Departments");
+            return View(departments ?? new List<Department>());
         }
 
-        TempData["Msg"] = "Department updated successfully.";
-        return RedirectToAction(nameof(Index));
-    }
-    // GET: Departments/Delete/5
-    public async Task<IActionResult> Delete(int id)
-    {
-        var res = await _httpClient.GetAsync($"{_apiBase}Departments/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
+        // ✅ Create (GET)
+        [HttpGet]
+        public IActionResult Create() => View();
 
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<DepartmentView>(json);
-        return View(item);
-    }
-
-    // POST: Departments/Delete/5
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var res = await _httpClient.DeleteAsync($"{_apiBase}Departments/{id}");
-        if (!res.IsSuccessStatusCode)
+        // ✅ Create (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Department dept)
         {
-            TempData["Msg"] = "Delete failed.";
+            if (!ModelState.IsValid) return View(dept);
+
+            var payload = new { DepartmentName = dept.DepartmentName };
+            var response = await _httpClient.PostAsJsonAsync("api/Departments", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "✅ Department created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Error = "❌ Failed to create department.";
+            return View(dept);
+        }
+
+        // ✅ Edit (GET)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var dept = await _httpClient.GetFromJsonAsync<Department>($"api/Departments/{id}");
+            if (dept == null) return NotFound();
+            return View(dept);
+        }
+
+        // ✅ Edit (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Department dept)
+        {
+            if (!ModelState.IsValid) return View(dept);
+
+            // must include id in route and proper DTO fields
+            var payload = new
+            {
+                DepartmentID = dept.DepartmentID,
+                DepartmentName = dept.DepartmentName
+            };
+
+            var response = await _httpClient.PutAsJsonAsync($"api/Departments/{dept.DepartmentID}", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "✅ Department updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Error = "❌ Failed to update department.";
+            return View(dept);
+        }
+
+        // ✅ Delete (GET confirmation)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var dept = await _httpClient.GetFromJsonAsync<Department>($"api/Departments/{id}");
+            if (dept == null) return NotFound();
+            return View(dept);
+        }
+
+        // ✅ Delete (POST confirmed)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"api/Departments/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "🗑️ Department deleted successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Msg"] = "❌ Failed to delete department.";
             return RedirectToAction(nameof(Index));
         }
-        TempData["Msg"] = "Department deleted.";
-        return RedirectToAction(nameof(Index));
     }
-
-    // You can later add Create/Edit/Delete that POST/PUT/DELETE to API
-}
-
-public class DepartmentView
-{
-    public int DepartmentID { get; set; }
-    public string DepartmentName { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
 }

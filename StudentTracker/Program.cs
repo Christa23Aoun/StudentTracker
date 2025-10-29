@@ -1,52 +1,55 @@
+using StudentTrackerDAL.Infrastructure;
+using StudentTrackerDAL.Repositories;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerBLL.Services.Dashboard;
+
 var builder = WebApplication.CreateBuilder(args);
 
-
+// MVC
 builder.Services.AddControllersWithViews();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-
+// ? Add HttpClient support for API communication
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
+    client.BaseAddress = new Uri("https://localhost:7199/"); // ?? Your API base URL
 });
 
-builder.Services.AddControllersWithViews();
 
-builder.Services.Configure<ApiSettings>(
-    builder.Configuration.GetSection("ApiSettings"));
+// ---------- DAL wiring for MVC (same style you used in API) ----------
+builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+
+// Repos that use ISqlConnectionFactory
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();      // NOTE: Your UserRepository constructor must use ISqlConnectionFactory OR IConfiguration. If it expects IConfiguration, see the note below.
+
+// Repos that were written with a string ctor (we saw TestGradeRepository/AttendanceRepository in your code)
+builder.Services.AddScoped<ITestGradeRepository>(_ =>
+    new TestGradeRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IAttendanceRepository>(_ =>
+    new AttendanceRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ---------- BLL services ----------
+builder.Services.AddScoped<AdminDashboardService>();
 
 var app = builder.Build();
 
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
-
-app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseSession();
-
 app.UseAuthorization();
 
+// Default route + your admin route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "admin/{action=Dashboard}",
+    defaults: new { controller = "Admin" });
+
 app.Run();
-
-
-public class ApiSettings
-{
-    public string BaseUrl { get; set; } = string.Empty;
-}

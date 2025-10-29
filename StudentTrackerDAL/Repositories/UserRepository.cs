@@ -164,14 +164,15 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-        // ✅ Delete user
+        // ✅ Soft Delete User (recommended)
         public async Task<bool> DeleteAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
 
+            // Set user inactive instead of deleting to avoid FK conflicts
             var rows = await con.ExecuteAsync(
-                "DELETE FROM Users WHERE UserID = @UserID",
+                "UPDATE Users SET IsActive = 0 WHERE UserID = @UserID",
                 new { UserID = userId });
 
             if (rows > 0)
@@ -181,17 +182,18 @@ namespace StudentTrackerDAL.Repositories
                     new
                     {
                         UserID = userId,
-                        Action = "DELETE",
+                        Action = "UPDATE",
                         TableName = "Users",
                         RecordID = userId.ToString(),
-                        OldValue = "User deleted",
-                        NewValue = (string?)null
+                        OldValue = "IsActive=1",
+                        NewValue = "IsActive=0"
                     },
                     commandType: CommandType.StoredProcedure);
             }
 
             return rows > 0;
         }
+
         public async Task<int> CountByRoleAsync(string roleName)
         {
             using var con = new SqlConnection(_connectionString);
