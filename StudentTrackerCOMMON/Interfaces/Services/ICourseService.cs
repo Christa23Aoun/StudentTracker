@@ -10,4 +10,7 @@ public interface ICourseService
     Task<int> CreateAsync(CourseCreateDto dto);
     Task<int> UpdateAsync(CourseUpdateDto dto);
     Task<int> DeleteAsync(int id);
+    Task<IEnumerable<StudentTrackerCOMMON.Models.CourseListItem>> GetByTeacherIdAsync(int teacherId);
+    Task<IEnumerable<dynamic>> GetCourseStatsByTeacherAsync(int teacherId);
+
 }

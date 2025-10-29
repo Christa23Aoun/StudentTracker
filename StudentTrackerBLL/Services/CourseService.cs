@@ -2,6 +2,7 @@
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerDAL.Repositories;
 
 namespace StudentTrackerBLL.Services;
 
@@ -12,6 +13,10 @@ public class CourseService : ICourseService
 
     public Task<IEnumerable<CourseListItem>> GetAllAsync() => _repo.GetAllAsync();
     public Task<CourseListItem?> GetByIdAsync(int id) => _repo.GetByIdAsync(id);
+    public async Task<IEnumerable<dynamic>> GetCourseStatsByTeacherAsync(int teacherId)
+    {
+        return await _repo.GetCourseStatsByTeacherAsync(teacherId);
+    }
 
     public Task<int> CreateAsync(CourseCreateDto dto)
     {
@@ -56,4 +61,24 @@ public class CourseService : ICourseService
         if (semId <= 0) throw new ArgumentException("SemesterID is required.");
         if (teacherId <= 0) throw new ArgumentException("TeacherID is required (enter a valid UserID for a teacher).");
     }
+    public async Task<IEnumerable<CourseListItem>> GetByTeacherIdAsync(int teacherId)
+    {
+        var courses = await _repo.GetByTeacherIdAsync(teacherId);
+
+        // Convert List<Course> → IEnumerable<CourseListItem> if necessary
+        return courses.Select(c => new CourseListItem
+        {
+            CourseID = c.CourseID,
+            CourseCode = c.CourseCode,
+            CourseName = c.CourseName,
+            CreditHours = c.CreditHours,
+            DepartmentID = c.DepartmentID,
+            TeacherID = c.TeacherID,
+            SemesterID = c.SemesterID,
+            IsActive = c.IsActive
+        });
+    }
+
+
+
 }

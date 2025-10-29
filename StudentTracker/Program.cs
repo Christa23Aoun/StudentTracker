@@ -6,6 +6,9 @@ using StudentTrackerBLL.Services.Dashboard;
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC
+﻿var builder = WebApplication.CreateBuilder(args);
+
+// MVC and Session configuration
 builder.Services.AddControllersWithViews();
 // ? Add HttpClient support for API communication
 builder.Services.AddHttpClient("API", client =>
@@ -34,6 +37,18 @@ builder.Services.AddScoped<AdminDashboardService>();
 var app = builder.Build();
 
 // Pipeline
+// HttpClient for API calls
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
+});
+
+builder.Services.Configure<ApiSettings>(
+    builder.Configuration.GetSection("ApiSettings"));
+
+var app = builder.Build();
+
+// Error handling & middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -43,6 +58,14 @@ app.UseRouting();
 app.UseAuthorization();
 
 // Default route + your admin route
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseSession();
+app.UseAuthorization();
+
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -53,3 +76,11 @@ app.MapControllerRoute(
     defaults: new { controller = "Admin" });
 
 app.Run();
+// ✅ This line starts the web server
+app.Run();
+
+// Model for API settings
+public class ApiSettings
+{
+    public string BaseUrl { get; set; } = string.Empty;
+}

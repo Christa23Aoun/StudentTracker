@@ -42,4 +42,19 @@ public class CoursesController : ControllerBase
         await _service.DeleteAsync(id);
         return Ok(new { id, message = "Course deleted" });
     }
+    // ✅ NEW ENDPOINT: Get courses by teacher
+    [HttpGet("byTeacher/{teacherId:int}")]
+    public async Task<IActionResult> GetByTeacher(int teacherId)
+    {
+        var items = await _service.GetByTeacherIdAsync(teacherId);
+        return Ok(items);
+    }
+    // ✅ NEW: course statistics for a teacher
+    [HttpGet("stats/{teacherId:int}")]
+    public async Task<IActionResult> GetCourseStats(int teacherId)
+    {
+        var stats = await _service.GetCourseStatsByTeacherAsync(teacherId);
+        return Ok(stats);
+    }
+
 }

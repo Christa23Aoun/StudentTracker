@@ -102,6 +102,14 @@ namespace StudentTracker.Controllers
             }
 
             TempData["Msg"] = "❌ Failed to delete department.";
+    // POST: Departments/Delete/5 
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var res = await _httpClient.DeleteAsync($"{_apiBase}Departments/{id}");
+        if (!res.IsSuccessStatusCode)
+        {
+            TempData["Msg"] = "Delete failed.";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,0 +1,161 @@
+﻿@model StudentTracker.Models.StudentDashboardVM
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">🎓 Student Dashboard</h2>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4 text-center">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm p-3">
+                <h5>Current Semester</h5>
+                <h4 class="text-primary">@Model.CurrentSemester</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm p-3">
+                <h5>Active Courses</h5>
+                <h4 class="text-success">@Model.ActiveCoursesCount</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm p-3">
+                <h5>GPA</h5>
+                <h4 class="text-warning">@Model.GPA.ToString("0.00")</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm p-3">
+                <h5>Attendance</h5>
+                <h4 class="text-info">@Model.AttendancePercent.ToString("0.0")%</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" asp-action="Index" class="row mb-4 g-3">
+        <input type="hidden" name="userId" value="@Model.UserID" />
+        <div class="col-md-6">
+            <label class="form-label">Semester</label>
+           <select name="semester" class="form-select" onchange="this.form.submit()">
+    <option value="">All</option>
+    @foreach (var s in Model.Semesters)
+    {
+        if (Model.SelectedSemester == s)
+        {
+            <option value="@s" selected>@s</option>
+        }
+        else
+        {
+            <option value="@s">@s</option>
+        }
+    }
+</select>
+
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Department</label>
+           <select name="department" class="form-select" onchange="this.form.submit()">
+    <option value="">All</option>
+    @foreach (var d in Model.Departments)
+    {
+        if (Model.SelectedDepartment == d)
+        {
+            <option value="@d" selected>@d</option>
+        }
+        else
+        {
+            <option value="@d">@d</option>
+        }
+    }
+</select>
+
+        </div>
+    </form>
+
+    <!-- Courses Table -->
+    <div class="card shadow-sm p-3 mb-4">
+        <h4 class="mb-3">My Courses</h4>
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Course</th>
+                    <th>Teacher</th>
+                    <th>Department</th>
+                    <th>Semester</th>
+                    <th>Attendance</th>
+                    <th>Average Grade</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Courses)
+                {
+                    <tr>
+                        <td>@c.CourseName</td>
+                        <td>@c.TeacherName</td>
+                        <td>@c.Department</td>
+                        <td>@c.Semester</td>
+                        <td>@c.AttendanceRate.ToString("0.0")%</td>
+                        <td>@c.CurrentAverage.ToString("0.0")%</td>
+                        <td>
+                            <form asp-action="Enroll" method="post">
+                                <input type="hidden" name="userId" value="@Model.UserID" />
+                                <input type="hidden" name="courseId" value="@c.CourseID" />
+                                <button class="btn btn-sm btn-outline-primary">Enroll</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="card shadow-sm p-3 mb-4">
+        <h4>Performance</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="gradeChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="attendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card shadow-sm p-3">
+        <h4>Notifications</h4>
+        <ul class="list-group">
+            @foreach (var n in Model.Notifications)
+            {
+                <li class="list-group-item @(n.IsRead ? "text-muted" : "fw-bold")">
+                    @n.Message
+                    <span class="float-end">@n.CreatedAt.ToShortDateString()</span>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const gLabels = [@string.Join(",", Model.GradeSeries.Select(p => $"'{p.X:MM-dd}'"))];
+        const gData = [@string.Join(",", Model.GradeSeries.Select(p => p.Y.ToString().Replace(",", ".")))];
+        new Chart(document.getElementById('gradeChart'), {
+            type: 'line',
+            data: { labels: gLabels, datasets: [{ label: 'Grades', data: gData, borderColor: 'orange', borderWidth: 2 }] }
+        });
+
+        const aLabels = [@string.Join(",", Model.AttendanceSeries.Select(p => $"'{p.X:MM-dd}'"))];
+        const aData = [@string.Join(",", Model.AttendanceSeries.Select(p => p.Y.ToString().Replace(",", ".")))];
+        new Chart(document.getElementById('attendanceChart'), {
+            type: 'line',
+            data: { labels: aLabels, datasets: [{ label: 'Attendance %', data: aData, borderColor: 'blue', borderWidth: 2 }] }
+        });
+    </script>
+}
