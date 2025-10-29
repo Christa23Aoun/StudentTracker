@@ -10,6 +10,8 @@ namespace StudentTrackerCOMMON.DTOs.TeacherDashboard
         public int CourseID { get; set; }
         public string CourseName { get; set; } = string.Empty;
         public string SemesterName { get; set; } = string.Empty;
+        public string? CourseCode { get; set; }          // new
+        public string? DepartmentName { get; set; }          // new
 
         public int StudentCount { get; set; }
         // Percentages 0–100 (store as decimal to avoid rounding issues)

@@ -114,6 +114,14 @@ public class CourseRepository : ICourseRepository
         ORDER BY c.CourseName;";
         return await conn.QueryAsync(sql);
     }
+    public async Task<IEnumerable<dynamic>> GetCourseStatsByTeacherAsync(int teacherId)
+    {
+        using var conn = _factory.Create();
+        return await conn.QueryAsync(
+            "dbo.sp_TeacherDashboard_GetCourseStats",
+            new { TeacherId = teacherId },
+            commandType: System.Data.CommandType.StoredProcedure);
+    }
 
 
 }

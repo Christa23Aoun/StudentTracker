@@ -15,7 +15,7 @@ namespace StudentTracker.Controllers
 
         public async Task<IActionResult> Dashboard()
         {
-            // ✅ 1. Get teacher info from session
+            // 1. Get teacher info from session
             var teacherId = HttpContext.Session.GetInt32("UserID");
             var teacherName = HttpContext.Session.GetString("UserName");
             var teacherEmail = HttpContext.Session.GetString("UserEmail");
@@ -29,38 +29,57 @@ namespace StudentTracker.Controllers
                 return RedirectToAction("LoginTeacher", "Auth");
             }
 
-            // ✅ 2. Fetch teacher's courses from API
+            //  2. Fetch teacher's courses from API
+            // 2) Fetch teacher's courses from API (deserialize CourseListItem)
             var courses = new List<TeacherCourseRowDto>();
 
             try
             {
                 var response = await _http.GetAsync($"api/Courses/byTeacher/{teacherId}");
+                Console.WriteLine($"[DEBUG] API call: api/Courses/byTeacher/{teacherId} -> {response.StatusCode}");
+
                 if (response.IsSuccessStatusCode)
                 {
-                    var dbCourses = await response.Content.ReadFromJsonAsync<List<StudentTrackerCOMMON.Models.Course>>();
+                    // Deserialize to CourseListItem (matches your JSON)
+                    var dbCourses = await response.Content
+                        .ReadFromJsonAsync<List<StudentTrackerCOMMON.Models.CourseListItem>>();
+                    Console.WriteLine($"[DEBUG] Received {dbCourses?.Count} courses from API");
 
                     if (dbCourses != null)
                     {
+                        // Map to the rows the view expects
                         foreach (var c in dbCourses)
                         {
                             courses.Add(new TeacherCourseRowDto
                             {
+                                CourseID = c.CourseID,
+                                CourseCode = c.CourseCode,
                                 CourseName = c.CourseName,
-                                SemesterName = "Fall 2025", // temporary placeholder
-                                StudentCount = 25,          // placeholder
-                                AverageGrade = 85,          // placeholder
-                                AttendanceRate = 90         // placeholder
+                                DepartmentName = c.DepartmentName ?? "",
+                                SemesterName = c.SemesterName ?? "",
+                                // If you later expose real metrics from API, bind them here.
+                                StudentCount = 0,
+                                AverageGrade = 0,
+                                AttendanceRate = 0
                             });
                         }
                     }
+                    else
+                    {
+                        ViewBag.Error = "No courses found (empty response).";
+                    }
+                }
+                else
+                {
+                    ViewBag.Error = $"API error: {response.StatusCode}";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                ViewBag.Error = "Could not load courses from API.";
+                ViewBag.Error = "Could not load courses from API: " + ex.Message;
             }
 
-            // ✅ 3. Build the TeacherDashboardDto model
+            //  3. Build the TeacherDashboardDto model
             var dashboard = new TeacherDashboardDto
             {
                 CourseCount = courses?.Count ?? 0,
@@ -76,7 +95,7 @@ namespace StudentTracker.Controllers
                 }
             };
 
-            // ✅ 4. Return dashboard object to the view
+            //  4. Return dashboard object to the view
             return View(dashboard);
         }
     }

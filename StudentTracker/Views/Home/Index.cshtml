@@ -2,7 +2,64 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <img src="~/images/uniHome.jpg" alt="Hero image" class="hero-bg" />
+    <div class="container hero-content">
+        <h1 class="batata">
+            Welcome to WTF University&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Empowering the Future of Education.
+        </h1>
+        <div class="hero-actions">
+            <a class="btn primary" href="#">Discover Our Programs</a>
+            <a class="btn ghost" href="#">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Latest News & Events ===== -->
+<section class="news-block container" aria-label="Latest News & Events">
+    <div class="news-header">
+        <h2>Latest News & Events</h2>
+        <div class="news-controls">
+            <button class="news-prev" aria-label="Previous slide">‹</button>
+            <button class="news-next" aria-label="Next slide">›</button>
+        </div>
+    </div>
+
+    <div class="news-track" id="newsTrack">
+        <article class="news-card">
+            <div class="news-card-body">
+                <h3>150 Years of Academic Excellence</h3>
+                <p>Celebrating a legacy of innovation and education since 1875.</p>
+                <a class="news-link" href="#">Lire plus →</a>
+            </div>
+        </article>
+
+        <article class="news-card">
+            <div class="news-card-body">
+                <h3>Admissions Open 2025–2026</h3>
+                <p>Join our diverse community of scholars and innovators.</p>
+                <a class="news-link" href="#">Lire plus →</a>
+            </div>
+        </article>
+
+        <article class="news-card">
+            <div class="news-card-body">
+                <h3>Join Our Research Team</h3>
+                <p>Groundbreaking research opportunities across all disciplines.</p>
+                <a class="news-link" href="#">Lire plus →</a>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- ===== Stats Section ===== -->
+<section class="stats-band">
+    <div class="container stats-container">
+        <div class="stat"><h3>11,500</h3><p>Students</p></div>
+        <div class="stat"><h3>2,100</h3><p>Teachers</p></div>
+        <div class="stat"><h3>400</h3><p>Researchers</p></div>
+        <div class="stat"><h3>13</h3><p>Faculties</p></div>
+    </div>
+</section>
