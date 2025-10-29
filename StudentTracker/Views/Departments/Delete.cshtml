@@ -1,14 +1,19 @@
-﻿@model StudentTracker.Controllers.DepartmentView
-@{
-    ViewData["Title"] = "Delete Department";
-}
-<h2>Delete Department</h2>
+﻿@model StudentTrackerCOMMON.Models.Department
 
-<div class="alert alert-warning">
-    Are you sure you want to delete <strong>@Model.DepartmentName</strong>?
+<div class="container mt-5">
+    <h2 class="text-center text-danger mb-4">⚠️ Confirm Delete</h2>
+
+    <div class="alert alert-warning text-center shadow-sm">
+        Are you sure you want to delete department:
+        <strong>@Model.DepartmentName</strong> ?
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="DepartmentID" />
+
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-danger px-4">🗑️ Delete</button>
+        </div>
+    </form>
 </div>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="DepartmentID" />
-    <button class="btn btn-danger" type="submit">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>

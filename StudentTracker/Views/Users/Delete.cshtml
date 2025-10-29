@@ -1,0 +1,36 @@
+﻿@model StudentTrackerCOMMON.Models.User
+
+@{
+    ViewData["Title"] = "Delete User";
+    var role = ViewBag.Role ?? "";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-danger mb-4">⚠️ Confirm Deletion</h2>
+
+    <div class="alert alert-warning shadow-sm text-center">
+        <p class="fs-5">
+            Are you sure you want to delete this
+            <strong>@role</strong>?
+        </p>
+        <p class="fw-bold text-dark mb-0">@Model.FullName</p>
+        <p class="text-muted">@Model.Email</p>
+    </div>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="userID" value="@Model.UserID" />
+        <input type="hidden" name="role" value="@ViewBag.Role" />
+
+        <div class="d-flex justify-content-center mt-4 gap-3">
+            <a asp-action="Index" asp-route-role="@ViewBag.Role" class="btn btn-secondary px-4">
+                ❌ Cancel
+            </a>
+            <button type="submit" class="btn btn-danger px-4">
+                🗑️ Yes, Delete
+            </button>
+        </div>
+    </form>
+
+
+</div>

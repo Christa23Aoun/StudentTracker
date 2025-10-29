@@ -1,35 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTracker.Models;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+using StudentTrackerBLL.Services.Dashboard;
 
 namespace StudentTracker.Controllers
 {
-    public class DashboardController : Controller
+    public class AdminController : Controller
     {
-        private readonly HttpClient _httpClient;
+        private readonly AdminDashboardService _service;
 
-        // constructor: receives the HttpClient we registered in Program.cs
-        public DashboardController(IHttpClientFactory factory)
+        public AdminController(AdminDashboardService service)
         {
-            _httpClient = factory.CreateClient("API");
+            _service = service;
         }
 
-        // this calls your API: GET /api/dashboard/admin/summary
-        public async Task<IActionResult> Admin()
+        [HttpGet("/admin/dashboard")]
+        public async Task<IActionResult> Dashboard()
         {
-            var response = await _httpClient.GetAsync("api/dashboard/admin/summary");
-
-            if (!response.IsSuccessStatusCode)
-                return View("Error"); // simple error fallback
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            var summary = JsonSerializer.Deserialize<DashboardSummaryViewModel>(json,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return View(summary);
+            var model = await _service.GetAdminDashboardAsync();
+            return View("~/Views/Dashboard/Admin.cshtml", model);
         }
     }
 }

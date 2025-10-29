@@ -1,48 +1,80 @@
-﻿using StudentTrackerCOMMON.DTOs;
+﻿using StudentTrackerCOMMON.DTOs.AdminDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace StudentTrackerBLL.Services;
-
-public class DashboardService
+namespace StudentTrackerBLL.Services.Dashboard
 {
-    private readonly ICourseRepository _courses;
-    private readonly IUserRepository _users;
-    private readonly IDepartmentRepository _departments;
-
-    public DashboardService(
-        ICourseRepository courses,
-        IUserRepository users,
-        IDepartmentRepository departments)
+    public class AdminDashboardService
     {
-        _courses = courses;
-        _users = users;
-        _departments = departments;
-    }
+        private readonly IUserRepository _users;
+        private readonly ICourseRepository _courses;
+        private readonly IDepartmentRepository _departments;
+        private readonly ITestGradeRepository _testGrades;
+        private readonly IAttendanceRepository _attendance;
 
-    public async Task<AdminDashboardSummaryDto> GetSummaryAsync()
-    {
-        var students = await _users.CountByRoleAsync("Student");
-        var teachers = await _users.CountByRoleAsync("Teacher");
-        var courses = await _courses.CountActiveAsync();
-        var depts = await _departments.CountAsync();
+        public AdminDashboardService(
+            IUserRepository users,
+            ICourseRepository courses,
+            IDepartmentRepository departments,
+            ITestGradeRepository testGrades,
+            IAttendanceRepository attendance)
+        {
+            _users = users;
+            _courses = courses;
+            _departments = departments;
+            _testGrades = testGrades;
+            _attendance = attendance;
+        }
 
-        return new AdminDashboardSummaryDto(
-            TotalStudents: students,
-            TotalTeachers: teachers,
-            ActiveCourses: courses,
-            Departments: depts,
-            CurrentAcademicYear: "2024-2025",
-            CurrentSemester: "Fall"
-        );
-    }
-    public async Task<IEnumerable<dynamic>> GetDepartmentsAsync()
-    {
-        return await _departments.GetDepartmentSummaryAsync();
-    }
-    public async Task<IEnumerable<dynamic>> GetCoursesAsync()
-    {
-        return await _courses.GetCourseSummaryAsync();
-    }
+        public async Task<AdminDashboardDto> GetAdminDashboardAsync()
+        {
+            var students = await _users.CountByRoleAsync("Student");
+            var teachers = await _users.CountByRoleAsync("Teacher");
+            var courses = await _courses.GetAllAsync();
+            var depts = await _departments.GetAllAsync();
 
+            var summary = new AdminDashboardSummaryDto
+            {
+                TotalStudents = students,
+                TotalTeachers = teachers,
+                ActiveCourses = courses.Count(),
+                Departments = depts.Count(),
+                CurrentAcademicYear = "2024-2025",
+                CurrentSemester = "Fall"
+            };
 
+            return new AdminDashboardDto
+            {
+                Summary = summary,
+                Departments = depts.Select(d => new DepartmentDashboardDto
+                {
+                    DepartmentID = d.DepartmentID,
+                    DepartmentName = d.DepartmentName,
+                    CourseCount = courses.Count(c => c.DepartmentID == d.DepartmentID)
+                }).ToList(),
+                Courses = courses.Select(c => new CourseDashboardDto
+                {
+                    CourseID = c.CourseID,
+                    CourseCode = c.CourseCode,
+                    CourseName = c.CourseName,
+                    DepartmentName = depts.FirstOrDefault(d => d.DepartmentID == c.DepartmentID)?.DepartmentName ?? "—",
+                    TeacherName = "—",
+                    IsActive = c.IsActive
+                }).ToList(),
+                Users = (await _users.GetAllAsync()).Select(u => new UserDashboardDto
+                {
+                    UserID = u.UserID,
+                    FullName = u.FullName,
+                    Email = u.Email,
+                    RoleName = u.RoleID == 1 ? "Admin" :
+                               u.RoleID == 2 ? "Teacher" :
+                               u.RoleID == 3 ? "Student" : "Unknown",
+                    IsActive = u.IsActive
+                }).ToList(),
+                PendingGrades = new List<AdminPendingGradeDto>() // ✅ Fixed type
+            };
+        }
+    }
 }

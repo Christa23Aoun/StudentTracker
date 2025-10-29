@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerBLL.Services;
+using StudentTrackerBLL.Services.Dashboard;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -7,31 +7,19 @@ namespace StudentTrackerAPI.Controllers
     [Route("api/dashboard")]
     public class DashboardController : ControllerBase
     {
-        private readonly DashboardService _service;
-        public DashboardController(DashboardService service)
+        private readonly AdminDashboardService _service;
+
+        public DashboardController(AdminDashboardService service)
         {
             _service = service;
         }
 
-
         [HttpGet("admin/summary")]
         public async Task<ActionResult> GetSummary()
         {
-            var summary = await _service.GetSummaryAsync();
-            return Ok(summary);
+            // ✅ change this line
+            var dashboard = await _service.GetAdminDashboardAsync();
+            return Ok(dashboard);
         }
-        [HttpGet("admin/departments")]
-        public async Task<ActionResult> GetDepartments()
-        {
-            var departments = await _service.GetDepartmentsAsync();
-            return Ok(departments);
-        }
-        [HttpGet("admin/courses")]
-        public async Task<ActionResult> GetCourses()
-        {
-            var courses = await _service.GetCoursesAsync();
-            return Ok(courses);
-        }
-
     }
 }
