@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.Interfaces.Repositories;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -8,86 +8,63 @@ namespace StudentTrackerAPI.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _userRepo;
 
-        public UsersController(IUserRepository userRepository)
+        // ✅ Inject repository via constructor
+        public UsersController(IUserRepository userRepo)
         {
-            _userRepository = userRepository;
+            _userRepo = userRepo;
         }
 
-        // UsersController.cs
-        [HttpPost("create")]
-        public async Task<IActionResult> Create(User user)
-        {
-            if (user == null) return BadRequest("Invalid user data.");
-
-            // If PasswordHash looks like plain text (no bcrypt prefix), hash it
-            if (string.IsNullOrWhiteSpace(user.PasswordHash) || !user.PasswordHash.StartsWith("$2"))
-            {
-                // Expecting caller to send plain password in PasswordHash or a separate field you add (e.g., PlainPassword)
-                // Best: change the DTO. Quick workaround:
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash ?? "");
-            }
-
-            var id = await _userRepository.CreateAsync(user);
-            return Ok(new { Message = "User created successfully", UserID = id });
-        }
-
-
+        // ✅ Get all users
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _userRepo.GetAllAsync();
             return Ok(users);
         }
 
-        [HttpGet("email/{email}")]
-        public async Task<IActionResult> GetByEmail(string email)
+        // ✅ Get user by ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var users = await _userRepo.GetAllAsync(); // or GetByIdAsync if added later
+            var user = users.FirstOrDefault(u => u.UserID == id);
             if (user == null)
-                return NotFound("User not found");
+                return NotFound();
+
             return Ok(user);
         }
 
-        [HttpPost("{id}/activate")]
-        public async Task<IActionResult> Activate(int id)
+        // ✅ Create new user
+        [HttpPost("create")]
+        public async Task<IActionResult> Create(User user)
         {
-            var ok = await _userRepository.ActivateAsync(id);
-            if (!ok)
-                return NotFound("User not found or already active");
-            return Ok("User activated successfully");
+            var newId = await _userRepo.CreateAsync(user);
+            return Ok(new { UserID = newId });
         }
 
+        // ✅ Update user
         [HttpPut("update")]
         public async Task<IActionResult> Update(User user)
         {
-            if (user == null)
-                return BadRequest("Invalid user data.");
-
-            var ok = await _userRepository.UpdateAsync(user);
-            if (!ok)
-                return NotFound("User not found.");
-
-            return Ok("User updated successfully.");
+            var updated = await _userRepo.UpdateAsync(user);
+            if (!updated) return BadRequest("Failed to update user");
+            return Ok();
         }
 
+        // ✅ Delete user
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var ok = await _userRepository.DeleteAsync(id);
-            if (!ok)
-                return NotFound("User not found or already deleted.");
-            return Ok("User deleted successfully.");
+            var deleted = await _userRepo.DeleteAsync(id);
+
+            if (deleted)
+                return Ok(new { message = $"✅ User with ID {id} deleted successfully" });
+
+            return NotFound(new { message = $"⚠️ User with ID {id} not found or could not be deleted" });
         }
 
-        [HttpPost("{id}/role/{roleId}")]
-        public async Task<IActionResult> SetRole(int id, int roleId)
-        {
-            var ok = await _userRepository.SetRoleAsync(id, roleId);
-            if (!ok)
-                return NotFound("User not found or role invalid");
-            return Ok("User role updated successfully");
-        }
+
     }
 }

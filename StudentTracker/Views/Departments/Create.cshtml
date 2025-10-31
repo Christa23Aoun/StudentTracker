@@ -1,19 +1,29 @@
-﻿@model StudentTracker.Controllers.DepartmentView
+﻿@model StudentTrackerCOMMON.Models.Department
+
 @{
     ViewData["Title"] = "Create Department";
 }
-<h2>Create Department</h2>
 
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label class="form-label">Department Name</label>
-        <input asp-for="DepartmentName" class="form-control" />
-        <span asp-validation-for="DepartmentName" class="text-danger"></span>
-    </div>
-    <button class="btn btn-primary" type="submit">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">➕ Create Department</h2>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+    }
+
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="DepartmentName" class="form-label fw-bold">Department Name</label>
+            <input asp-for="DepartmentName" class="form-control shadow-sm" placeholder="Enter department name" />
+            <span asp-validation-for="DepartmentName" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-success px-4 shadow-sm">Create</button>
+            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">Cancel</a>
+        </div>
+    </form>
+</div>

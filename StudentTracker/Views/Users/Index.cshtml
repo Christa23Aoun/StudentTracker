@@ -1,25 +1,154 @@
 ﻿@model IEnumerable<StudentTrackerCOMMON.Models.User>
 
-<h2>All Users</h2>
-<a asp-action="Create" class="btn btn-primary">Add User</a>
-<table class="table">
-    <thead>
-        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.UserID</td>
-                <td>@u.FullName</td>
-                <td>@u.Email</td>
-                <td>@u.RoleID</td>
-                <td>@u.IsActive</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@u.UserID">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@u.UserID">Delete</a>
-                </td>
-            </tr>
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">
+            @(ViewBag.RoleFilter == "Student" ? "🎓 All Students" :
+                ViewBag.RoleFilter == "Teacher" ? "👨‍🏫 All Teachers" :
+                "👥 All Users")
+        </h2>
+
+        <!-- ✅ Back to Dashboard Button -->
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary shadow-sm">
+            ⬅️ Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ✅ Success & Error Messages -->
+    @if (TempData["Msg"] != null)
+    {
+        var msg = TempData["Msg"].ToString();
+        var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
+        <div class="alert @(isDelete ? "alert-danger" : "alert-success") text-center shadow-sm rounded-3 mb-4">
+            @msg
+        </div>
+    }
+
+    <!-- ✅ Role Filter Info -->
+    @if (ViewBag.FilterRole != null)
+    {
+        <div class="alert alert-info text-center mb-4 shadow-sm rounded-3">
+            Showing only <strong>@ViewBag.FilterRole</strong>s
+        </div>
+    }
+
+    <!-- ✅ Add User Button -->
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-action="Create" class="btn btn-success shadow-sm">
+            ➕ Add New User
+        </a>
+    </div>
+
+    <!-- ✅ Users Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle shadow-sm">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var u in Model)
+                    {
+                        <tr class="text-center">
+                            <td>@u.UserID</td>
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td>
+                                @(
+                                    u.RoleID switch
+                                    {
+                                        1 => "Admin 🧑‍💼",
+                                        2 => "Teacher 👨‍🏫",
+                                        3 => "Student 👩‍🎓",
+                                        _ => "Unknown ❔"
+                                    }
+                                    )
+                            </td>
+                            <td>
+                                @if (u.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success px-3 py-2">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-2">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@u.UserID"
+                                   class="btn btn-sm btn-outline-primary me-1">✏️ Edit</a>
+                                <a asp-action="Delete" asp-route-id="@u.UserID"
+                                   class="btn btn-sm btn-outline-danger">🗑️ Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No users found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ✅ Pastel Color Scheme + Fade Effect -->
+<style>
+    .alert-success {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+        font-weight: 500;
+    }
+
+    .alert-danger {
+        background-color: #FFEBEE;
+        color: #C62828;
+        font-weight: 500;
+    }
+
+    .alert-info {
+        background-color: #E3F2FD;
+        color: #1565C0;
+        font-weight: 500;
+    }
+
+    .alert {
+        transition: opacity 0.6s ease;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #f0f0f0;
         }
-    </tbody>
-</table>
+</style>
+
+<script>
+    // ✅ Auto-hide messages after 3 seconds
+    setTimeout(() => {
+        const alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.style.opacity = '0';
+            setTimeout(() => alertBox.remove(), 600);
+        }
+    }, 3000);
+</script>
