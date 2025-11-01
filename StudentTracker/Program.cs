@@ -1,4 +1,4 @@
-using StudentTrackerBLL.Services;
+﻿using StudentTrackerBLL.Services;
 using StudentTrackerBLL.Services.Dashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
@@ -41,6 +41,14 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IAttendanceRepository>(_ => new AttendanceRepository(connectionString));
 builder.Services.AddScoped<ITestGradeRepository>(_ => new TestGradeRepository(connectionString));
+var app = builder.Build();
+
+// Pipeline
+// HttpClient for API calls
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
+});
 
 // 🔹 Services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
