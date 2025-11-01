@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace StudentTrackerBLL.Services.Dashboard
 {
-    public class AdminDashboardService
+    public class AdminDashboardService : IAdminDashboardService
     {
         private readonly IUserRepository _users;
         private readonly ICourseRepository _courses;

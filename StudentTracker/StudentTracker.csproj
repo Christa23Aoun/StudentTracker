@@ -11,11 +11,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\StudentTrackerBLL\StudentTrackerBLL.csproj" />
-		<ProjectReference Include="..\StudentTrackerDAL\StudentTrackerDAL.csproj" />
-		<ProjectReference Include="..\StudentTrackerCOMMON\StudentTrackerCOMMON.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StudentTrackerBLL\StudentTrackerBLL.csproj" />
+    <ProjectReference Include="..\StudentTrackerCOMMON\StudentTrackerCOMMON.csproj" />
+    <ProjectReference Include="..\StudentTrackerDAL\StudentTrackerDAL.csproj" />
+  </ItemGroup>
 
 
 </Project>

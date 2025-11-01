@@ -37,9 +37,8 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
-// 🔹 Admin Dashboard
-builder.Services.AddScoped<AdminDashboardService>();
 
 var app = builder.Build();
 

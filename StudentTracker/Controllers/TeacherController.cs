@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 using System.Net.Http.Json;
 
@@ -13,6 +14,7 @@ namespace StudentTracker.Controllers
             _http = factory.CreateClient("API");
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Dashboard()
         {
             // 1. Get teacher info from session
