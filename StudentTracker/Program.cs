@@ -20,16 +20,17 @@ builder.Services.AddSession(options =>
 // HttpClient for API calls
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
+    client.BaseAddress = new Uri("https://localhost:7199/");
 });
 
+// ApiSettings binding
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
-// 🔹 Add factory
+// 🔹 Database connection factory
 builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 
-// 🔹 Normal repositories
+// 🔹 Repositories
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -41,14 +42,6 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IAttendanceRepository>(_ => new AttendanceRepository(connectionString));
 builder.Services.AddScoped<ITestGradeRepository>(_ => new TestGradeRepository(connectionString));
-var app = builder.Build();
-
-// Pipeline
-// HttpClient for API calls
-builder.Services.AddHttpClient("API", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
-});
 
 // 🔹 Services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
@@ -58,9 +51,10 @@ builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
+// ✅ build AFTER all service registrations
 var app = builder.Build();
 
-// Error handling & middleware
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -73,12 +67,10 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
 
-// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// ✅ This line starts the web server
 app.Run();
 
 // Model for API settings

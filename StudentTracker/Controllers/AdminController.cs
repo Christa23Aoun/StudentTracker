@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerBLL.Services.Dashboard;
+using StudentTrackerCOMMON.Interfaces.Repositories; 
 
 namespace StudentTracker.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly AdminDashboardService _service;
+        private readonly IAdminDashboardService _service; 
 
-        public AdminController(AdminDashboardService service)
+        public AdminController(IAdminDashboardService service) 
         {
             _service = service;
         }

@@ -105,16 +105,18 @@ namespace StudentTracker.Controllers
 
             return View("index");
         }
-        TempData["Msg"] = "Department deleted.";
-        return RedirectToAction(nameof(Index));
     }
-
-    // You can later add Create/Edit/Delete that POST/PUT/DELETE to API
 }
+//        TempData["Msg"] = "Department deleted.";
+//        return RedirectToAction(nameof(Index));
+//    }
 
-public class DepartmentView
-{
-    public int DepartmentID { get; set; }
-    public string DepartmentName { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-}
+//    // You can later add Create/Edit/Delete that POST/PUT/DELETE to API
+//}
+
+//public class DepartmentView
+//{
+//    public int DepartmentID { get; set; }
+//    public string DepartmentName { get; set; } = string.Empty;
+//    public DateTime CreatedAt { get; set; }
+//}
