@@ -1,131 +1,171 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
 using System.Text;
 
-namespace StudentTracker.Controllers;
-
-public class SemestersController : Controller
+namespace StudentTracker.Controllers
 {
-    private readonly HttpClient _client;
-    private readonly string _apiBase;
-
-    public SemestersController(IHttpClientFactory factory, IConfiguration config)
+    // 🔒 Only authorized (logged-in) users can manage semesters
+    [Authorize]
+    public class SemestersController : BaseController
     {
-        _client = factory.CreateClient();
-        _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
-    }
+        private readonly HttpClient _client;
+        private readonly string _apiBase;
 
-    // Helper: fetch academic years for dropdown
-    private async Task<List<AcademicYearOption>> LoadAcademicYearsAsync()
-    {
-        var res = await _client.GetAsync($"{_apiBase}AcademicYears");
-        if (!res.IsSuccessStatusCode) return new List<AcademicYearOption>();
-        var json = await res.Content.ReadAsStringAsync();
-        var list = JsonConvert.DeserializeObject<List<AcademicYearOption>>(json) ?? new();
-        return list;
-    }
-
-    public async Task<IActionResult> Index()
-    {
-        var res = await _client.GetAsync($"{_apiBase}Semesters");
-        if (!res.IsSuccessStatusCode) return View(new List<SemesterView>());
-        var json = await res.Content.ReadAsStringAsync();
-        var list = JsonConvert.DeserializeObject<List<SemesterView>>(json) ?? new();
-        return View(list);
-    }
-
-    public async Task<IActionResult> Create()
-    {
-        return View(new SemesterView { AcademicYears = await LoadAcademicYearsAsync() });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(SemesterView model)
-    {
-        if (!ModelState.IsValid)
+        public SemestersController(IHttpClientFactory factory, IConfiguration config)
         {
-            model.AcademicYears = await LoadAcademicYearsAsync();
+            _client = factory.CreateClient();
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
+        }
+
+        // Helper: fetch academic years for dropdown
+        private async Task<List<AcademicYearOption>> LoadAcademicYearsAsync()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AcademicYears");
+            if (!res.IsSuccessStatusCode)
+                return new List<AcademicYearOption>();
+
+            var json = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<AcademicYearOption>>(json) ?? new();
+            return list;
+        }
+
+        // GET: /Semesters
+        public async Task<IActionResult> Index()
+        {
+            var res = await _client.GetAsync($"{_apiBase}Semesters");
+            if (!res.IsSuccessStatusCode)
+                return View(new List<SemesterView>());
+
+            var json = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<SemesterView>>(json) ?? new();
+            return View(list);
+        }
+
+        // GET: /Semesters/Create
+        public async Task<IActionResult> Create()
+        {
+            var model = new SemesterView
+            {
+                AcademicYears = await LoadAcademicYearsAsync()
+            };
             return View(model);
         }
 
-        var payload = JsonConvert.SerializeObject(new
+        // POST: /Semesters/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(SemesterView model)
         {
-            academicYearID = model.AcademicYearID,
-            name = model.Name,
-            semesterNb = model.SemesterNb,
-            startDate = model.StartDate,
-            endDate = model.EndDate
-        });
+            if (!ModelState.IsValid)
+            {
+                model.AcademicYears = await LoadAcademicYearsAsync();
+                return View(model);
+            }
 
-        var res = await _client.PostAsync($"{_apiBase}Semesters", new StringContent(payload, Encoding.UTF8, "application/json"));
-        if (!res.IsSuccessStatusCode)
-        {
-            ModelState.AddModelError("", "Create failed.");
-            model.AcademicYears = await LoadAcademicYearsAsync();
-            return View(model);
+            var payload = JsonConvert.SerializeObject(new
+            {
+                academicYearID = model.AcademicYearID,
+                name = model.Name,
+                semesterNb = model.SemesterNb,
+                startDate = model.StartDate,
+                endDate = model.EndDate
+            });
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync($"{_apiBase}Semesters", content);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Failed to create semester.");
+                model.AcademicYears = await LoadAcademicYearsAsync();
+                return View(model);
+            }
+
+            TempData["Msg"] = "Semester created successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
-        TempData["Msg"] = "Semester created.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Edit(int id)
-    {
-        var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<SemesterView>(json)!;
-        item.AcademicYears = await LoadAcademicYearsAsync();
-        return View(item);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, SemesterView model)
-    {
-        if (id != model.SemesterID) return BadRequest();
-        if (!ModelState.IsValid)
+        // GET: /Semesters/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            model.AcademicYears = await LoadAcademicYearsAsync();
-            return View(model);
+            var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
+            if (!res.IsSuccessStatusCode)
+                return NotFound();
+
+            var json = await res.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<SemesterView>(json);
+            if (item == null)
+                return NotFound();
+
+            item.AcademicYears = await LoadAcademicYearsAsync();
+            return View(item);
         }
 
-        var payload = JsonConvert.SerializeObject(new
+        // POST: /Semesters/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, SemesterView model)
         {
-            semesterID = model.SemesterID,
-            academicYearID = model.AcademicYearID,
-            name = model.Name,
-            semesterNb = model.SemesterNb,
-            startDate = model.StartDate,
-            endDate = model.EndDate
-        });
+            if (id != model.SemesterID)
+                return BadRequest();
 
-        var res = await _client.PutAsync($"{_apiBase}Semesters/{id}", new StringContent(payload, Encoding.UTF8, "application/json"));
-        if (!res.IsSuccessStatusCode)
-        {
-            ModelState.AddModelError("", "Update failed.");
-            model.AcademicYears = await LoadAcademicYearsAsync();
-            return View(model);
+            if (!ModelState.IsValid)
+            {
+                model.AcademicYears = await LoadAcademicYearsAsync();
+                return View(model);
+            }
+
+            var payload = JsonConvert.SerializeObject(new
+            {
+                semesterID = model.SemesterID,
+                academicYearID = model.AcademicYearID,
+                name = model.Name,
+                semesterNb = model.SemesterNb,
+                startDate = model.StartDate,
+                endDate = model.EndDate
+            });
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var res = await _client.PutAsync($"{_apiBase}Semesters/{id}", content);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Failed to update semester.");
+                model.AcademicYears = await LoadAcademicYearsAsync();
+                return View(model);
+            }
+
+            TempData["Msg"] = "Semester updated successfully.";
+            return RedirectToAction(nameof(Index));
         }
 
-        TempData["Msg"] = "Semester updated.";
-        return RedirectToAction(nameof(Index));
-    }
+        // GET: /Semesters/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
+            if (!res.IsSuccessStatusCode)
+                return NotFound();
 
-    public async Task<IActionResult> Delete(int id)
-    {
-        var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<SemesterView>(json);
-        return View(item);
-    }
+            var json = await res.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<SemesterView>(json);
+            if (item == null)
+                return NotFound();
 
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var res = await _client.DeleteAsync($"{_apiBase}Semesters/{id}");
-        TempData["Msg"] = res.IsSuccessStatusCode ? "Semester deleted." : "Delete failed.";
-        return RedirectToAction(nameof(Index));
+            return View(item);
+        }
+
+        // POST: /Semesters/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var res = await _client.DeleteAsync($"{_apiBase}Semesters/{id}");
+            TempData["Msg"] = res.IsSuccessStatusCode
+                ? "Semester deleted successfully."
+                : "Failed to delete semester.";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

@@ -1,57 +1,79 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using StudentTracker.Models;
+using System.Text;
 
 namespace StudentTracker.Controllers
 {
+    // 🔒 Students must be logged in to see their dashboard
+    [Authorize(Roles = "Student")]
     public class StudentDashboardController : Controller
     {
-        private readonly HttpClient _api;
+        private readonly HttpClient _client;
+        private readonly string _apiBase;
 
-        public StudentDashboardController(IHttpClientFactory factory)
+        public StudentDashboardController(IHttpClientFactory factory, IConfiguration config)
         {
-            _api = factory.CreateClient("API");
+            _client = factory.CreateClient();
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ✅ Default dashboard page
-        public async Task<IActionResult> Index(int userId = 2, string? semester = null, string? department = null)
+        // GET: /StudentDashboard
+        public async Task<IActionResult> Index(string? semester = null, string? department = null)
         {
-            // --- 1) Fetch enrolled courses ---
-            var enrolled = await _api.GetFromJsonAsync<List<StudentCourseVM>>($"api/StudentCourses/user/{userId}")
-                ?? new List<StudentCourseVM>();
+            // 🔹 Get current student ID from session
+            var userId = HttpContext.Session.GetInt32("UserID");
+            if (userId == null)
+            {
+                TempData["Error"] = "Please log in first.";
+                return RedirectToAction("Login", "Auth");
+            }
 
-
+            // ---------- 1) Enrolled courses ----------
+            var enrolledRes = await _client.GetAsync($"{_apiBase}StudentCourses/user/{userId}");
+            var enrolled = new List<StudentCourseVM>();
+            if (enrolledRes.IsSuccessStatusCode)
+            {
+                var json = await enrolledRes.Content.ReadAsStringAsync();
+                enrolled = JsonConvert.DeserializeObject<List<StudentCourseVM>>(json) ?? new();
+            }
 
             var courseCards = new List<CourseCardVM>();
             foreach (var c in enrolled)
             {
-                int courseId = c.CourseID;
-                string courseName = c.CourseName;
-                string teacherName = c.TeacherName;
-                string dept = c.Department;
-                string sem = c.Semester;
-
                 double attendanceRate = 0;
-                try { attendanceRate = await _api.GetFromJsonAsync<double>($"api/Attendance/user/{userId}/course/{courseId}/percent"); } catch { }
-
                 double avg = 0;
-                try { avg = await _api.GetFromJsonAsync<double>($"api/TestGrades/user/{userId}/course/{courseId}/average"); } catch { }
+
+                try
+                {
+                    var attRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/course/{c.CourseID}/percent");
+                    if (attRes.IsSuccessStatusCode)
+                        attendanceRate = double.Parse(await attRes.Content.ReadAsStringAsync());
+                }
+                catch { }
+
+                try
+                {
+                    var avgRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/course/{c.CourseID}/average");
+                    if (avgRes.IsSuccessStatusCode)
+                        avg = double.Parse(await avgRes.Content.ReadAsStringAsync());
+                }
+                catch { }
 
                 courseCards.Add(new CourseCardVM
                 {
-                    CourseID = courseId,
-                    CourseName = courseName,
-                    TeacherName = teacherName,
-                    Department = dept,
-                    Semester = sem,
+                    CourseID = c.CourseID,
+                    CourseName = c.CourseName,
+                    TeacherName = c.TeacherName,
+                    Department = c.Department,
+                    Semester = c.Semester,
                     AttendanceRate = attendanceRate,
                     CurrentAverage = avg
                 });
             }
 
-
-
-            // --- 2) Filters ---
+            // ---------- 2) Filters ----------
             var allDepartments = courseCards.Select(x => x.Department).Distinct().ToList();
             var allSemesters = courseCards.Select(x => x.Semester).Distinct().ToList();
 
@@ -60,38 +82,52 @@ namespace StudentTracker.Controllers
             if (!string.IsNullOrWhiteSpace(semester))
                 courseCards = courseCards.Where(c => c.Semester == semester).ToList();
 
-            // --- 3) GPA + Attendance ---
+            // ---------- 3) GPA + Attendance ----------
             double gpa = 0;
-            try { gpa = await _api.GetFromJsonAsync<double>($"api/TestGrades/user/{userId}/gpa"); } catch { }
             double overallAttendance = 0;
-            try { overallAttendance = await _api.GetFromJsonAsync<double>($"api/Attendance/user/{userId}/percent"); } catch { }
+            try
+            {
+                var gpaRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/gpa");
+                if (gpaRes.IsSuccessStatusCode)
+                    gpa = double.Parse(await gpaRes.Content.ReadAsStringAsync());
+            }
+            catch { }
 
-            // --- 4) Mock notifications (since Notifications API not ready) ---
+            try
+            {
+                var attRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/percent");
+                if (attRes.IsSuccessStatusCode)
+                    overallAttendance = double.Parse(await attRes.Content.ReadAsStringAsync());
+            }
+            catch { }
+
+            // ---------- 4) Temporary notifications ----------
             var notifications = new List<NotificationVM>
             {
                 new NotificationVM { Message = "Welcome to your dashboard!", Type = "Info", CreatedAt = DateTime.Now },
-                new NotificationVM { Message = "You are enrolled in 2 courses.", Type = "Success", CreatedAt = DateTime.Now }
+                new NotificationVM { Message = $"You are enrolled in {courseCards.Count} courses.", Type = "Success", CreatedAt = DateTime.Now }
             };
 
-            // --- 5) Mock charts ---
+            // ---------- 5) Mock chart data ----------
             var gradeSeries = new List<SeriesPointVM>
             {
                 new SeriesPointVM { X = DateTime.Now.AddDays(-10), Y = 75 },
-                new SeriesPointVM { X = DateTime.Now.AddDays(-5), Y = 80 },
-                new SeriesPointVM { X = DateTime.Now, Y = 85 }
+                new SeriesPointVM { X = DateTime.Now.AddDays(-5),  Y = 80 },
+                new SeriesPointVM { X = DateTime.Now,             Y = 85 }
             };
+
             var attendanceSeries = new List<SeriesPointVM>
             {
                 new SeriesPointVM { X = DateTime.Now.AddDays(-10), Y = 90 },
-                new SeriesPointVM { X = DateTime.Now.AddDays(-5), Y = 88 },
-                new SeriesPointVM { X = DateTime.Now, Y = 92 }
+                new SeriesPointVM { X = DateTime.Now.AddDays(-5),  Y = 88 },
+                new SeriesPointVM { X = DateTime.Now,              Y = 92 }
             };
 
-            // --- 6) Assemble ViewModel ---
+            // ---------- 6) Assemble full dashboard ----------
             var vm = new StudentDashboardVM
             {
-                UserID = userId,
-                StudentName = "Student",
+                UserID = userId.Value,
+                StudentName = HttpContext.Session.GetString("UserName") ?? "Student",
                 CurrentSemester = allSemesters.LastOrDefault() ?? "-",
                 ActiveCoursesCount = courseCards.Count,
                 GPA = gpa,

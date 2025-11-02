@@ -17,6 +17,16 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// ✅ Add Authentication & Authorization (fixes your runtime error)
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/Login";
+    });
+
+builder.Services.AddAuthorization();
+
 // HttpClient for API calls
 builder.Services.AddHttpClient("API", client =>
 {
@@ -38,8 +48,8 @@ builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-// 🔹 Manual string-based repositories
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// 🔹 Manual string-based repositories (Dapper)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 builder.Services.AddScoped<IAttendanceRepository>(_ => new AttendanceRepository(connectionString));
 builder.Services.AddScoped<ITestGradeRepository>(_ => new TestGradeRepository(connectionString));
 
@@ -51,7 +61,7 @@ builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
-// ✅ build AFTER all service registrations
+// ✅ Build AFTER all service registrations
 var app = builder.Build();
 
 // Middleware pipeline
@@ -64,7 +74,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// 🔹 Session + Auth
 app.UseSession();
+app.UseAuthentication(); // 👈 must come before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllerRoute(

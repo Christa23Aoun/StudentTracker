@@ -2,7 +2,7 @@
 {
     public class AdminDashboardViewModel
     {
-        public DashboardSummary? Summary { get; set; }
+        public DashboardSummary Summary { get; set; } = new();
         public List<DepartmentInfo>? Departments { get; set; }
         public List<CourseInfo>? Courses { get; set; }
         public List<UserInfo>? Users { get; set; }
