@@ -1,19 +1,93 @@
 ﻿@model StudentTrackerCOMMON.Models.User
-
 @{
     ViewData["Title"] = "Delete User";
     var role = ViewBag.Role ?? "";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center text-danger mb-4">⚠️ Confirm Deletion</h2>
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
 
-    <div class="alert alert-warning shadow-sm text-center">
+    .delete-box {
+        max-width: 600px;
+        margin: 120px auto;
+        padding: 50px;
+        background: rgba(0, 45, 90, 0.85);
+        border-radius: 25px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        text-align: center;
+    }
+
+    h2 {
+        color: #ff6b6b;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .alert-warning {
+        background: rgba(60, 0, 0, 0.7);
+        border: 1px solid rgba(255, 193, 7, 0.4);
+        color: #fff8e1;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    strong {
+        color: #fff;
+    }
+
+    .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 35px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ff1744, #c62828);
+        color: #fff;
+    }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff5252, #e53935);
+            box-shadow: 0 0 15px rgba(255, 82, 82, 0.6);
+        }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ddd;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+</style>
+
+<div class="delete-box">
+    <h2>⚠️ Confirm Deletion</h2>
+
+    <div class="alert-warning">
         <p class="fs-5">
-            Are you sure you want to delete this
-            <strong>@role</strong>?
+            Are you sure you want to delete this <strong>@role</strong>?
         </p>
-        <p class="fw-bold text-dark mb-0">@Model.FullName</p>
+        <p class="fw-bold fs-5 text-light mb-0">@Model.FullName</p>
         <p class="text-muted">@Model.Email</p>
     </div>
 
@@ -22,15 +96,9 @@
         <input type="hidden" name="userID" value="@Model.UserID" />
         <input type="hidden" name="role" value="@ViewBag.Role" />
 
-        <div class="d-flex justify-content-center mt-4 gap-3">
-            <a asp-action="Index" asp-route-role="@ViewBag.Role" class="btn btn-secondary px-4">
-                ❌ Cancel
-            </a>
-            <button type="submit" class="btn btn-danger px-4">
-                🗑️ Yes, Delete
-            </button>
+        <div class="btn-row">
+            <a asp-action="Index" asp-route-role="@ViewBag.Role" class="btn btn-secondary">❌ Cancel</a>
+            <button type="submit" class="btn btn-danger">🗑️ Delete</button>
         </div>
     </form>
-
-
 </div>

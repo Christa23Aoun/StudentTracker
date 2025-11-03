@@ -1,10 +1,74 @@
 ﻿@model StudentTracker.Models.CourseView
-<h2>Delete Course</h2>
-<div class="alert alert-warning">
-    Delete <strong>@Model.CourseName</strong> (Code: @Model.CourseCode)?
+@{
+    ViewData["Title"] = "Delete Course";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+    }
+
+    .delete-container {
+        max-width: 600px;
+        margin: 100px auto;
+        padding: 40px;
+        text-align: center;
+        background: rgba(60, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        color: #ff6b6b;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    p {
+        color: #ddd;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px 25px;
+        margin: 0 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ff4444, #a50000);
+        color: #fff;
+    }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 15px rgba(255, 80, 80, 0.6);
+            transform: translateY(-2px);
+        }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ddd;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+</style>
+
+<div class="delete-container">
+    <h2>🗑️ Delete Course</h2>
+    <p>Are you sure you want to delete <strong>@Model.CourseName</strong>?</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="CourseID" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
 </div>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="CourseID" />
-    <button class="btn btn-danger" type="submit">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>

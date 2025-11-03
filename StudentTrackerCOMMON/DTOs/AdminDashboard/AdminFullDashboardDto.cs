@@ -1,23 +1,14 @@
 ﻿namespace StudentTrackerCOMMON.DTOs.AdminDashboard
 {
-    // Root model returned by ONE API call (the unified dashboard model)
     public class AdminFullDashboardDto
     {
-        // ✅ Summary cards (students, teachers, courses, departments)
         public DashboardSummaryDto Summary { get; set; } = new();
-
-        // ✅ Academic overview
         public List<DepartmentCoursesDto> Departments { get; set; } = new();
         public List<CourseItemDto> Courses { get; set; } = new();
-
-        // ✅ User overview
         public List<UserRoleDto> Users { get; set; } = new();
-
-        // ✅ Grade validation section
         public List<PendingGradeDto> PendingGrades { get; set; } = new();
     }
 
-    // --- Sub-DTOs for nested objects ---
     public class DashboardSummaryDto
     {
         public int TotalStudents { get; set; }

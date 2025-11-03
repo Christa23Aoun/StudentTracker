@@ -88,26 +88,27 @@ namespace StudentTracker.Controllers
             return View(dept);
         }
 
-    // POST: Departments/Delete/5 
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var res = await _httpClient.DeleteAsync($"{_apiBase}Departments/{id}");
-        if (!res.IsSuccessStatusCode)
+        // POST: Departments/Delete/5 
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            TempData["Msg"] = "Delete failed.";
+            var res = await _httpClient.DeleteAsync($"api/Departments/{id}");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "Delete failed.";
+                return RedirectToAction(nameof(Index));
+            }
+            TempData["Msg"] = "Department deleted.";
             return RedirectToAction(nameof(Index));
         }
-        TempData["Msg"] = "Department deleted.";
-        return RedirectToAction(nameof(Index));
+
+        // You can later add Create/Edit/Delete that POST/PUT/DELETE to API
     }
 
-    // You can later add Create/Edit/Delete that POST/PUT/DELETE to API
-}
-
-public class DepartmentView
-{
-    public int DepartmentID { get; set; }
-    public string DepartmentName { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
+    public class DepartmentView
+    {
+        public int DepartmentID { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
 }

@@ -4,49 +4,251 @@
     ViewData["Title"] = "Users";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary fw-bold mb-0">
+<style>
+    /* ===== Background: identical tone to Admin Dashboard ===== */
+    body {
+        background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ===== Wrapper ===== */
+    .users-wrapper {
+        width: 85%;
+        max-width: 1200px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75); /* darker blue, blurred look */
+        border-radius: 22px;
+        backdrop-filter: blur(30px); /* 💠 stronger blur, less shine */
+        -webkit-backdrop-filter: blur(30px);
+        padding: 50px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* ===== Page Header ===== */
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* ===== Buttons Row ===== */
+    .buttons-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .btn-back {
+        background: rgba(120, 180, 255, 0.25);
+        color: #e2eeff;
+    }
+
+        .btn-back:hover {
+            background: rgba(120, 180, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .btn-add {
+        background: linear-gradient(135deg, #008cff, #005fc4);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 140, 255, 0.3);
+    }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #005fc4, #008cff);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 140, 255, 0.5);
+        }
+
+    /* ===== Table Section ===== */
+    .table-container {
+        overflow-x: auto;
+        background: rgba(0, 40, 85, 0.85); /* darker opaque blue */
+        border-radius: 18px;
+        padding: 25px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    thead {
+        background: rgba(0, 90, 170, 0.5);
+    }
+
+    th {
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        color: #cfe6ff;
+        letter-spacing: 0.6px;
+    }
+
+    tbody tr:hover {
+        background: rgba(0, 90, 160, 0.25);
+        transition: 0.3s;
+    }
+
+    /* ===== Status Badges ===== */
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .bg-success-subtle {
+        background: rgba(0, 255, 170, 0.12);
+        color: #00e676;
+    }
+
+    .bg-danger-subtle {
+        background: rgba(255, 100, 100, 0.12);
+        color: #ff7b7b;
+    }
+
+    /* ===== Action Buttons ===== */
+    .action-btn {
+        display: inline-block;
+        border-radius: 8px;
+        padding: 6px 14px;
+        margin: 0 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .edit {
+        color: #4fc3f7;
+        background: rgba(79, 195, 247, 0.15);
+        border: 1px solid rgba(79, 195, 247, 0.25);
+    }
+
+        .edit:hover {
+            background: rgba(79, 195, 247, 0.25);
+            transform: translateY(-2px);
+        }
+
+    .delete {
+        color: #ef9a9a;
+        background: rgba(239, 154, 154, 0.15);
+        border: 1px solid rgba(239, 154, 154, 0.25);
+    }
+
+        .delete:hover {
+            background: rgba(239, 154, 154, 0.25);
+            transform: translateY(-2px);
+        }
+
+    /* ===== Alerts ===== */
+    .alert {
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin: 10px 0 20px 0;
+        font-weight: 500;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .alert-success {
+        background: rgba(0, 255, 170, 0.15);
+        color: #baffda;
+    }
+
+    .alert-danger {
+        background: rgba(255, 80, 80, 0.15);
+        color: #ffb3b3;
+    }
+
+    .alert-info {
+        background: rgba(0, 190, 255, 0.15);
+        color: #aee0ff;
+    }
+
+    /* ===== Responsive ===== */
+    @@media (max-width: 768px) {
+        .buttons-row
+
+    {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    }
+</style>
+
+<div class="users-wrapper">
+    <div class="page-header">
+        <h2>
             @(ViewBag.RoleFilter == "Student" ? "🎓 All Students" :
                 ViewBag.RoleFilter == "Teacher" ? "👨‍🏫 All Teachers" :
                 "👥 All Users")
         </h2>
-
-        <!-- ✅ Back to Dashboard Button -->
-        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary shadow-sm">
-            ⬅️ Back to Dashboard
-        </a>
     </div>
 
-    <!-- ✅ Success & Error Messages -->
+    <div class="buttons-row">
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
+        <a asp-action="Create" class="btn btn-add">➕ Add New User</a>
+    </div>
+
     @if (TempData["Msg"] != null)
     {
         var msg = TempData["Msg"].ToString();
         var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
-        <div class="alert @(isDelete ? "alert-danger" : "alert-success") text-center shadow-sm rounded-3 mb-4">
-            @msg
-        </div>
+        <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
     }
 
-    <!-- ✅ Role Filter Info -->
     @if (ViewBag.FilterRole != null)
     {
-        <div class="alert alert-info text-center mb-4 shadow-sm rounded-3">
+        <div class="alert alert-info">
             Showing only <strong>@ViewBag.FilterRole</strong>s
         </div>
     }
 
-    <!-- ✅ Add User Button -->
-    <div class="d-flex justify-content-end mb-3">
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            ➕ Add New User
-        </a>
-    </div>
-
-    <!-- ✅ Users Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle shadow-sm">
-            <thead class="table-light text-center">
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Full Name</th>
@@ -61,7 +263,7 @@
                 {
                     foreach (var u in Model)
                     {
-                        <tr class="text-center">
+                        <tr>
                             <td>@u.UserID</td>
                             <td>@u.FullName</td>
                             <td>@u.Email</td>
@@ -79,18 +281,16 @@
                             <td>
                                 @if (u.IsActive)
                                 {
-                                    <span class="badge bg-success-subtle text-success px-3 py-2">Active</span>
+                                    <span class="badge bg-success-subtle">Active</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-danger-subtle text-danger px-3 py-2">Inactive</span>
+                                    <span class="badge bg-danger-subtle">Inactive</span>
                                 }
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@u.UserID"
-                                   class="btn btn-sm btn-outline-primary me-1">✏️ Edit</a>
-                                <a asp-action="Delete" asp-route-id="@u.UserID"
-                                   class="btn btn-sm btn-outline-danger">🗑️ Delete</a>
+                                <a asp-action="Edit" asp-route-id="@u.UserID" class="action-btn edit">✏️ Edit</a>
+                                <a asp-action="Delete" asp-route-id="@u.UserID" class="action-btn delete">🗑️ Delete</a>
                             </td>
                         </tr>
                     }
@@ -98,9 +298,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No users found.
-                        </td>
+                        <td colspan="6" class="text-center text-muted py-4">No users found.</td>
                     </tr>
                 }
             </tbody>
@@ -108,42 +306,8 @@
     </div>
 </div>
 
-<!-- ✅ Pastel Color Scheme + Fade Effect -->
-<style>
-    .alert-success {
-        background-color: #E8F5E9;
-        color: #2E7D32;
-        font-weight: 500;
-    }
-
-    .alert-danger {
-        background-color: #FFEBEE;
-        color: #C62828;
-        font-weight: 500;
-    }
-
-    .alert-info {
-        background-color: #E3F2FD;
-        color: #1565C0;
-        font-weight: 500;
-    }
-
-    .alert {
-        transition: opacity 0.6s ease;
-    }
-
-    .btn-outline-secondary {
-        border-radius: 8px;
-        font-weight: 500;
-    }
-
-        .btn-outline-secondary:hover {
-            background-color: #f0f0f0;
-        }
-</style>
-
 <script>
-    // ✅ Auto-hide messages after 3 seconds
+    // Auto-hide alert messages
     setTimeout(() => {
         const alertBox = document.querySelector('.alert');
         if (alertBox) {

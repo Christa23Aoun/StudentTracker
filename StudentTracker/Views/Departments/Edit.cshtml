@@ -1,25 +1,124 @@
 ﻿@model StudentTrackerCOMMON.Models.Department
+@{
+    ViewData["Title"] = "Edit Department";
+}
 
-<div class="container mt-5">
-    <h2 class="text-center text-primary mb-4">✏️ Edit Department</h2>
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-container {
+        max-width: 700px;
+        margin: 100px auto;
+        padding: 50px;
+        background: rgba(0, 45, 90, 0.8);
+        border-radius: 25px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #ffffff;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #cfe6ff;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
+            outline: none;
+        }
+
+    .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 35px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #00bcd4, #1976d2);
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1976d2, #00bcd4);
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
+        }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ddd;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+    .alert-danger {
+        background: rgba(255, 80, 80, 0.2);
+        color: #ffb3b3;
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="form-container">
+    <h2>✏️ Edit Department</h2>
 
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+        <div class="alert-danger">@ViewBag.Error</div>
     }
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="DepartmentID" />
 
-        <div class="mb-3">
-            <label asp-for="DepartmentName" class="form-label fw-bold">Department Name</label>
-            <input asp-for="DepartmentName" class="form-control shadow-sm" />
-            <span asp-validation-for="DepartmentName" class="text-danger"></span>
-        </div>
+        <label class="form-label">Department Name</label>
+        <input asp-for="DepartmentName" class="form-control" placeholder="Enter department name" />
+        <span asp-validation-for="DepartmentName" class="text-danger"></span>
 
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-primary px-4">Save</button>
-            <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">⬅ Cancel</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

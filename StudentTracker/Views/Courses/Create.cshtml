@@ -1,57 +1,155 @@
 ﻿@model StudentTracker.Models.CourseView
-<h2>Create Course</h2>
+@{
+    ViewData["Title"] = "Add Course";
+}
 
-<form asp-action="Create" method="post">
-    <div class="mb-3">
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-container {
+        max-width: 700px;
+        margin: 100px auto;
+        padding: 50px;
+        background: rgba(0, 45, 90, 0.8);
+        border-radius: 25px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #ffffff;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #cfe6ff;
+        margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+        transition: all 0.2s ease;
+    }
+
+        /* ✅ make dropdown text readable even when not hovered */
+        .form-select option {
+            background-color: #00284d;
+            color: #fff;
+            font-weight: 500;
+            padding: 10px;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
+            outline: none;
+        }
+
+    .form-check {
+        margin-top: 10px;
+        margin-bottom: 25px;
+    }
+
+    .form-check-label {
+        margin-left: 5px;
+        font-weight: 500;
+    }
+
+    .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 35px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #006aff, #003c9e);
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0050c8, #007bff);
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+        }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ddd;
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+</style>
+
+<div class="form-container">
+    <h2>➕ Add Course</h2>
+
+    <form asp-action="Create" method="post">
         <label class="form-label">Course Code</label>
         <input asp-for="CourseCode" class="form-control" />
-    </div>
 
-    <div class="mb-3">
         <label class="form-label">Course Name</label>
         <input asp-for="CourseName" class="form-control" />
         <span asp-validation-for="CourseName" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
         <label class="form-label">Credit Hours</label>
         <input asp-for="CreditHours" type="number" class="form-control" />
         <span asp-validation-for="CreditHours" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
         <label class="form-label">Department</label>
         <select asp-for="DepartmentID" class="form-select"
                 asp-items="@(new SelectList(Model.Departments, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name)))">
             <option value="">-- select --</option>
         </select>
-        <span asp-validation-for="DepartmentID" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
         <label class="form-label">Semester</label>
         <select asp-for="SemesterID" class="form-select"
                 asp-items="@(new SelectList(Model.Semesters, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name)))">
             <option value="">-- select --</option>
         </select>
-        <span asp-validation-for="SemesterID" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
-        <label class="form-label">Teacher ID (temp)</label>
+        <label class="form-label">Teacher ID (temporary)</label>
         <input asp-for="TeacherID" type="number" class="form-control" />
-        <div class="form-text">Enter an existing UserID for a Teacher (Dev1 will later provide dropdown).</div>
-        <span asp-validation-for="TeacherID" class="text-danger"></span>
-    </div>
+        <div class="form-text text-light">Enter an existing UserID for a teacher (temporary input).</div>
 
-    <div class="form-check mb-3">
-        <input class="form-check-input" asp-for="IsActive" />
-        <label class="form-check-label" asp-for="IsActive">Active</label>
-    </div>
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IsActive" />
+            <label class="form-check-label" asp-for="IsActive">Active</label>
+        </div>
 
-    <button class="btn btn-primary" type="submit">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+        <div class="btn-row">
+            <button class="btn btn-primary" type="submit">💾 Save</button>
+            <a asp-action="Index" class="btn btn-secondary">⬅️ Back</a>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
