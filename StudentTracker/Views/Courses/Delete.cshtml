@@ -1,4 +1,8 @@
 ﻿@model StudentTracker.Models.CourseView
+@{
+    ViewData["Title"] = "Delete Course";
+}
+
 <h2>Delete Course</h2>
 <div class="alert alert-warning">
     Delete <strong>@Model.CourseName</strong> (Code: @Model.CourseCode)?
