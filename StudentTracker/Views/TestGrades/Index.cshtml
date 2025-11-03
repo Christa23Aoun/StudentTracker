@@ -1,34 +1,204 @@
-﻿@model List<StudentTrackerCOMMON.Models.TestGrade>
+﻿@model IEnumerable<StudentTracker.Models.TestGradeView>
 
-<h2>Test Grades</h2>
-<a class="btn btn-primary" href="/TestGrades/Create">+ Add Grade</a>
+@{
+    ViewData["Title"] = "Test Grades";
+}
 
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>TestID</th>
-            <th>StudentID</th>
-            <th>Score</th>
-            <th>Validated</th>
-            <th>Validation Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var g in Model)
-        {
-            <tr>
-                <td>@g.TestGradeID</td>
-                <td>@g.TestID</td>
-                <td>@g.StudentID</td>
-                <td>@g.Score</td>
-                <td>@(g.IsValidated ? "Yes" : "No")</td>
-                <td>@(g.ValidationDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                <td>
-                    <a class="btn btn-danger btn-sm" href="/TestGrades/Delete/@g.TestGradeID">Delete</a>
-                </td>
-            </tr>
+<style>
+    body {
+        background: linear-gradient(135deg, #001f3f, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .grades-wrapper {
+        text-align: center;
+        padding: 80px 0;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        margin-bottom: 40px;
+    }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.3rem;
+            color: #fff;
         }
-    </tbody>
-</table>
+
+        .page-header p {
+            color: #cfd8dc;
+            font-size: 1.05rem;
+            margin-top: 8px;
+        }
+
+    .btn-add {
+        background: linear-gradient(135deg, #00bcd4, #1976d2);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 10px 25px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+    }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #1976d2, #00bcd4);
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(0, 188, 212, 0.6);
+        }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 auto;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    thead {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        color: #aee0ff;
+    }
+
+    tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transition: 0.3s;
+    }
+
+    .action-btn {
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 6px 12px;
+        margin: 0 4px;
+        transition: 0.3s;
+        color: #fff;
+    }
+
+    .delete {
+        background: rgba(248, 113, 113, 0.2);
+        border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+
+        .delete:hover {
+            background: rgba(248, 113, 113, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .alert {
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin: 10px 0 20px 0;
+        font-weight: 500;
+        text-align: center;
+        backdrop-filter: blur(8px);
+    }
+
+    .alert-success {
+        background: rgba(0, 255, 170, 0.2);
+        color: #baffda;
+    }
+
+    .alert-danger {
+        background: rgba(255, 80, 80, 0.2);
+        color: #ffb3b3;
+    }
+
+</style>
+
+<div class="grades-wrapper">
+    <div class="page-header">
+        <h2>🧾 Test Grades</h2>
+        <p>Manage student test grades and validations.</p>
+    </div>
+
+    <div class="mb-4 text-end">
+        <a asp-action="Create" class="btn-add">➕ Add Grade</a>
+    </div>
+
+    @if (TempData["Msg"] != null)
+    {
+        var msg = TempData["Msg"].ToString();
+        var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
+        <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
+    }
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Test ID</th>
+                    <th>Student ID</th>
+                    <th>Score</th>
+                    <th>Validated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var g in Model)
+                    {
+                        <tr>
+                            <td>@g.GradeID</td>
+                            <td>@g.TestID</td>
+                            <td>@g.StudentID</td>
+                            <td>@g.Score</td>
+                            <td>@(g.IsValidated ? "Yes" : "No")</td>
+                            <td>
+                                <a asp-action="Delete" asp-route-id="@g.GradeID" class="action-btn delete">🗑️ Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No test grades found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        const alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.style.opacity = '0';
+            setTimeout(() => alertBox.remove(), 600);
+        }
+    }, 3000);
+</script>

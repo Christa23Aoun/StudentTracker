@@ -1,4 +1,5 @@
-﻿@model StudentTrackerCOMMON.Models.Department
+﻿@model StudentTracker.Models.DepartmentView
+
 @{
     ViewData["Title"] = "Edit Department";
 }
@@ -106,6 +107,8 @@
     }
 
     <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="DepartmentID" />
 
         <label class="form-label">Department Name</label>

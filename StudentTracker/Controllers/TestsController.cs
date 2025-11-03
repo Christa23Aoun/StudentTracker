@@ -19,22 +19,24 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /Tests
         public async Task<IActionResult> Index()
         {
-            var res = await _client.GetAsync($"{_apiBase}Tests");
-            if (!res.IsSuccessStatusCode)
-                return View(new List<TestView>());
+            var response = await _client.GetAsync($"{_apiBase}Tests");
+            var list = new List<TestView>();
 
-            var json = await res.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
-            return View(data);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                list = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
+            }
+
+            return View(list);
         }
+
 
         // GET: /Tests/Create
         public IActionResult Create() => View();
 
-        // POST: /Tests/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
@@ -42,19 +44,20 @@ namespace StudentTracker.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var payload = JsonConvert.SerializeObject(model);
-            var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            var res = await _client.PostAsync($"{_apiBase}Tests", content);
+            var json = JsonConvert.SerializeObject(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{_apiBase}Tests", content);
 
-            if (!res.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError("", "Failed to create test.");
-                return View(model);
+                TempData["Msg"] = "✅ Test created successfully!";
+                return RedirectToAction("Index");
             }
 
-            TempData["Msg"] = "Test created successfully.";
-            return RedirectToAction(nameof(Index));
+            ViewBag.Error = "Failed to create test.";
+            return View(model);
         }
+
 
         // GET: /Tests/Delete/5
         public async Task<IActionResult> Delete(int id)

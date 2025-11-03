@@ -1,4 +1,5 @@
-﻿@model StudentTrackerCOMMON.Models.Department
+﻿@model StudentTracker.Models.DepartmentView
+
 @{
     ViewData["Title"] = "Delete Department";
 }
@@ -92,6 +93,8 @@
     </div>
 
     <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="DepartmentID" />
 
         <div class="btn-row">

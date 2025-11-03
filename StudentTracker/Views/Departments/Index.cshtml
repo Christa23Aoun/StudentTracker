@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<StudentTracker.Models.DepartmentView>
+
 @{
     ViewData["Title"] = "Departments";
 }
@@ -201,7 +202,6 @@
                 <tr>
                     <th>ID</th>
                     <th>Department Name</th>
-                   
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -213,7 +213,6 @@
                         <tr>
                             <td>@d.DepartmentID</td>
                             <td>@d.DepartmentName</td>
-                           
                             <td>
                                 <a asp-action="Edit" asp-route-id="@d.DepartmentID" class="action-btn edit">✏️ Edit</a>
                                 <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="action-btn delete">🗑️ Delete</a>
@@ -224,7 +223,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">No departments found.</td>
+                        <td colspan="3" class="text-center text-muted py-4">No departments found.</td>
                     </tr>
                 }
             </tbody>
@@ -233,6 +232,7 @@
 </div>
 
 <script>
+    // Auto-hide alert messages
     setTimeout(() => {
         const alertBox = document.querySelector('.alert');
         if (alertBox) {

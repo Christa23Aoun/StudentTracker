@@ -1,10 +1,104 @@
 ﻿@model StudentTracker.Models.SemesterView
-<h2>Delete Semester</h2>
-<div class="alert alert-warning">
-    Delete <strong>@Model.Name</strong> (AY: @Model.AcademicYearID, #@Model.SemesterNb)?
+
+@{
+    ViewData["Title"] = "Delete Semester";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .delete-container {
+        max-width: 650px;
+        margin: 100px auto;
+        padding: 50px;
+        background: rgba(0, 45, 90, 0.8);
+        border-radius: 25px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        text-align: center;
+    }
+
+    h2 {
+        font-weight: 700;
+        color: #ff5252;
+        margin-bottom: 35px;
+    }
+
+    .alert-warning {
+        background: rgba(60, 0, 0, 0.7);
+        border: 1px solid rgba(255, 200, 0, 0.4);
+        border-radius: 12px;
+        color: #ffecb3;
+        padding: 20px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        box-shadow: 0 0 20px rgba(255, 180, 0, 0.15);
+        margin-bottom: 30px;
+    }
+
+    strong {
+        color: #fff;
+    }
+
+    .btn-row {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 35px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ff1744, #d50000);
+        box-shadow: 0 0 12px rgba(255, 50, 50, 0.4);
+    }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff5252, #c62828);
+            box-shadow: 0 0 18px rgba(255, 80, 80, 0.6);
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="delete-container">
+    <h2>⚠️ Confirm Deletion</h2>
+
+    <div class="alert-warning shadow-sm">
+        Are you sure you want to delete semester:
+        <strong>@Model.Name</strong>
+        (Academic Year: <strong>@Model.AcademicYearID</strong>, Number: <strong>@Model.SemesterNb</strong>)?
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="SemesterID" />
+
+        <div class="btn-row">
+            <a asp-action="Index" class="btn btn-secondary">❌ Cancel</a>
+            <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+        </div>
+    </form>
 </div>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="SemesterID" />
-    <button class="btn btn-danger" type="submit">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>

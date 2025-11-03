@@ -1,4 +1,4 @@
-﻿@model StudentTrackerCOMMON.Models.User
+﻿@model StudentTracker.Models.UserView
 @{
     ViewData["Title"] = "Add User";
 }
@@ -47,7 +47,6 @@
         transition: all 0.2s ease;
     }
 
-        /* ✅ visible dropdown text */
         .form-select option {
             background-color: #00284d;
             color: #fff;
@@ -68,6 +67,8 @@
         border-radius: 10px;
         color: #ffbaba;
         margin-bottom: 20px;
+        text-align: center;
+        padding: 10px;
     }
 
     .btn-row {
@@ -111,7 +112,7 @@
 
     @if (ViewBag.Error != null)
     {
-        <div class="alert text-center">@ViewBag.Error</div>
+        <div class="alert">@ViewBag.Error</div>
     }
 
     <form asp-action="Create" method="post">

@@ -239,12 +239,13 @@
         <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
     }
 
-    @if (ViewBag.FilterRole != null)
+    @if (ViewBag.RoleFilter != null)
     {
         <div class="alert alert-info">
-            Showing only <strong>@ViewBag.FilterRole</strong>s
+            Showing only <strong>@ViewBag.RoleFilter</strong>s
         </div>
     }
+
 
     <div class="table-container">
         <table>

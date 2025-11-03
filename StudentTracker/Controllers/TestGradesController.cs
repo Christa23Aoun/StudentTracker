@@ -42,18 +42,28 @@ namespace StudentTracker.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var payload = JsonConvert.SerializeObject(model);
-            var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            var res = await _client.PostAsync($"{_apiBase}TestGrades", content);
-
-            if (!res.IsSuccessStatusCode)
+            try
             {
-                ModelState.AddModelError("", "Failed to add test grade.");
-                return View(model);
+                var json = JsonConvert.SerializeObject(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync($"{_apiBase}TestGrades", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Msg"] = "✅ Test grade added successfully!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Failed to save test grade.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Server error: " + ex.Message;
             }
 
-            TempData["Msg"] = "Test grade added successfully.";
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
         // GET: /TestGrades/Delete/5

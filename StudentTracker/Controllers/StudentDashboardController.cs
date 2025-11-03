@@ -16,13 +16,13 @@ namespace StudentTracker.Controllers
         public StudentDashboardController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient();
-            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
+            _apiBase = config.GetSection("ApiSettings:BaseUrl")?.Value ?? string.Empty;
         }
 
-        // GET: /StudentDashboard
+        [HttpGet]
         public async Task<IActionResult> Index(string? semester = null, string? department = null)
         {
-            // 🔹 Get current student ID from session
+            // ✅ 1) Get current student ID from session
             var userId = HttpContext.Session.GetInt32("UserID");
             if (userId == null)
             {
@@ -30,50 +30,45 @@ namespace StudentTracker.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // ---------- 1) Enrolled courses ----------
+            // ✅ 2) Fetch enrolled courses via API
+            var courseCards = new List<CourseCardVM>();
             var enrolledRes = await _client.GetAsync($"{_apiBase}StudentCourses/user/{userId}");
-            var enrolled = new List<StudentCourseVM>();
             if (enrolledRes.IsSuccessStatusCode)
             {
                 var json = await enrolledRes.Content.ReadAsStringAsync();
-                enrolled = JsonConvert.DeserializeObject<List<StudentCourseVM>>(json) ?? new();
-            }
+                var enrolled = JsonConvert.DeserializeObject<List<StudentCourseVM>>(json) ?? new();
 
-            var courseCards = new List<CourseCardVM>();
-            foreach (var c in enrolled)
-            {
-                double attendanceRate = 0;
-                double avg = 0;
-
-                try
+                foreach (var c in enrolled)
                 {
+                    double attendanceRate = 0;
+                    double avg = 0;
+
+                    // Attendance %
                     var attRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/course/{c.CourseID}/percent");
-                    if (attRes.IsSuccessStatusCode)
-                        attendanceRate = double.Parse(await attRes.Content.ReadAsStringAsync());
-                }
-                catch { }
+                    if (attRes.IsSuccessStatusCode &&
+                        double.TryParse(await attRes.Content.ReadAsStringAsync(), out var att))
+                        attendanceRate = att;
 
-                try
-                {
+                    // Average grade
                     var avgRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/course/{c.CourseID}/average");
-                    if (avgRes.IsSuccessStatusCode)
-                        avg = double.Parse(await avgRes.Content.ReadAsStringAsync());
-                }
-                catch { }
+                    if (avgRes.IsSuccessStatusCode &&
+                        double.TryParse(await avgRes.Content.ReadAsStringAsync(), out var avgScore))
+                        avg = avgScore;
 
-                courseCards.Add(new CourseCardVM
-                {
-                    CourseID = c.CourseID,
-                    CourseName = c.CourseName,
-                    TeacherName = c.TeacherName,
-                    Department = c.Department,
-                    Semester = c.Semester,
-                    AttendanceRate = attendanceRate,
-                    CurrentAverage = avg
-                });
+                    courseCards.Add(new CourseCardVM
+                    {
+                        CourseID = c.CourseID,
+                        CourseName = c.CourseName,
+                        TeacherName = c.TeacherName,
+                        Department = c.Department,
+                        Semester = c.Semester,
+                        AttendanceRate = attendanceRate,
+                        CurrentAverage = avg
+                    });
+                }
             }
 
-            // ---------- 2) Filters ----------
+            // ✅ 3) Filters
             var allDepartments = courseCards.Select(x => x.Department).Distinct().ToList();
             var allSemesters = courseCards.Select(x => x.Semester).Distinct().ToList();
 
@@ -82,48 +77,42 @@ namespace StudentTracker.Controllers
             if (!string.IsNullOrWhiteSpace(semester))
                 courseCards = courseCards.Where(c => c.Semester == semester).ToList();
 
-            // ---------- 3) GPA + Attendance ----------
+            // ✅ 4) GPA + Global Attendance
             double gpa = 0;
             double overallAttendance = 0;
-            try
-            {
-                var gpaRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/gpa");
-                if (gpaRes.IsSuccessStatusCode)
-                    gpa = double.Parse(await gpaRes.Content.ReadAsStringAsync());
-            }
-            catch { }
 
-            try
-            {
-                var attRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/percent");
-                if (attRes.IsSuccessStatusCode)
-                    overallAttendance = double.Parse(await attRes.Content.ReadAsStringAsync());
-            }
-            catch { }
+            var gpaRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/gpa");
+            if (gpaRes.IsSuccessStatusCode &&
+                double.TryParse(await gpaRes.Content.ReadAsStringAsync(), out var g))
+                gpa = g;
 
-            // ---------- 4) Temporary notifications ----------
+            var attOverallRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/percent");
+            if (attOverallRes.IsSuccessStatusCode &&
+                double.TryParse(await attOverallRes.Content.ReadAsStringAsync(), out var attPercent))
+                overallAttendance = attPercent;
+
+            // ✅ 5) Notifications (sample or fetched later)
             var notifications = new List<NotificationVM>
             {
-                new NotificationVM { Message = "Welcome to your dashboard!", Type = "Info", CreatedAt = DateTime.Now },
-                new NotificationVM { Message = $"You are enrolled in {courseCards.Count} courses.", Type = "Success", CreatedAt = DateTime.Now }
+                new() { Message = "Welcome to your dashboard!", Type = "Info", CreatedAt = DateTime.Now },
+                new() { Message = $"You are enrolled in {courseCards.Count} courses.", Type = "Success", CreatedAt = DateTime.Now }
             };
 
-            // ---------- 5) Mock chart data ----------
+            // ✅ 6) Simple chart demo data (optional)
             var gradeSeries = new List<SeriesPointVM>
             {
-                new SeriesPointVM { X = DateTime.Now.AddDays(-10), Y = 75 },
-                new SeriesPointVM { X = DateTime.Now.AddDays(-5),  Y = 80 },
-                new SeriesPointVM { X = DateTime.Now,             Y = 85 }
+                new() { X = DateTime.Now.AddDays(-10), Y = 75 },
+                new() { X = DateTime.Now.AddDays(-5),  Y = 80 },
+                new() { X = DateTime.Now,              Y = 85 }
             };
-
             var attendanceSeries = new List<SeriesPointVM>
             {
-                new SeriesPointVM { X = DateTime.Now.AddDays(-10), Y = 90 },
-                new SeriesPointVM { X = DateTime.Now.AddDays(-5),  Y = 88 },
-                new SeriesPointVM { X = DateTime.Now,              Y = 92 }
+                new() { X = DateTime.Now.AddDays(-10), Y = 90 },
+                new() { X = DateTime.Now.AddDays(-5),  Y = 88 },
+                new() { X = DateTime.Now,              Y = 92 }
             };
 
-            // ---------- 6) Assemble full dashboard ----------
+            // ✅ 7) Final view model
             var vm = new StudentDashboardVM
             {
                 UserID = userId.Value,
