@@ -12,11 +12,10 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Site CSS -->
-    <link rel="stylesheet" href="~/css/styles.css" />
+    <!-- Site CSS (with versioning to refresh cache) -->
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
 <body>
-
     <!-- ===== Header: Top Contact Bar ===== -->
     <div class="topbar">
         <div class="container topbar-inner">
@@ -51,8 +50,14 @@
                     <button class="lang">FR</button>
                 </div>
 
-                <!-- ✅ Converted to static front-end link -->
-                <a class="btn primary" href="#">Se connecter</a>
+                <!-- 🔹 Connect Dropdown -->
+                <div class="connect-dropdown">
+                    <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
+                    <div class="connect-menu" id="connectMenu">
+                        <a href="/Auth/LoginTeacher">👨‍🏫 Teacher</a>
+                        <a href="/Auth/LoginStudent">🎓 Student</a>
+                    </div>
+                </div>
 
                 <button class="menu-toggle" aria-label="Open menu">☰</button>
             </div>
@@ -111,7 +116,34 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/app.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- 🔹 Connect Dropdown Logic -->
+    <script>
+        document.getElementById('connectBtn')?.addEventListener('click', function (e) {
+            const menu = document.getElementById('connectMenu');
+            if (!menu) return;
+            menu.classList.toggle('show');
+            this.setAttribute('aria-expanded', menu.classList.contains('show') ? 'true' : 'false');
+            e.stopPropagation();
+        });
+
+        window.addEventListener('click', function (e) {
+            const menu = document.getElementById('connectMenu');
+            const btn = document.getElementById('connectBtn');
+            if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.querySelectorAll('#connectMenu a').forEach(a => {
+            a.addEventListener('click', () => {
+                document.getElementById('connectMenu')?.classList.remove('show');
+                document.getElementById('connectBtn')?.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
