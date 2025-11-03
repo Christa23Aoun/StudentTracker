@@ -1,4 +1,11 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using StudentTrackerBLL.Services;
+using StudentTrackerBLL.Services.Dashboard;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerDAL.Infrastructure;
+using StudentTrackerDAL.Repositories;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // MVC and Session configuration
 builder.Services.AddControllersWithViews();
@@ -10,18 +17,54 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// ✅ Add Authentication & Authorization (fixes your runtime error)
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/Login";
+    });
+
+builder.Services.AddAuthorization();
+
 // HttpClient for API calls
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7199/"); // your API URL
+    client.BaseAddress = new Uri("https://localhost:7199/");
 });
 
+// ApiSettings binding
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
+// 🔹 Database connection factory
+builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+
+// 🔹 Repositories
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
+builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+// 🔹 Manual string-based repositories (Dapper)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+builder.Services.AddScoped<IAttendanceRepository>(_ => new AttendanceRepository(connectionString));
+builder.Services.AddScoped<ITestGradeRepository>(_ => new TestGradeRepository(connectionString));
+
+// 🔹 Services
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
+builder.Services.AddScoped<ISemesterService, SemesterService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+
+// ✅ Build AFTER all service registrations
 var app = builder.Build();
 
-// Error handling & middleware
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -31,15 +74,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// 🔹 Session + Auth
 app.UseSession();
+app.UseAuthentication(); // 👈 must come before UseAuthorization
 app.UseAuthorization();
 
-// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// ✅ This line starts the web server
 app.Run();
 
 // Model for API settings

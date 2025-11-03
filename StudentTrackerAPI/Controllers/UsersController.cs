@@ -65,6 +65,18 @@ namespace StudentTrackerAPI.Controllers
             return NotFound(new { message = $"⚠️ User with ID {id} not found or could not be deleted" });
         }
 
+        // ✅ Get user by email (used during login)
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> GetByEmail(string email)
+        {
+            var users = await _userRepo.GetAllAsync(); // or use a GetByEmailAsync if you already implemented one
+            var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+            if (user == null)
+                return NotFound(new { message = $"No user found with email {email}" });
+
+            return Ok(user);
+        }
 
     }
 }

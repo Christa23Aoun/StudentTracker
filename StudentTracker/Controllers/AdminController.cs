@@ -1,58 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using StudentTrackerCOMMON.DTOs.AdminDashboard;
+using StudentTracker.Models;
+using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    [Route("admin")]
-    public class AdminController : Controller
+    // Only logged-in (authorized) users can access the Admin Dashboard
+   // [Authorize(Roles = "Admin")]
+    public class AdminController : BaseController
     {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly HttpClient _client;
+        private readonly string _apiBase;
 
-        public AdminController(IHttpClientFactory clientFactory)
+        public AdminController(IHttpClientFactory factory, IConfiguration config)
         {
-            _clientFactory = clientFactory;
+            _client = factory.CreateClient();
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        [HttpGet("")]
-        [HttpGet("dashboard")]
+        // GET: /admin/dashboard
+        [HttpGet("/admin/dashboard")]
         public async Task<IActionResult> Dashboard()
         {
-            var client = _clientFactory.CreateClient("API");
-
-            try
+            // Call the API to fetch dashboard data
+            var res = await _client.GetAsync($"{_apiBase}Dashboard/Admin");
+            if (!res.IsSuccessStatusCode)
             {
-                // ✅ FIXED: correct API route (matches your DashboardController)
-                var response = await client.GetAsync("api/dashboard/admin/summary");
-
-                var json = await response.Content.ReadAsStringAsync();
-
-                // 🧩 Print to Output window for debugging
-                Console.WriteLine("=== API DASHBOARD RESPONSE ===");
-                Console.WriteLine(json);
-                Console.WriteLine("=== END OF RESPONSE ===");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    TempData["Msg"] = $"⚠️ API call failed: {response.StatusCode}";
-                    return View("~/Views/Dashboard/Admin.cshtml", new AdminFullDashboardDto());
-                }
-
-                var dashboardData = JsonConvert.DeserializeObject<AdminFullDashboardDto>(json);
-
-                if (dashboardData == null)
-                {
-                    TempData["Msg"] = "❌ Deserialization failed (null object)";
-                    dashboardData = new AdminFullDashboardDto();
-                }
-
-                return View("~/Views/Dashboard/Admin.cshtml", dashboardData);
+                // If the API fails, show an empty dashboard
+                return View("~/Views/Dashboard/Admin.cshtml", new AdminDashboardViewModel());
             }
-            catch (Exception ex)
-            {
-                TempData["Msg"] = $"❌ Error: {ex.Message}";
-                return View("~/Views/Dashboard/Admin.cshtml", new AdminFullDashboardDto());
-            }
+
+            // Deserialize API response into your FrontEnd model
+            var json = await res.Content.ReadAsStringAsync();
+            var model = JsonConvert.DeserializeObject<AdminDashboardViewModel>(json)
+                         ?? new AdminDashboardViewModel();
+
+            return View("~/Views/Dashboard/Admin.cshtml", model);
         }
     }
 }
