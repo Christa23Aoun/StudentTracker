@@ -1,158 +1,265 @@
-﻿@model StudentTracker.Models.StudentDashboardVM
+﻿@model StudentTracker.Models.ViewModels.StudentDashboardVM
 @{
     ViewData["Title"] = "Student Dashboard";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4 text-center">🎓 Student Dashboard</h2>
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
 
-    <!-- Summary Cards -->
-    <div class="row mb-4 text-center">
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm p-3">
-                <h5>Current Semester</h5>
-                <h4 class="text-primary">@Model.CurrentSemester</h4>
-            </div>
+    .dashboard-wrapper {
+        width: 85%;
+        max-width: 1250px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 22px;
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        padding: 50px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-bottom: 35px;
+    }
+
+    .stat-box {
+        flex: 1;
+        min-width: 220px;
+        background: rgba(0, 40, 85, 0.85);
+        border-radius: 18px;
+        padding: 25px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .stat-box h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: #79c7ff;
+        }
+
+        .stat-box span {
+            font-size: 1rem;
+            color: #cce6ff;
+        }
+
+    .table-container {
+        overflow-x: auto;
+        background: rgba(0, 40, 85, 0.85);
+        border-radius: 18px;
+        padding: 25px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    thead {
+        background: rgba(0, 90, 170, 0.5);
+    }
+
+    th {
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        color: #cfe6ff;
+        letter-spacing: 0.6px;
+    }
+
+    tbody tr:hover {
+        background: rgba(0, 90, 160, 0.25);
+        transition: 0.3s;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .bg-success-subtle {
+        background: rgba(0, 255, 170, 0.12);
+        color: #00e676;
+    }
+
+    .bg-warning-subtle {
+        background: rgba(255, 255, 100, 0.12);
+        color: #fff57b;
+    }
+
+    .bg-danger-subtle {
+        background: rgba(255, 100, 100, 0.12);
+        color: #ff7b7b;
+    }
+
+    .btn-action {
+        display: inline-block;
+        border-radius: 8px;
+        padding: 6px 14px;
+        margin: 0 4px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: #4fc3f7;
+        background: rgba(79, 195, 247, 0.15);
+        border: 1px solid rgba(79, 195, 247, 0.25);
+    }
+
+        .btn-action:hover {
+            background: rgba(79, 195, 247, 0.25);
+            transform: translateY(-2px);
+        }
+
+    .chart-section {
+        margin-top: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .chart-box {
+        flex: 1;
+        min-width: 450px;
+        background: rgba(0, 40, 85, 0.85);
+        border-radius: 18px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @@media (max-width: 768px) {
+        .stats-row, .chart-section {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="page-header">
+        <h2>🎓 Welcome, @Model.StudentName</h2>
+        <p>@Model.CurrentSemester</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-box">
+            <h3>@Model.ActiveCourseCount</h3>
+            <span>Active Courses</span>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm p-3">
-                <h5>Active Courses</h5>
-                <h4 class="text-success">@Model.ActiveCoursesCount</h4>
-            </div>
+        <div class="stat-box">
+            <h3>@Model.GPA.ToString("0.00")</h3>
+            <span>GPA</span>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm p-3">
-                <h5>GPA</h5>
-                <h4 class="text-warning">@Model.GPA.ToString("0.00")</h4>
-            </div>
+        <div class="stat-box">
+            <h3>@Model.AttendancePercent.ToString("0.0")%</h3>
+            <span>Attendance</span>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm p-3">
-                <h5>Attendance</h5>
-                <h4 class="text-info">@Model.AttendancePercent.ToString("0.0")%</h4>
-            </div>
+        <div class="stat-box">
+            <h3>@Model.Notifications.Count</h3>
+            <span>Notifications</span>
         </div>
     </div>
 
-    <!-- Filters -->
-    <form method="get" asp-action="Index" class="row mb-4 g-3">
-        <input type="hidden" name="userId" value="@Model.UserID" />
-        <div class="col-md-6">
-            <label class="form-label">Semester</label>
-            <select name="semester" class="form-select" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var s in Model.Semesters)
-                {
-                    <option value="@s" selected="@(Model.SelectedSemester == s)">
-                        @s
-                    </option>
-                }
-            </select>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Department</label>
-            <select name="department" class="form-select" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var d in Model.Departments)
-                {
-                    <option value="@d" selected="@(Model.SelectedDepartment == d)">
-                        @d
-                    </option>
-                }
-            </select>
-        </div>
-    </form>
-
-    <!-- Courses Table -->
-    <div class="card shadow-sm p-3 mb-4">
-        <h4 class="mb-3">My Courses</h4>
-        <table class="table table-hover">
-            <thead class="table-light">
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
                     <th>Course</th>
                     <th>Teacher</th>
                     <th>Department</th>
-                    <th>Semester</th>
                     <th>Attendance</th>
-                    <th>Average Grade</th>
-                    <th></th>
+                    <th>Average</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @if (Model.Courses?.Any() == true)
+                @if (Model.MyCourses.Any())
                 {
-                    foreach (var c in Model.Courses)
+                    foreach (var c in Model.MyCourses)
                     {
+                        var badgeClass = c.AttendanceRate < 75 ? "bg-danger-subtle" : c.AttendanceRate < 85 ? "bg-warning-subtle" : "bg-success-subtle";
                         <tr>
                             <td>@c.CourseName</td>
                             <td>@c.TeacherName</td>
                             <td>@c.Department</td>
-                            <td>@c.Semester</td>
-                            <td>@c.AttendanceRate.ToString("0.0")%</td>
-                            <td>@c.CurrentAverage.ToString("0.0")%</td>
+                            <td><span class="badge @badgeClass">@c.AttendanceRate%</span></td>
+                            <td>@c.CurrentAverage</td>
                             <td>
-                                <form asp-action="Enroll" method="post">
-                                    <input type="hidden" name="userId" value="@Model.UserID" />
-                                    <input type="hidden" name="courseId" value="@c.CourseID" />
-                                    <button class="btn btn-sm btn-outline-primary">Enroll</button>
-                                </form>
+                                <a asp-controller="Courses" asp-action="Details" asp-route-id="@c.CourseId" class="btn-action">📘 Details</a>
                             </td>
                         </tr>
                     }
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No courses found.</td>
-                    </tr>
+                    <tr><td colspan="6">No courses found.</td></tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <!-- Performance Charts -->
-    <div class="card shadow-sm p-3 mb-4">
-        <h4>Performance</h4>
-        <div class="row">
-            <div class="col-md-6">
-                <canvas id="gradeChart"></canvas>
-            </div>
-            <div class="col-md-6">
-                <canvas id="attendanceChart"></canvas>
-            </div>
+    <div class="chart-section">
+        <div class="chart-box">
+            <h4>📈 Grade Progress</h4>
+            <canvas id="gradeChart"></canvas>
         </div>
-    </div>
-
-    <!-- Notifications -->
-    <div class="card shadow-sm p-3">
-        <h4>Notifications</h4>
-        <ul class="list-group">
-            @foreach (var n in Model.Notifications)
-            {
-                <li class="list-group-item @(n.IsRead ? "text-muted" : "fw-bold")">
-                    @n.Message
-                    <span class="float-end">@n.CreatedAt.ToShortDateString()</span>
-                </li>
-            }
-        </ul>
+        <div class="chart-box">
+            <h4>📊 Attendance Trend</h4>
+            <canvas id="attendanceChart"></canvas>
+        </div>
     </div>
 </div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const gLabels = [@string.Join(",", Model.GradeSeries.Select(p => $"'{p.X:MM-dd}'"))];
-        const gData = [@string.Join(",", Model.GradeSeries.Select(p => p.Y.ToString().Replace(",", ".")))];
-        new Chart(document.getElementById('gradeChart'), {
-            type: 'line',
-            data: { labels: gLabels, datasets: [{ label: 'Grades', data: gData, borderColor: 'orange', borderWidth: 2 }] }
-        });
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const gradeLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.GradeProgress.Select(p => p.Label)));
+    const gradeData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.GradeProgress.Select(p => p.Average)));
+    new Chart(document.getElementById('gradeChart'), {
+        type: 'line',
+        data: { labels: gradeLabels, datasets: [{ label: 'Average', data: gradeData, borderColor: '#00bfff', tension: 0.3 }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
 
-        const aLabels = [@string.Join(",", Model.AttendanceSeries.Select(p => $"'{p.X:MM-dd}'"))];
-        const aData = [@string.Join(",", Model.AttendanceSeries.Select(p => p.Y.ToString().Replace(",", ".")))];
-        new Chart(document.getElementById('attendanceChart'), {
-            type: 'line',
-            data: { labels: aLabels, datasets: [{ label: 'Attendance %', data: aData, borderColor: 'blue', borderWidth: 2 }] }
-        });
-    </script>
-}
+    const attLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AttendanceTrend.Select(p => p.WeekLabel)));
+    const attData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AttendanceTrend.Select(p => p.Percent)));
+    new Chart(document.getElementById('attendanceChart'), {
+        type: 'bar',
+        data: { labels: attLabels, datasets: [{ label: 'Attendance %', data: attData, backgroundColor: '#4fc3f7' }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+</script>
