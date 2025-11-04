@@ -34,7 +34,9 @@
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body">
                     <h6 class="text-muted">Average Grade</h6>
-                    <h4 class="fw-bold text-warning">@Model.AverageGrade.ToString("0")%</h4>
+                    <h4 class="fw-bold text-warning">
+                        @(Model.AverageGrade > 0 ? $"{Model.AverageGrade:0.##}%" : "—")
+                    </h4>
                 </div>
             </div>
         </div>
@@ -42,7 +44,9 @@
             <div class="card shadow-sm border-0 bg-light">
                 <div class="card-body">
                     <h6 class="text-muted">Attendance Rate</h6>
-                    <h4 class="fw-bold text-info">@Model.AttendanceRate.ToString("0")%</h4>
+                    <h4 class="fw-bold text-info">
+                        @(Model.AttendanceRate > 0 ? $"{Model.AttendanceRate:0.##}%" : "—")
+                    </h4>
                 </div>
             </div>
         </div>
@@ -77,8 +81,12 @@
                                 <td>@c.DepartmentName</td>
                                 <td>@c.SemesterName</td>
                                 <td>@c.StudentCount</td>
-                                <td>@c.AverageGrade%</td>
-                                <td>@c.AttendanceRate%</td>
+                                <td>
+                                    @(c.AverageGrade > 0 ? $"{c.AverageGrade:0.##}%" : "—")
+                                </td>
+                                <td>
+                                    @(c.AttendanceRate > 0 ? $"{c.AttendanceRate:0.##}%" : "—")
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -102,7 +110,9 @@
                 <ul class="list-group">
                     @foreach (var a in Model.RecentActivities)
                     {
-                        <li class="list-group-item">@a.Description (@a.Date.ToShortDateString())</li>
+                        <li class="list-group-item">
+                            @a.Description (@a.Date.ToShortDateString())
+                        </li>
                     }
                 </ul>
             }
