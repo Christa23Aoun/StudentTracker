@@ -16,7 +16,13 @@ namespace StudentTracker.Controllers
         }
 
         public IActionResult About() => View();
-        public IActionResult Admissions() => View();
+        [HttpGet]
+        public IActionResult Admissions()
+        {
+            ViewData["Title"] = "Admissions – WTF University";
+            return View();
+        }
+
         public IActionResult Research() => View();
         public IActionResult StudentLife() => View();
         public IActionResult News() => View();
@@ -44,5 +50,6 @@ namespace StudentTracker.Controllers
                 return View(new List<DepartmentView>());
             }
         }
+
     }
 }

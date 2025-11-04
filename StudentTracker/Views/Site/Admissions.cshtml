@@ -1,5 +1,57 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Admissions – WTF University";
 }
+
+<section class="page-hero admissions-hero text-white text-center py-5">
+    <div class="container position-relative">
+        <h1 class="fw-bold display-5 mb-3">Admissions at WTF University</h1>
+        <p class="lead opacity-90">Join a community of innovators, dreamers, and doers.</p>
+    </div>
+</section>
+
+<section class="container my-5">
+    <div class="row align-items-center g-5">
+        <div class="col-md-6">
+            <img src="~/images/icon2.png" alt="Students on campus"
+                 class="img-fluid rounded-4 shadow-lg border-0" />
+        </div>
+        <div class="col-md-6">
+            <h2 class="text-primary fw-bold mb-3">How to Apply</h2>
+            <p>
+                Our admissions process is designed to be simple and transparent.
+                Complete your online application, upload required documents,
+                and our admissions team will guide you every step of the way.
+            </p>
+
+            <ul class="list-unstyled">
+                <li>✅ Online Application Form</li>
+                <li>✅ Transcripts & Certificates</li>
+                <li>✅ Motivation Letter</li>
+                <li>✅ Interview (if shortlisted)</li>
+            </ul>
+
+            <a href="#" class="btn btn-primary mt-3">Start Your Application</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .admissions-hero {
+        background: url('/images/unnamed.jpg') center/cover no-repeat;
+        color: #fff;
+        position: relative;
+    }
+
+        .admissions-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .admissions-hero .container {
+            position: relative;
+            z-index: 2;
+        }
+</style>
