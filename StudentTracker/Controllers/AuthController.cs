@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
@@ -27,8 +30,15 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginView model)
         {
+            Console.WriteLine("➡️ Login POST triggered"); // add this line
             if (!ModelState.IsValid)
+            {
+                Console.WriteLine("❌ Invalid model state");
                 return View(model);
+            }
+
+            // ✅ Preserve selected role if validation fails
+            ViewBag.Role = model.Role;
 
             try
             {
@@ -68,27 +78,34 @@ namespace StudentTracker.Controllers
                     _ => "Unknown"
                 };
 
-                // 🔹 Save session info
+                /// 🔹 Save session info
                 HttpContext.Session.SetString("UserName", user.FullName);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
-                Console.WriteLine($"✅ Logged in user: {user.FullName} ({user.Email}) | RoleID={user.RoleID}");
-                Console.WriteLine($"Session set: " +
-                    $"Name={HttpContext.Session.GetString("UserName")}, " +
-                    $"Role={HttpContext.Session.GetString("UserRole")}, " +
-                    $"ID={HttpContext.Session.GetInt32("UserID")}");
 
+                // ✅ Sign in with cookie (fixes redirect loop)
+                var claims = new List<Claim>
+                {
+                   new Claim(ClaimTypes.Name, user.FullName),
+                   new Claim(ClaimTypes.Email, user.Email),
+                   new Claim(ClaimTypes.Role, roleName)
+                };
+                var identity = new ClaimsIdentity(claims, "CookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync("CookieAuth", principal);
 
                 // 🔹 Redirect based on role
-                return user.RoleID switch
-                {
-                    1 => RedirectToAction("Dashboard", "Admin"),
-                    2 => RedirectToAction("Dashboard", "Teacher"),
-                    3 => RedirectToAction("Index", "StudentDashboard"),
-                    _ => RedirectToAction("Login")
-                };
+                if (roleName == "Admin")
+                    return RedirectToAction("Dashboard", "Admin");
+                if (roleName == "Teacher")
+                    return RedirectToAction("Dashboard", "Teacher");
+                if (roleName == "Student")
+                    return RedirectToAction("Index", "StudentDashboard");
+
+                return RedirectToAction("Login");
+
             }
             catch (Exception ex)
             {
@@ -99,13 +116,25 @@ namespace StudentTracker.Controllers
 
         // ---------- ROLE ENTRY POINTS ----------
         [HttpGet, AllowAnonymous]
-        public IActionResult LoginStudent() { ViewBag.Role = "Student"; return View("Login"); }
+        public IActionResult LoginStudent()
+        {
+            ViewBag.Role = "Student";
+            return View("Login");
+        }
 
         [HttpGet, AllowAnonymous]
-        public IActionResult LoginTeacher() { ViewBag.Role = "Teacher"; return View("Login"); }
+        public IActionResult LoginTeacher()
+        {
+            ViewBag.Role = "Teacher";
+            return View("Login");
+        }
 
         [HttpGet, AllowAnonymous]
-        public IActionResult LoginAdmin() { ViewBag.Role = "Admin"; return View("Login"); }
+        public IActionResult LoginAdmin()
+        {
+            ViewBag.Role = "Admin";
+            return View("Login");
+        }
 
         // ---------- REGISTER ----------
         [HttpGet]
