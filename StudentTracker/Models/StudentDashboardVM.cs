@@ -1,60 +1,61 @@
-﻿namespace StudentTracker.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace StudentTracker.Models.ViewModels
 {
     public class StudentDashboardVM
     {
-        public int UserID { get; set; }
+        // ===== Top overview =====
         public string StudentName { get; set; } = string.Empty;
-        public string CurrentSemester { get; set; } = "-";
-        public int ActiveCoursesCount { get; set; }
+        public string CurrentSemester { get; set; } = string.Empty;
+        public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
         public double AttendancePercent { get; set; }
 
-        public List<CourseCardVM> Courses { get; set; } = new();
+        // ===== Lists =====
+        public List<CourseItemVM> MyCourses { get; set; } = new();
         public List<NotificationVM> Notifications { get; set; } = new();
 
-        public List<SeriesPointVM> GradeSeries { get; set; } = new();
-        public List<SeriesPointVM> AttendanceSeries { get; set; } = new();
+        // ===== Charts =====
+        public List<GradePointVM> GradeProgress { get; set; } = new();
+        public List<AttendancePointVM> AttendanceTrend { get; set; } = new();
 
-        public List<string> Departments { get; set; } = new();
+        // ===== Filters =====
         public List<string> Semesters { get; set; } = new();
-        public string? SelectedDepartment { get; set; }
+        public List<string> Departments { get; set; } = new();
         public string? SelectedSemester { get; set; }
+        public string? SelectedDepartment { get; set; }
     }
 
-    public class CourseCardVM
+    public class CourseItemVM
     {
-        public int CourseID { get; set; }
+        public int CourseId { get; set; }
         public string CourseName { get; set; } = string.Empty;
         public string TeacherName { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
-        public string Semester { get; set; } = string.Empty;
         public double AttendanceRate { get; set; }
         public double CurrentAverage { get; set; }
     }
 
     public class NotificationVM
     {
-        public int NotificationID { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public string? Type { get; set; }
-        public bool IsRead { get; set; }
+        public int NotificationId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Type { get; set; } = "info"; // info | warning | success | danger
+        public bool IsRead { get; set; }
     }
 
-    public class SeriesPointVM
+    public class GradePointVM
     {
-        public DateTime X { get; set; }
-        public double Y { get; set; }
+        public string Label { get; set; } = string.Empty; // e.g., "Test 1", "Midterm"
+        public double Average { get; set; }
     }
-    public class StudentCourseVM
+
+    public class AttendancePointVM
     {
-        public int StudentCourseID { get; set; }
-        public int CourseID { get; set; }
-        public string CourseName { get; set; } = string.Empty;
-        public string Department { get; set; } = string.Empty;
-        public string TeacherName { get; set; } = string.Empty;
-        public string Semester { get; set; } = string.Empty;
+        public string WeekLabel { get; set; } = string.Empty; // e.g., "Wk1"
+        public double Percent { get; set; }
     }
-
-
 }

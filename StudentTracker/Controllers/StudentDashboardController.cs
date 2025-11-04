@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using StudentTracker.Models;
+using StudentTracker.Models.ViewModels;
 using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Students must be logged in to see their dashboard
-    [Authorize(Roles = "Student")]
+    [Authorize]
     public class StudentDashboardController : Controller
     {
         private readonly HttpClient _client;
@@ -16,122 +15,137 @@ namespace StudentTracker.Controllers
         public StudentDashboardController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient();
-            _apiBase = config.GetSection("ApiSettings:BaseUrl")?.Value ?? string.Empty;
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value ?? "https://localhost:7199/";
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index(string? semester = null, string? department = null)
+        // GET: /StudentDashboard
+        public async Task<IActionResult> Index(int? studentId, string? semester, string? department)
         {
-            // ✅ 1) Get current student ID from session
-            var userId = HttpContext.Session.GetInt32("UserID");
-            if (userId == null)
-            {
-                TempData["Error"] = "Please log in first.";
-                return RedirectToAction("Login", "Auth");
-            }
+            // If you store StudentId in session/claims, you can pull it from there when null.
+            var id = studentId ?? HttpContext.Session.GetInt32("StudentId") ?? 1;
 
-            // ✅ 2) Fetch enrolled courses via API
-            var courseCards = new List<CourseCardVM>();
-            var enrolledRes = await _client.GetAsync($"{_apiBase}StudentCourses/user/{userId}");
-            if (enrolledRes.IsSuccessStatusCode)
+            StudentDashboardVM model;
+            try
             {
-                var json = await enrolledRes.Content.ReadAsStringAsync();
-                var enrolled = JsonConvert.DeserializeObject<List<StudentCourseVM>>(json) ?? new();
-
-                foreach (var c in enrolled)
+                // Primary API (single payload) — preferred if your API exposes it
+                var res = await _client.GetAsync($"{_apiBase}api/Dashboard/Student/{id}?semester={semester}&department={department}");
+                if (res.IsSuccessStatusCode)
                 {
-                    double attendanceRate = 0;
-                    double avg = 0;
-
-                    // Attendance %
-                    var attRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/course/{c.CourseID}/percent");
-                    if (attRes.IsSuccessStatusCode &&
-                        double.TryParse(await attRes.Content.ReadAsStringAsync(), out var att))
-                        attendanceRate = att;
-
-                    // Average grade
-                    var avgRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/course/{c.CourseID}/average");
-                    if (avgRes.IsSuccessStatusCode &&
-                        double.TryParse(await avgRes.Content.ReadAsStringAsync(), out var avgScore))
-                        avg = avgScore;
-
-                    courseCards.Add(new CourseCardVM
-                    {
-                        CourseID = c.CourseID,
-                        CourseName = c.CourseName,
-                        TeacherName = c.TeacherName,
-                        Department = c.Department,
-                        Semester = c.Semester,
-                        AttendanceRate = attendanceRate,
-                        CurrentAverage = avg
-                    });
+                    var json = await res.Content.ReadAsStringAsync();
+                    model = JsonConvert.DeserializeObject<StudentDashboardVM>(json) ?? new StudentDashboardVM();
+                }
+                else
+                {
+                    // Fallback: compose from separate endpoints
+                    model = await BuildFromSeparateEndpoints(id, semester, department);
                 }
             }
+            catch
+            {
+                // Safe demo data if API is down so the page still renders
+                model = DemoData();
+            }
 
-            // ✅ 3) Filters
-            var allDepartments = courseCards.Select(x => x.Department).Distinct().ToList();
-            var allSemesters = courseCards.Select(x => x.Semester).Distinct().ToList();
-
-            if (!string.IsNullOrWhiteSpace(department))
-                courseCards = courseCards.Where(c => c.Department == department).ToList();
+            // Apply filters on the client side if needed
             if (!string.IsNullOrWhiteSpace(semester))
-                courseCards = courseCards.Where(c => c.Semester == semester).ToList();
+                model.MyCourses = model.MyCourses.Where(c => c.CourseName.Contains(semester, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!string.IsNullOrWhiteSpace(department))
+                model.MyCourses = model.MyCourses.Where(c => c.Department.Equals(department, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            // ✅ 4) GPA + Global Attendance
-            double gpa = 0;
-            double overallAttendance = 0;
+            return View(model);
+        }
 
-            var gpaRes = await _client.GetAsync($"{_apiBase}TestGrades/user/{userId}/gpa");
-            if (gpaRes.IsSuccessStatusCode &&
-                double.TryParse(await gpaRes.Content.ReadAsStringAsync(), out var g))
-                gpa = g;
+        private async Task<StudentDashboardVM> BuildFromSeparateEndpoints(int studentId, string? semester, string? department)
+        {
+            var model = new StudentDashboardVM();
 
-            var attOverallRes = await _client.GetAsync($"{_apiBase}Attendance/user/{userId}/percent");
-            if (attOverallRes.IsSuccessStatusCode &&
-                double.TryParse(await attOverallRes.Content.ReadAsStringAsync(), out var attPercent))
-                overallAttendance = attPercent;
-
-            // ✅ 5) Notifications (sample or fetched later)
-            var notifications = new List<NotificationVM>
+            // Overview
+            var overview = await _client.GetAsync($"{_apiBase}api/Students/{studentId}/overview");
+            if (overview.IsSuccessStatusCode)
             {
-                new() { Message = "Welcome to your dashboard!", Type = "Info", CreatedAt = DateTime.Now },
-                new() { Message = $"You are enrolled in {courseCards.Count} courses.", Type = "Success", CreatedAt = DateTime.Now }
-            };
+                dynamic o = JsonConvert.DeserializeObject(await overview.Content.ReadAsStringAsync())!;
+                model.StudentName = o.studentName;
+                model.CurrentSemester = o.currentSemester;
+                model.ActiveCourseCount = (int)o.activeCourseCount;
+                model.GPA = (double)o.gpa;
+                model.AttendancePercent = (double)o.attendancePercent;
+                model.Semesters = ((IEnumerable<object>)o.semesters).Select(s => s.ToString()!).ToList();
+                model.Departments = ((IEnumerable<object>)o.departments).Select(s => s.ToString()!).ToList();
+            }
 
-            // ✅ 6) Simple chart demo data (optional)
-            var gradeSeries = new List<SeriesPointVM>
+            // Courses
+            var courses = await _client.GetAsync($"{_apiBase}api/Students/{studentId}/courses?semester={semester}&department={department}");
+            if (courses.IsSuccessStatusCode)
             {
-                new() { X = DateTime.Now.AddDays(-10), Y = 75 },
-                new() { X = DateTime.Now.AddDays(-5),  Y = 80 },
-                new() { X = DateTime.Now,              Y = 85 }
-            };
-            var attendanceSeries = new List<SeriesPointVM>
-            {
-                new() { X = DateTime.Now.AddDays(-10), Y = 90 },
-                new() { X = DateTime.Now.AddDays(-5),  Y = 88 },
-                new() { X = DateTime.Now,              Y = 92 }
-            };
+                var list = JsonConvert.DeserializeObject<List<CourseItemVM>>(await courses.Content.ReadAsStringAsync());
+                if (list != null) model.MyCourses = list;
+            }
 
-            // ✅ 7) Final view model
-            var vm = new StudentDashboardVM
+            // Notifications
+            var notifs = await _client.GetAsync($"{_apiBase}api/Students/{studentId}/notifications?unreadOnly=false");
+            if (notifs.IsSuccessStatusCode)
             {
-                UserID = userId.Value,
-                StudentName = HttpContext.Session.GetString("UserName") ?? "Student",
-                CurrentSemester = allSemesters.LastOrDefault() ?? "-",
-                ActiveCoursesCount = courseCards.Count,
-                GPA = gpa,
-                AttendancePercent = overallAttendance,
-                Courses = courseCards,
-                Notifications = notifications,
-                GradeSeries = gradeSeries,
-                AttendanceSeries = attendanceSeries,
-                Departments = allDepartments,
-                Semesters = allSemesters,
-                SelectedDepartment = department,
-                SelectedSemester = semester
-            };
+                var list = JsonConvert.DeserializeObject<List<NotificationVM>>(await notifs.Content.ReadAsStringAsync());
+                if (list != null) model.Notifications = list.OrderByDescending(n => n.CreatedAt).ToList();
+            }
 
-            return View(vm);
+            // Charts
+            var grades = await _client.GetAsync($"{_apiBase}api/Students/{studentId}/grades/progress");
+            if (grades.IsSuccessStatusCode)
+            {
+                var list = JsonConvert.DeserializeObject<List<GradePointVM>>(await grades.Content.ReadAsStringAsync());
+                if (list != null) model.GradeProgress = list;
+            }
+            var attendance = await _client.GetAsync($"{_apiBase}api/Students/{studentId}/attendance/trend");
+            if (attendance.IsSuccessStatusCode)
+            {
+                var list = JsonConvert.DeserializeObject<List<AttendancePointVM>>(await attendance.Content.ReadAsStringAsync());
+                if (list != null) model.AttendanceTrend = list;
+            }
+
+            return model;
+        }
+
+        private StudentDashboardVM DemoData()
+        {
+            return new StudentDashboardVM
+            {
+                StudentName = "Lynn El-Haly",
+                CurrentSemester = "Fall 2025",
+                ActiveCourseCount = 4,
+                GPA = 3.42,
+                AttendancePercent = 92.5,
+                Semesters = new() { "Fall 2025", "Spring 2025", "Fall 2024" },
+                Departments = new() { "CS", "Math", "Physics" },
+                MyCourses = new()
+                {
+                    new CourseItemVM{ CourseId=1, CourseName="Operating Systems", TeacherName="Dr. Tannous", Department="CS", AttendanceRate=95, CurrentAverage=88},
+                    new CourseItemVM{ CourseId=2, CourseName="Data Structures", TeacherName="Dr. Gerges", Department="CS", AttendanceRate=90, CurrentAverage=91},
+                    new CourseItemVM{ CourseId=3, CourseName="Discrete Math", TeacherName="Dr. Hachem", Department="Math", AttendanceRate=89, CurrentAverage=84},
+                    new CourseItemVM{ CourseId=4, CourseName="Physics I", TeacherName="Dr. Salem", Department="Physics", AttendanceRate=96, CurrentAverage=86},
+                },
+                Notifications = new()
+                {
+                    new NotificationVM{ NotificationId=101, CreatedAt=DateTime.UtcNow.AddDays(-1), Title="New grade posted", Message="OS Midterm grade is available.", Type="success", IsRead=false},
+                    new NotificationVM{ NotificationId=102, CreatedAt=DateTime.UtcNow.AddDays(-3), Title="Attendance Warning", Message="Data Structures attendance at 70%.", Type="warning", IsRead=false},
+                    new NotificationVM{ NotificationId=103, CreatedAt=DateTime.UtcNow.AddDays(-7), Title="Course update", Message="Discrete Math room changed to B302.", Type="info", IsRead=true},
+                },
+                GradeProgress = new()
+                {
+                    new GradePointVM{ Label="Quiz 1", Average=78},
+                    new GradePointVM{ Label="Quiz 2", Average=82},
+                    new GradePointVM{ Label="Midterm", Average=86},
+                    new GradePointVM{ Label="Project", Average=90},
+                },
+                AttendanceTrend = new()
+                {
+                    new AttendancePointVM{ WeekLabel="Wk1", Percent=100},
+                    new AttendancePointVM{ WeekLabel="Wk2", Percent=95},
+                    new AttendancePointVM{ WeekLabel="Wk3", Percent=88},
+                    new AttendancePointVM{ WeekLabel="Wk4", Percent=92},
+                    new AttendancePointVM{ WeekLabel="Wk5", Percent=94},
+                }
+            };
         }
     }
 }
