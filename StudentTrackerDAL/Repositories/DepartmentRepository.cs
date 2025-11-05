@@ -14,10 +14,17 @@ public class DepartmentRepository : IDepartmentRepository
     public async Task<IEnumerable<Department>> GetAllAsync()
     {
         using var conn = _factory.Create();
-        return await conn.QueryAsync<Department>(
-            "dbo.Departments_GetAll",
-            commandType: System.Data.CommandType.StoredProcedure);
+
+        var sql = @"
+        SELECT DepartmentID, DepartmentName, CreatedAt,
+               ISNULL(Description, 'Description not available.') AS Description,
+               ISNULL(IsActive, 0) AS IsActive
+        FROM Departments
+        ORDER BY DepartmentName;";
+
+        return await conn.QueryAsync<Department>(sql);
     }
+
 
     public async Task<Department?> GetByIdAsync(int id)
     {

@@ -1,12 +1,21 @@
-﻿@model List<StudentTracker.Models.DepartmentView>
+﻿@using System.Collections.Generic
+@model List<StudentTracker.Models.DepartmentView>
 
 @{
+    Layout = "_LayoutHome";
     ViewData["Title"] = "Faculties - WTF University";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center text-primary mb-4">🏛️ Faculties & Departments</h2>
+<section class="faculties-hero text-white text-center py-5">
+    <div class="container">
+        <h1 class="fw-bold mb-3">🏛️ Faculties & Departments</h1>
+        <p class="lead opacity-90">
+            Explore the academic divisions that shape the innovators of tomorrow.
+        </p>
+    </div>
+</section>
 
+<div class="container my-5">
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-danger text-center">@ViewBag.Error</div>
@@ -18,25 +27,94 @@
     }
     else
     {
-        <div class="row justify-content-center">
+        <div class="row g-4 justify-content-center">
             @foreach (var dept in Model)
             {
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body text-center">
-                            <h5 class="card-title text-primary">@dept.DepartmentName</h5>
-                            <p class="text-muted">
-                                @(string.IsNullOrWhiteSpace(dept.Description)
-                                                        ? "Description not available."
-                                                        : dept.Description)
-                    </p>
-                    <span class="badge @(dept.IsActive ? "bg-success" : "bg-secondary")">
-                        @(dept.IsActive ? "Active" : "Inactive")
-                    </span>
-                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="department-block text-center p-4">
+                        <div class="dept-icon mb-3">
+                            <i class="fa-solid fa-building-columns fa-2x"></i>
+                        </div>
+                        <h5 class="fw-bold">@dept.DepartmentName</h5>
+                        <p class="text-muted small mb-3">
+                            @(string.IsNullOrWhiteSpace(dept.Description)
+                                                ? "Description not available."
+                                                : dept.Description)
+                </p>
+                <span class="badge @(dept.IsActive ? "bg-success" : "bg-secondary") px-3 py-2">
+                    @(dept.IsActive ? "Active" : "Inactive")
+                </span>
             </div>
         </div>
                 }
         </div>
     }
 </div>
+
+<style>
+    /* ===== Hero Section ===== */
+    .faculties-hero {
+        background: linear-gradient(135deg, rgba(13, 75, 132, 0.95), rgba(10, 56, 98, 0.95)), url('/images/uniHome.jpg') center/cover no-repeat;
+        color: #fff;
+    }
+
+    /* ===== Department Block ===== */
+    .department-block {
+        background: #fff;
+        border: 3px solid #0d4b84;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(13, 75, 132, 0.15);
+        height: 280px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .department-block:hover {
+            background: #0d4b84;
+            color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(13, 75, 132, 0.4);
+        }
+
+            .department-block:hover .text-muted {
+                color: #e0e6f3 !important;
+            }
+
+    .dept-icon i {
+        color: #0d4b84;
+        background: rgba(13, 75, 132, 0.08);
+        padding: 14px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .department-block:hover .dept-icon i {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .department-block h5 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .department-block p {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .badge {
+        border-radius: 25px;
+        font-size: 0.8rem;
+    }
+
+    @@media (max-width: 768px) {
+        .department-block {
+            height: auto;
+            padding: 24px 16px;
+        }
+    }
+</style>
