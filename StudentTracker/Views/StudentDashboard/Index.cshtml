@@ -39,39 +39,27 @@
         <input type="hidden" name="userId" value="@Model.UserID" />
         <div class="col-md-6">
             <label class="form-label">Semester</label>
-           <select name="semester" class="form-select" onchange="this.form.submit()">
-    <option value="">All</option>
-    @foreach (var s in Model.Semesters)
-    {
-        if (Model.SelectedSemester == s)
-        {
-            <option value="@s" selected>@s</option>
-        }
-        else
-        {
-            <option value="@s">@s</option>
-        }
-    }
-</select>
-
+            <select name="semester" class="form-select" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var s in Model.Semesters)
+                {
+                    <option value="@s" selected="@(Model.SelectedSemester == s)">
+                        @s
+                    </option>
+                }
+            </select>
         </div>
         <div class="col-md-6">
             <label class="form-label">Department</label>
-           <select name="department" class="form-select" onchange="this.form.submit()">
-    <option value="">All</option>
-    @foreach (var d in Model.Departments)
-    {
-        if (Model.SelectedDepartment == d)
-        {
-            <option value="@d" selected>@d</option>
-        }
-        else
-        {
-            <option value="@d">@d</option>
-        }
-    }
-</select>
-
+            <select name="department" class="form-select" onchange="this.form.submit()">
+                <option value="">All</option>
+                @foreach (var d in Model.Departments)
+                {
+                    <option value="@d" selected="@(Model.SelectedDepartment == d)">
+                        @d
+                    </option>
+                }
+            </select>
         </div>
     </form>
 
@@ -91,22 +79,31 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var c in Model.Courses)
+                @if (Model.Courses?.Any() == true)
+                {
+                    foreach (var c in Model.Courses)
+                    {
+                        <tr>
+                            <td>@c.CourseName</td>
+                            <td>@c.TeacherName</td>
+                            <td>@c.Department</td>
+                            <td>@c.Semester</td>
+                            <td>@c.AttendanceRate.ToString("0.0")%</td>
+                            <td>@c.CurrentAverage.ToString("0.0")%</td>
+                            <td>
+                                <form asp-action="Enroll" method="post">
+                                    <input type="hidden" name="userId" value="@Model.UserID" />
+                                    <input type="hidden" name="courseId" value="@c.CourseID" />
+                                    <button class="btn btn-sm btn-outline-primary">Enroll</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@c.CourseName</td>
-                        <td>@c.TeacherName</td>
-                        <td>@c.Department</td>
-                        <td>@c.Semester</td>
-                        <td>@c.AttendanceRate.ToString("0.0")%</td>
-                        <td>@c.CurrentAverage.ToString("0.0")%</td>
-                        <td>
-                            <form asp-action="Enroll" method="post">
-                                <input type="hidden" name="userId" value="@Model.UserID" />
-                                <input type="hidden" name="courseId" value="@c.CourseID" />
-                                <button class="btn btn-sm btn-outline-primary">Enroll</button>
-                            </form>
-                        </td>
+                        <td colspan="7" class="text-center text-muted py-4">No courses found.</td>
                     </tr>
                 }
             </tbody>

@@ -1,38 +1,244 @@
 ﻿@model IEnumerable<StudentTracker.Models.SemesterView>
-<h2>Semesters</h2>
-<p><a asp-action="Create" class="btn btn-success">+ New Semester</a></p>
-@if (TempData["Msg"] != null)
-{
-    <div class="alert alert-info">@TempData["Msg"]</div>
+
+@{
+    ViewData["Title"] = "Semesters";
 }
 
-<table class="table table-bordered table-striped">
-    <thead class="table-light">
-        <tr>
-            <th>ID</th>
-            <th>Academic Year</th>
-            <th>Name</th>
-            <th>#</th>
-            <th>Start</th>
-            <th>End</th>
-            <th style="width:150px;">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td>@s.SemesterID</td>
-                <td>@s.AcademicYearID</td> <!-- Optional: show AY name if you return it later -->
-                <td>@s.Name</td>
-                <td>@s.SemesterNb</td>
-                <td>@s.StartDate.ToShortDateString()</td>
-                <td>@s.EndDate.ToShortDateString()</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@s.SemesterID" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@s.SemesterID" class="btn btn-sm btn-outline-danger">Delete</a>
-                </td>
-            </tr>
+<style>
+    body {
+        background: linear-gradient(135deg, #001f3f, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .semesters-wrapper {
+        text-align: center;
+        padding: 80px 0;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        margin-bottom: 40px;
+    }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.3rem;
+            color: #fff;
         }
-    </tbody>
-</table>
+
+        .page-header p {
+            color: #cfd8dc;
+            font-size: 1.05rem;
+            margin-top: 8px;
+        }
+
+    .buttons-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        color: #fff;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+    .btn-add {
+        background: linear-gradient(135deg, #00bcd4, #1976d2);
+        box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+    }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #1976d2, #00bcd4);
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(0, 188, 212, 0.6);
+        }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 auto;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    thead {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        color: #aee0ff;
+    }
+
+    tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transition: 0.3s;
+    }
+
+    .action-btn {
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 6px 12px;
+        margin: 0 4px;
+        transition: 0.3s;
+        color: #fff;
+    }
+
+    .edit {
+        background: rgba(56, 189, 248, 0.2);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+        .edit:hover {
+            background: rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .delete {
+        background: rgba(248, 113, 113, 0.2);
+        border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+
+        .delete:hover {
+            background: rgba(248, 113, 113, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .alert {
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin: 10px 0 20px 0;
+        font-weight: 500;
+        text-align: center;
+        backdrop-filter: blur(8px);
+    }
+
+    .alert-info {
+        background: rgba(0, 190, 255, 0.15);
+        color: #aee0ff;
+    }
+
+    @@media (max-width: 768px) {
+        .buttons-row {
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .table-container {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="semesters-wrapper">
+    <div class="page-header">
+        <h2>📅 Semesters</h2>
+        <p>Manage academic semesters and schedules.</p>
+    </div>
+
+    <div class="buttons-row">
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
+        <a asp-action="Create" class="btn btn-add">➕ Add Semester</a>
+    </div>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-info">@TempData["Msg"]</div>
+    }
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Academic Year</th>
+                    <th>Name</th>
+                    <th>#</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var s in Model)
+                    {
+                        <tr>
+                            <td>@s.SemesterID</td>
+                            <td>@s.AcademicYearID</td>
+                            <td>@s.Name</td>
+                            <td>@s.SemesterNb</td>
+                            <td>@s.StartDate.ToShortDateString()</td>
+                            <td>@s.EndDate.ToShortDateString()</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@s.SemesterID" class="action-btn edit">✏️ Edit</a>
+                                <a asp-action="Delete" asp-route-id="@s.SemesterID" class="action-btn delete">🗑️ Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No semesters found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // ✅ Auto-hide alert after 3 seconds
+    setTimeout(() => {
+        const alertBox = document.querySelector('.alert');
+        if (alertBox) {
+            alertBox.style.opacity = '0';
+            setTimeout(() => alertBox.remove(), 600);
+        }
+    }, 3000);
+</script>

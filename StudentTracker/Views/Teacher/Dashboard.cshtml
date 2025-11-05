@@ -1,50 +1,52 @@
-﻿@model StudentTrackerCOMMON.DTOs.TeacherDashboard.TeacherDashboardDto
+﻿@model StudentTracker.Models.TeacherDashboardView
 
 @{
     ViewData["Title"] = "Teacher Dashboard";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4 text-primary">👨‍🏫 Teacher Dashboard</h2>
+    <h2 class="mb-4 text-primary text-center">👨‍🏫 Teacher Dashboard</h2>
 
-    <!-- Teacher Info -->
     <div class="alert alert-light border text-center">
-        <strong>@ViewBag.TeacherName</strong>
-        <br />
-        <small class="text-muted">@ViewBag.TeacherEmail</small>
+        <strong>@Model.TeacherName</strong><br />
+        <small class="text-muted">@Model.TeacherEmail</small>
     </div>
 
     <!-- Summary Cards -->
-    <div class="row mb-4">
+    <div class="row mb-4 text-center">
         <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body text-center">
+                <div class="card-body">
                     <h6 class="text-muted">My Courses</h6>
-                    <h4 class="fw-bold text-primary">@Model?.CourseCount ?? 0</h4>
+                    <h4 class="fw-bold text-primary">@Model.TotalCourses</h4>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body text-center">
+                <div class="card-body">
                     <h6 class="text-muted">Students Enrolled</h6>
-                    <h4 class="fw-bold text-success">@Model?.StudentCount ?? 0</h4>
+                    <h4 class="fw-bold text-success">@Model.TotalStudents</h4>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body text-center">
+                <div class="card-body">
                     <h6 class="text-muted">Average Grade</h6>
-                    <h4 class="fw-bold text-warning">@((Model?.AverageGrade ?? 0).ToString("0"))%</h4>
+                    <h4 class="fw-bold text-warning">
+                        @(Model.AverageGrade > 0 ? $"{Model.AverageGrade:0.##}%" : "—")
+                    </h4>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body text-center">
+                <div class="card-body">
                     <h6 class="text-muted">Attendance Rate</h6>
-                    <h4 class="fw-bold text-info">@((Model?.AttendanceRate ?? 0).ToString("0"))%</h4>
+                    <h4 class="fw-bold text-info">
+                        @(Model.AttendanceRate > 0 ? $"{Model.AttendanceRate:0.##}%" : "—")
+                    </h4>
                 </div>
             </div>
         </div>
@@ -53,15 +55,17 @@
     <!-- Courses Table -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">📚 My Courses</h5>
+            <h5>📚 My Courses</h5>
         </div>
         <div class="card-body">
-            @if (Model?.Courses?.Any() == true)
+            @if (Model.Courses?.Any() == true)
             {
                 <table class="table table-striped align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th>Code</th>
                             <th>Course</th>
+                            <th>Department</th>
                             <th>Semester</th>
                             <th>Students</th>
                             <th>Average</th>
@@ -72,11 +76,17 @@
                         @foreach (var c in Model.Courses)
                         {
                             <tr>
+                                <td>@c.CourseCode</td>
                                 <td>@c.CourseName</td>
+                                <td>@c.DepartmentName</td>
                                 <td>@c.SemesterName</td>
                                 <td>@c.StudentCount</td>
-                                <td>@c.AverageGrade%</td>
-                                <td>@c.AttendanceRate%</td>
+                                <td>
+                                    @(c.AverageGrade > 0 ? $"{c.AverageGrade:0.##}%" : "—")
+                                </td>
+                                <td>
+                                    @(c.AttendanceRate > 0 ? $"{c.AttendanceRate:0.##}%" : "—")
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -92,21 +102,23 @@
     <!-- Recent Activities -->
     <div class="card shadow-sm border-0">
         <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">🕒 Recent Activities</h5>
+            <h5>🕒 Recent Activities</h5>
         </div>
         <div class="card-body">
-            @if (Model?.RecentActivities?.Any() == true)
+            @if (Model.RecentActivities?.Any() == true)
             {
                 <ul class="list-group">
-                    @foreach (var activity in Model.RecentActivities)
+                    @foreach (var a in Model.RecentActivities)
                     {
-                        <li class="list-group-item">@activity.Description</li>
+                        <li class="list-group-item">
+                            @a.Description (@a.Date.ToShortDateString())
+                        </li>
                     }
                 </ul>
             }
             else
             {
-                <p class="text-muted">No recent activity yet.</p>
+                <p class="text-muted">No recent activities yet.</p>
             }
         </div>
     </div>

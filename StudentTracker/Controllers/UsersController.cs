@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only authorized users (typically Admins) can manage accounts
+    // 🔒 Only Admins can manage user accounts
     [Authorize(Roles = "Admin")]
     public class UsersController : BaseController
     {
@@ -20,6 +20,7 @@ namespace StudentTracker.Controllers
         }
 
         // ✅ List users (optionally filtered by role)
+        [HttpGet]
         public async Task<IActionResult> Index(string? role)
         {
             var res = await _client.GetAsync($"{_apiBase}Users");
@@ -29,14 +30,15 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
-            // show only active
+            // 🔹 Show only active users
             users = users.Where(u => u.IsActive).ToList();
 
-            // filter by role if provided
+            // 🔹 Filter by role if provided
             if (!string.IsNullOrWhiteSpace(role))
             {
                 users = users
-                    .Where(u => u.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
+                    .Where(u => u.Role != null &&
+                                u.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
                     .ToList();
                 ViewBag.RoleFilter = role;
             }
@@ -69,7 +71,7 @@ namespace StudentTracker.Controllers
                 return RedirectToAction(nameof(Index), new { role = model.Role });
             }
 
-            ViewBag.Error = "❌ Unable to create user. Please check the data.";
+            ViewBag.Error = "❌ Unable to create user. Please check the entered data.";
             return View(model);
         }
 
@@ -94,6 +96,9 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserView model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
+
             var payload = JsonConvert.SerializeObject(model);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
             var res = await _client.PutAsync($"{_apiBase}Users/update", content);
@@ -104,7 +109,7 @@ namespace StudentTracker.Controllers
                 return RedirectToAction(nameof(Index), new { role = model.Role });
             }
 
-            ViewBag.Error = "❌ Update failed.";
+            ViewBag.Error = "❌ Update failed. Please try again.";
             return View(model);
         }
 
@@ -131,9 +136,10 @@ namespace StudentTracker.Controllers
         public async Task<IActionResult> DeleteConfirmed(int userId, string role)
         {
             var res = await _client.DeleteAsync($"{_apiBase}Users/{userId}");
+
             TempData["Msg"] = res.IsSuccessStatusCode
                 ? "✅ User deleted successfully!"
-                : "❌ Delete failed.";
+                : "❌ Delete failed. Please try again.";
 
             return RedirectToAction(nameof(Index), new { role });
         }

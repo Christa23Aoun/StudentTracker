@@ -1,5 +1,6 @@
-﻿@{
-    // role comes from query string or ViewBag (default to "Student")
+﻿@model StudentTracker.Models.LoginView
+
+@{
     var role = (string?)ViewBag.Role
                ?? Context.Request.Query["role"].ToString()
                ?? "Student";
@@ -7,32 +8,134 @@
     ViewData["Title"] = $"Login - {role}";
 }
 
-<div class="container mt-5" style="max-width:400px;">
-    <h3 class="text-center text-primary mb-4">Login – @role</h3>
+<style>
+    html, body {
+        height: 100%;
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
 
-    <form asp-action="Login" method="post">
-        <!-- send the role to the POST action -->
+    footer, hr {
+        border: none;
+        background: none;
+    }
+
+    .login-box {
+        max-width: 420px;
+        margin: 100px auto;
+        background: rgba(0, 45, 90, 0.85);
+        border-radius: 25px;
+        padding: 45px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        text-align: center;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+    }
+
+    h3 {
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #fff;
+    }
+
+    label {
+        font-weight: 600;
+        color: #cfe6ff;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 20px;
+        transition: all 0.2s ease;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 12px rgba(33,150,243,0.6);
+            outline: none;
+        }
+
+    .btn-primary {
+        width: 100%;
+        background: linear-gradient(135deg, #006aff, #0048b3);
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #007bff, #003f91);
+            box-shadow: 0 0 15px rgba(0,150,255,0.6);
+            transform: translateY(-2px);
+        }
+
+    .alert {
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 15px;
+        background: rgba(255,80,80,0.2);
+        color: #ffb3b3;
+    }
+
+    a {
+        color: #aee0ff;
+        text-decoration: none;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    .role-badge {
+        font-weight: 600;
+        color: #aee0ff;
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="login-box">
+    <h3>🔐 Login – @role</h3>
+
+    <form asp-controller="Auth" asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" name="Role" value="@role" />
+        <span class="role-badge">(@role)</span>
 
-        <div class="mb-3">
+        <div class="mb-3 text-start">
             <label class="form-label">Email</label>
-            <input type="email" name="Email" class="form-control" placeholder="Enter your email" required />
+            <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 text-start">
             <label class="form-label">Password</label>
-            <input type="password" name="Password" class="form-control" placeholder="Enter your password" required />
+            <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" required />
+            <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-
-        <div class="text-center mt-3">
-            <a asp-action="Register" class="text-decoration-none">Don’t have an account? Register here</a>
-        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
 
         @if (ViewBag.Error != null)
         {
-            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+            <div class="alert mt-3">@ViewBag.Error</div>
         }
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

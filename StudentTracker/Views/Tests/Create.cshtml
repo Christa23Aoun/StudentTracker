@@ -1,27 +1,55 @@
-﻿@model StudentTrackerCOMMON.Models.Test
+﻿@model StudentTracker.Models.TestView
 
-<h2>Create Test</h2>
+@{
+    ViewData["Title"] = "Create Test";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label>Course ID</label>
-        <input asp-for="CourseID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Test Name</label>
-        <input asp-for="TestName" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Test Date</label>
-        <input asp-for="TestDate" type="date" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Weight</label>
-        <input asp-for="Weight" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Max Score</label>
-        <input asp-for="MaxScore" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-success mt-2">Save</button>
-</form>
+<div class="container mt-5" style="max-width:700px;">
+    <h2 class="text-center text-primary mb-4">🧪 Create New Test</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+    }
+
+    <form asp-action="Create" method="post" class="shadow-sm p-4 rounded bg-light">
+        <div class="mb-3">
+            <label class="form-label">Course ID</label>
+            <input asp-for="CourseID" class="form-control" placeholder="Enter course ID" required />
+            <span asp-validation-for="CourseID" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Test Name</label>
+            <input asp-for="TestName" class="form-control" placeholder="Enter test name" required />
+            <span asp-validation-for="TestName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Test Date</label>
+            <input asp-for="TestDate" type="date" class="form-control" required />
+            <span asp-validation-for="TestDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Weight</label>
+            <input asp-for="Weight" type="number" step="0.1" class="form-control" placeholder="Enter test weight" required />
+            <span asp-validation-for="Weight" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Max Score</label>
+            <input asp-for="MaxScore" type="number" step="0.1" class="form-control" placeholder="Enter maximum score" required />
+            <span asp-validation-for="MaxScore" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-success px-4">Save</button>
+            <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -7,7 +7,6 @@
         public string CourseName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public string SemesterName { get; set; } = string.Empty;
-
         public int StudentCount { get; set; }
         public double AverageGrade { get; set; }
         public double AttendanceRate { get; set; }
@@ -22,6 +21,7 @@
     public class TeacherDashboardView
     {
         public string TeacherName { get; set; } = string.Empty;
+        public string TeacherEmail { get; set; } = string.Empty;
         public int TotalCourses { get; set; }
         public int TotalStudents { get; set; }
         public double AverageGrade { get; set; }

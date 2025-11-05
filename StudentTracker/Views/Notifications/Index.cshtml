@@ -1,12 +1,100 @@
-﻿@model IEnumerable<StudentTrackerCOMMON.Models.Notification>
+﻿@model IEnumerable<StudentTracker.Models.NotificationView>
 
-<h2>Notifications</h2>
-<ul class="list-group">
-    @foreach (var n in Model)
-    {
-        <li class="list-group-item @(n.IsRead ? "text-muted" : "fw-bold")">
-            @n.Message
-            <span class="float-end">@n.CreatedAt.ToLocalTime()</span>
-        </li>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
     }
-</ul>
+
+    .notifications-wrapper {
+        max-width: 800px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 20px;
+        padding: 40px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 35px;
+        color: #ffffff;
+    }
+
+    ul.list-group {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .list-group-item {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+        transition: all 0.2s ease;
+    }
+
+        .list-group-item:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .list-group-item.unread {
+            font-weight: 600;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .list-group-item.read {
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+    .timestamp {
+        font-size: 0.9rem;
+        color: #b0c4de;
+    }
+
+    .empty {
+        text-align: center;
+        color: #cfd8dc;
+        margin-top: 30px;
+        font-style: italic;
+    }
+</style>
+
+<div class="notifications-wrapper">
+    <h2>🔔 Notifications</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <ul class="list-group">
+            @foreach (var n in Model)
+            {
+                <li class="list-group-item @(n.IsRead ? "read" : "unread")">
+                    <span>@n.Message</span>
+                    <span class="timestamp">@n.CreatedAt.ToLocalTime().ToString("g")</span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="empty">No notifications available.</div>
+    }
+</div>
