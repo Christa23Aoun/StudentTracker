@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
 
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

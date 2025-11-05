@@ -30,16 +30,20 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
-            // 🔹 Show only active users
+            // ✅ Keep only active users
             users = users.Where(u => u.IsActive).ToList();
 
-            // 🔹 Filter by role if provided
+            // ✅ Filter by role if provided (match RoleID instead of string)
             if (!string.IsNullOrWhiteSpace(role))
             {
-                users = users
-                    .Where(u => u.Role != null &&
-                                u.Role.Equals(role, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                role = role.ToLower();
+                users = role switch
+                {
+                    "admin" => users.Where(u => u.RoleID == 1).ToList(),
+                    "teacher" => users.Where(u => u.RoleID == 2).ToList(),
+                    "student" => users.Where(u => u.RoleID == 3).ToList(),
+                    _ => users
+                };
                 ViewBag.RoleFilter = role;
             }
 
@@ -61,17 +65,34 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
 
+            // ✅ Copy plain password to PasswordHash before sending to API
+            model.PasswordHash = model.Password;
+
             var payload = JsonConvert.SerializeObject(model);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
             var res = await _client.PostAsync($"{_apiBase}Users/create", content);
 
+            string body = await res.Content.ReadAsStringAsync();
+            Console.WriteLine($"🔍 Create User response: {res.StatusCode}");
+            Console.WriteLine($"🔍 API body: {body}");
+
             if (res.IsSuccessStatusCode)
             {
                 TempData["Msg"] = "✅ User created successfully!";
-                return RedirectToAction(nameof(Index), new { role = model.Role });
+
+                // ✅ Automatically redirect to correct role list
+                string targetRole = model.RoleID switch
+                {
+                    1 => "Admin",
+                    2 => "Teacher",
+                    3 => "Student",
+                    _ => null
+                };
+
+                return RedirectToAction(nameof(Index), new { role = targetRole });
             }
 
-            ViewBag.Error = "❌ Unable to create user. Please check the entered data.";
+            ViewBag.Error = $"❌ Unable to create user. ({res.StatusCode})";
             return View(model);
         }
 

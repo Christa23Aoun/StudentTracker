@@ -16,44 +16,63 @@ namespace StudentTracker.Controllers
 
         public AuthController(IHttpClientFactory factory, IConfiguration config)
         {
-            _client = factory.CreateClient();
+            _client = factory.CreateClient("API"); // ✅ use named client ("API")
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ---------- LOGIN ----------
+        // ---------- LOGIN (GET) ----------
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login() => View();
+        public IActionResult Login(string? role = null)
+        {
+            ViewBag.Role = role ?? "Student";
+            return View();
+        }
 
+        // ---------- LOGIN (POST) ----------
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginView model)
         {
-            Console.WriteLine("➡️ Login POST triggered"); // add this line
+            Console.WriteLine("➡️ Login POST triggered");
+
+            // ✅ Debug ModelState
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("❌ Invalid model state");
+                foreach (var kv in ModelState)
+                {
+                    foreach (var err in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"❌ Field: {kv.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
+
+                // Keep the selected role visible
+                ViewBag.Role = model.Role ?? "Student";
                 return View(model);
             }
 
-            // ✅ Preserve selected role if validation fails
-            ViewBag.Role = model.Role;
-
             try
             {
-                // 🔹 Send login request to API
+                // 🔹 Prepare payload for API
                 var payload = JsonConvert.SerializeObject(model);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
                 var res = await _client.PostAsync($"{_apiBase}Auth/login", content);
 
+                Console.WriteLine($"🔍 Login API response: {res.StatusCode}");
+                string apiReply = await res.Content.ReadAsStringAsync();
+                Console.WriteLine($"🔍 API reply body: {apiReply}");
+
                 if (!res.IsSuccessStatusCode)
                 {
                     ViewBag.Error = "Invalid email or password.";
+                    ViewBag.Role = model.Role ?? "Student";
                     return View(model);
                 }
 
-                // 🔹 After successful login, retrieve user details by email
+                // 🔹 Fetch user details by email
                 var userRes = await _client.GetAsync($"{_apiBase}Users/email/{model.Email}");
                 if (!userRes.IsSuccessStatusCode)
                 {
@@ -69,7 +88,7 @@ namespace StudentTracker.Controllers
                     return View(model);
                 }
 
-                // 🔹 Map RoleName based on RoleID (DB convention)
+                // 🔹 Determine RoleName based on RoleID
                 string roleName = user.RoleID switch
                 {
                     1 => "Admin",
@@ -78,34 +97,32 @@ namespace StudentTracker.Controllers
                     _ => "Unknown"
                 };
 
-                /// 🔹 Save session info
+                // 🔹 Save session
                 HttpContext.Session.SetString("UserName", user.FullName);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
 
-                // ✅ Sign in with cookie (fixes redirect loop)
+                // 🔹 Authenticate cookie
                 var claims = new List<Claim>
                 {
-                   new Claim(ClaimTypes.Name, user.FullName),
-                   new Claim(ClaimTypes.Email, user.Email),
-                   new Claim(ClaimTypes.Role, roleName)
+                    new Claim(ClaimTypes.Name, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, roleName)
                 };
                 var identity = new ClaimsIdentity(claims, "CookieAuth");
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync("CookieAuth", principal);
 
-                // 🔹 Redirect based on role
-                if (roleName == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-                if (roleName == "Teacher")
-                    return RedirectToAction("Dashboard", "Teacher");
-                if (roleName == "Student")
-                    return RedirectToAction("Index", "StudentDashboard");
-
-                return RedirectToAction("Login");
-
+                // ✅ Redirect based on role
+                return roleName switch
+                {
+                    "Admin" => RedirectToAction("Dashboard", "Admin"),
+                    "Teacher" => RedirectToAction("Dashboard", "Teacher"),
+                    "Student" => RedirectToAction("Index", "StudentDashboard"),
+                    _ => RedirectToAction("Login")
+                };
             }
             catch (Exception ex)
             {
@@ -146,8 +163,21 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterView model)
         {
+            Console.WriteLine($"📧 Email: {model.Email}");
+            Console.WriteLine($"🔑 Password: {model.Password}");
+            Console.WriteLine($"🎭 Role: {model.Role}");
+
             if (!ModelState.IsValid)
+            {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var err in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"❌ Field: {kv.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
                 return View(model);
+            }
 
             try
             {
@@ -173,10 +203,17 @@ namespace StudentTracker.Controllers
 
         // ---------- LOGOUT ----------
         [Authorize]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            // 🧹 Clear session
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+
+            // 🧹 Sign out from cookie authentication
+            await HttpContext.SignOutAsync("CookieAuth");
+
+            // ✅ Redirect to login page
+            return RedirectToAction("Login", "Auth");
         }
+
     }
 }

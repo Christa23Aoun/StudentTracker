@@ -1,5 +1,6 @@
 ﻿using StudentTrackerCOMMON.DTOs.AdminDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Interfaces.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -73,7 +74,7 @@ namespace StudentTrackerBLL.Services.Dashboard
                                u.RoleID == 3 ? "Student" : "Unknown",
                     IsActive = u.IsActive
                 }).ToList(),
-                PendingGrades = new List<AdminPendingGradeDto>() // ✅ Fixed type
+                PendingGrades = new List<AdminPendingGradeDto>() // empty placeholder
             };
         }
     }

@@ -1,160 +1,117 @@
 ﻿@model StudentTracker.Models.AdminDashboardViewModel
-
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
+        background: linear-gradient(135deg, #001a33, #003c8f);
         font-family: 'Segoe UI', sans-serif;
         color: #fff;
         margin: 0;
         padding: 0;
     }
 
-    .dashboard-wrapper {
-        padding: 80px 0;
+    .dashboard-container {
+        width: 85%;
+        max-width: 1300px;
+        margin: 80px auto;
         text-align: center;
     }
 
-    .dashboard-header {
-        margin-bottom: 40px;
+    h1 {
+        font-weight: 700;
+        margin-bottom: 10px;
     }
 
-        .dashboard-header h2 {
-            font-weight: 700;
-            font-size: 2.3rem;
-            color: #fff;
-        }
-
-        .dashboard-header p {
-            color: #cfd8dc;
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-
-    .card-grid {
+    .dashboard-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 25px;
-        width: 85%;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-
-    .card-link {
-        text-decoration: none;
-        color: inherit;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
+        margin-top: 60px;
     }
 
     .card {
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-radius: 20px;
-        padding: 40px 20px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 22px;
+        padding: 40px 30px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        text-decoration: none;
         color: #fff;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 191, 255, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.1);
     }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 191, 255, 0.45), inset 0 0 10px rgba(255, 255, 255, 0.15);
-        }
-
-        .card h5 {
-            font-weight: 600;
-            font-size: 1.05rem;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-            opacity: 0.9;
-        }
-
-        .card h3 {
-            font-size: 2.6rem;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
-        }
-
-    .students {
-        border-top: 4px solid #00e676;
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
     }
 
-    .teachers {
-        border-top: 4px solid #2196f3;
+    .card h2 {
+        font-size: 2rem;
+        margin: 10px 0;
     }
 
-    .courses {
-        border-top: 4px solid #ffb300;
+    .card p {
+        font-size: 0.95rem;
+        color: #d0e0ff;
     }
 
-    .departments {
-        border-top: 4px solid #ba68c8;
-    }
-
-    .footer-summary {
-        margin-top: 60px;
-        color: #cfd8dc;
-        font-size: 1rem;
-    }
-
-        .footer-summary strong {
-            color: #fff;
-        }
+    /* 🔹 Unique glow borders */
+    .students { border-top: 5px solid #00C853; } /* Green */
+    .teachers { border-top: 5px solid #2979FF; } /* Blue */
+    .courses { border-top: 5px solid #FFD600; }  /* Yellow */
+    .departments { border-top: 5px solid #AA00FF; } /* Violet */
+    .grades { border-top: 5px solid #FF6D00; }   /* Orange */
+    .attendance { border-top: 5px solid #00BFA5; } /* Teal */
 </style>
 
-<div class="dashboard-wrapper">
-    <div class="dashboard-header">
-        <h2>🧑‍💼 Admin Dashboard</h2>
-        <p>Overview of the university’s academic structure and performance</p>
+<div class="dashboard-container">
+    <h1>👨‍💼 Admin Dashboard</h1>
+    <p>Overview of the university’s academic structure and performance.</p>
+
+    <div class="dashboard-cards">
+        <!-- Students -->
+        <a asp-controller="Users" asp-action="Index" asp-route-role="Student" class="card students">
+            <h2>👨‍🎓 @Model.Summary.TotalStudents</h2>
+            <p>Total registered students</p>
+        </a>
+
+        <!-- Teachers -->
+        <a asp-controller="Users" asp-action="Index" asp-route-role="Teacher" class="card teachers">
+            <h2>👩‍🏫 @Model.Summary.TotalTeachers</h2>
+            <p>Total active teachers</p>
+        </a>
+
+        <!-- Courses -->
+        <a asp-controller="Courses" asp-action="Index" class="card courses">
+            <h2>📚 @Model.Summary.ActiveCourses</h2>
+            <p>Active courses this semester</p>
+        </a>
+
+        <!-- Departments -->
+        <a asp-controller="Departments" asp-action="Index" class="card departments">
+            <h2>🏛 @Model.Summary.Departments</h2>
+            <p>Total academic departments</p>
+        </a>
+
+        <!-- Pending Grades -->
+        <a asp-controller="Grades" asp-action="Index" class="card grades">
+            <h2>🧾 @Model.PendingGrades.Count</h2>
+            <p>Pending grade validations</p>
+        </a>
+
+        <!-- Attendance -->
+        <a asp-controller="Attendance" asp-action="Index" class="card attendance">
+            <h2>🕒 @Model.AttendanceCount</h2>
+            <p>Total attendance records</p>
+        </a>
     </div>
 
-    @if (Model?.Summary != null)
-    {
-        <div class="card-grid">
-            <a href="/Users?role=Student" class="card-link">
-                <div class="card students">
-                    <h5>👩‍🎓 Total Students</h5>
-                    <h3>@Model.Summary.TotalStudents</h3>
-                </div>
-            </a>
-
-            <a href="/Users?role=Teacher" class="card-link">
-                <div class="card teachers">
-                    <h5>👨‍🏫 Total Teachers</h5>
-                    <h3>@Model.Summary.TotalTeachers</h3>
-                </div>
-            </a>
-
-            <a href="/Courses" class="card-link">
-                <div class="card courses">
-                    <h5>📚 Active Courses</h5>
-                    <h3>@Model.Summary.ActiveCourses</h3>
-                </div>
-            </a>
-
-            <a href="/Departments" class="card-link">
-                <div class="card departments">
-                    <h5>🏛️ Departments</h5>
-                    <h3>@Model.Summary.Departments</h3>
-                </div>
-            </a>
-        </div>
-
-        <div class="footer-summary">
-            Academic Year: <strong>@Model.Summary.CurrentAcademicYear</strong> |
-            Semester: <strong>@Model.Summary.CurrentSemester</strong>
-        </div>
-    }
-    else
-    {
-        <p class="text-center text-danger mt-5">
-            ⚠️ Unable to load dashboard data. Please try again later.
-        </p>
-    }
+    <p style="margin-top: 60px; font-size: 0.95rem; color: #cce;">
+        Academic Year: <strong>@Model.Summary.CurrentAcademicYear</strong> |
+        Semester: <strong>@Model.Summary.CurrentSemester</strong>
+    </p>
 </div>

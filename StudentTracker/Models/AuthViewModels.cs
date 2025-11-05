@@ -10,8 +10,8 @@ namespace StudentTracker.Models
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        // 🔹 New property to capture which role is logging in (Teacher / Student / Admin)
-        [Required]
+     
+      
         public string Role { get; set; } = string.Empty;
     }
 

@@ -128,6 +128,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
+                <
+
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">StudentTracker</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -137,6 +139,8 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        <li><a asp-controller="Auth" asp-action="Logout">Logout</a></li>
+
                     </ul>
                 </div>
             </div>
@@ -147,11 +151,12 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="footer text-muted">
+        <div class="container text-center">
             &copy; 2025 - StudentTracker
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

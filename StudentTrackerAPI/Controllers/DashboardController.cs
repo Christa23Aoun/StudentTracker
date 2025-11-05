@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerBLL.Services.Dashboard;
+using StudentTrackerCOMMON.Interfaces.Services;
 
 namespace StudentTrackerAPI.Controllers
 {
     [ApiController]
-    [Route("api/dashboard")]
+    [Route("api/[controller]")]
     public class DashboardController : ControllerBase
     {
-        private readonly AdminDashboardService _service;
+        private readonly IAdminDashboardService _adminService;
 
-        public DashboardController(AdminDashboardService service)
+        public DashboardController(IAdminDashboardService adminService)
         {
-            _service = service;
+            _adminService = adminService;
         }
 
-        [HttpGet("admin/summary")]
-        public async Task<ActionResult> GetSummary()
+        
+        [HttpGet("Admin")]
+        public async Task<IActionResult> GetAdminDashboard()
         {
-            // ✅ change this line
-            var dashboard = await _service.GetAdminDashboardAsync();
+            var dashboard = await _adminService.GetAdminDashboardAsync();
             return Ok(dashboard);
         }
     }

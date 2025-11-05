@@ -40,9 +40,17 @@ namespace StudentTrackerAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(User user)
         {
+            // ✅ Ensure password field exists
+            if (string.IsNullOrWhiteSpace(user.PasswordHash))
+                return BadRequest("Password is required.");
+
+            // ✅ Hash password before saving (use PasswordHash as input)
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
             var newId = await _userRepo.CreateAsync(user);
             return Ok(new { UserID = newId });
         }
+
 
         // ✅ Update user
         [HttpPut("update")]

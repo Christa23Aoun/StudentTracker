@@ -45,6 +45,7 @@
         padding: 12px;
         margin-bottom: 20px;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
         .form-select option {
@@ -105,6 +106,18 @@
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.25);
         }
+
+    /* Dropdown appearance fix */
+    .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+    }
+
+        .form-select::-ms-expand {
+            display: none;
+        }
 </style>
 
 <div class="form-container">
@@ -127,8 +140,8 @@
         <span asp-validation-for="Email" class="text-danger"></span>
 
         <label class="form-label">Password</label>
-        <input asp-for="PasswordHash" type="password" class="form-control" required />
-        <span asp-validation-for="PasswordHash" class="text-danger"></span>
+        <input asp-for="Password" type="password" class="form-control" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
 
         <label class="form-label">Role</label>
         <select asp-for="RoleID" class="form-select" required>
