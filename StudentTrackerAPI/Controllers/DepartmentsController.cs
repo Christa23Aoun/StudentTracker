@@ -15,7 +15,7 @@ public class DepartmentsController : ControllerBase
         _service = service;
     }
 
-    // GET: api/departments
+  
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -23,7 +23,7 @@ public class DepartmentsController : ControllerBase
         return Ok(departments);
     }
 
-    // GET: api/departments/5
+   
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -32,7 +32,7 @@ public class DepartmentsController : ControllerBase
         return Ok(department);
     }
 
-    // POST: api/departments
+ 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DepartmentCreateDto dto)
     {
@@ -43,7 +43,7 @@ public class DepartmentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = newId }, new { id = newId, message = "Department created successfully" });
     }
 
-    // PUT: api/departments/5
+  
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
     {
@@ -57,7 +57,6 @@ public class DepartmentsController : ControllerBase
         return Ok(new { message = "Department updated successfully" });
     }
 
-    // DELETE: api/departments/5
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

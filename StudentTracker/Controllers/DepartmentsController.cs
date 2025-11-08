@@ -11,7 +11,6 @@ namespace StudentTracker.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        // Make JSON tolerant to Pascal/camel casing
         private static readonly JsonSerializerOptions _json = new(JsonSerializerDefaults.Web)
         {
             PropertyNameCaseInsensitive = true
@@ -24,11 +23,11 @@ namespace StudentTracker.Controllers
 
         private HttpClient Api() => _httpClientFactory.CreateClient("API"); // BaseAddress = https://localhost:7199/api/
 
-        // GET: /Departments
+    
         public async Task<IActionResult> Index()
         {
             var client = Api();
-            var res = await client.GetAsync("departments");  // ✅ not api/departments
+            var res = await client.GetAsync("departments");  
 
             var list = new List<DepartmentView>();
 
@@ -36,7 +35,7 @@ namespace StudentTracker.Controllers
             {
                 var json = await res.Content.ReadAsStringAsync();
                 list = JsonSerializer.Deserialize<List<DepartmentView>>(json, _json) ?? new();
-                // Optional: newest first
+               
                 list = list.OrderByDescending(d => d.DepartmentID).ToList();
             }
             else
@@ -47,10 +46,9 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // GET: /Departments/Create
+     
         public IActionResult Create() => View();
 
-        // POST: /Departments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DepartmentView model)
@@ -59,11 +57,11 @@ namespace StudentTracker.Controllers
 
             var client = Api();
 
-            // The API expects DepartmentCreateDto { DepartmentName }
+           
             var body = JsonSerializer.Serialize(new { departmentName = model.DepartmentName }, _json);
             var payload = new StringContent(body, Encoding.UTF8, "application/json");
 
-            var res = await client.PostAsync("departments", payload); // ✅ not api/departments
+            var res = await client.PostAsync("departments", payload); 
 
             if (!res.IsSuccessStatusCode)
             {
@@ -76,11 +74,11 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Departments/Edit/5
+     
         public async Task<IActionResult> Edit(int id)
         {
             var client = Api();
-            var res = await client.GetAsync($"departments/{id}"); // ✅
+            var res = await client.GetAsync($"departments/{id}"); 
 
             if (!res.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
 
@@ -91,7 +89,6 @@ namespace StudentTracker.Controllers
             return View(data);
         }
 
-        // POST: /Departments/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DepartmentView model)
@@ -103,7 +100,7 @@ namespace StudentTracker.Controllers
             var body = JsonSerializer.Serialize(new { departmentID = model.DepartmentID, departmentName = model.DepartmentName }, _json);
             var payload = new StringContent(body, Encoding.UTF8, "application/json");
 
-            var res = await client.PutAsync($"departments/{id}", payload); // ✅
+            var res = await client.PutAsync($"departments/{id}", payload); 
 
             if (!res.IsSuccessStatusCode)
             {
@@ -115,11 +112,10 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Departments/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var client = Api();
-            var res = await client.GetAsync($"departments/{id}"); // ✅
+            var res = await client.GetAsync($"departments/{id}"); 
             if (!res.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
 
             var json = await res.Content.ReadAsStringAsync();
@@ -129,13 +125,13 @@ namespace StudentTracker.Controllers
             return View(data);
         }
 
-        // POST: /Departments/Delete/5
+       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int departmentId)
         {
             var client = Api();
-            var res = await client.DeleteAsync($"departments/{departmentId}"); // ✅
+            var res = await client.DeleteAsync($"departments/{departmentId}"); 
 
             TempData["Msg"] = res.IsSuccessStatusCode
                 ? "✅ Department deleted successfully."

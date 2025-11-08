@@ -18,16 +18,14 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value ?? "https://localhost:7199/";
         }
 
-        // GET: /StudentDashboard
+       
         public async Task<IActionResult> Index(int? studentId, string? semester, string? department)
         {
-            // If you store StudentId in session/claims, you can pull it from there when null.
             var id = studentId ?? HttpContext.Session.GetInt32("StudentId") ?? 1;
 
             StudentDashboardVM model;
             try
             {
-                // Primary API (single payload) — preferred if your API exposes it
                 var res = await _client.GetAsync($"{_apiBase}api/Dashboard/Student/{id}?semester={semester}&department={department}");
                 if (res.IsSuccessStatusCode)
                 {
@@ -36,17 +34,14 @@ namespace StudentTracker.Controllers
                 }
                 else
                 {
-                    // Fallback: compose from separate endpoints
                     model = await BuildFromSeparateEndpoints(id, semester, department);
                 }
             }
             catch
             {
-                // Safe demo data if API is down so the page still renders
                 model = DemoData();
             }
 
-            // Apply filters on the client side if needed
             if (!string.IsNullOrWhiteSpace(semester))
                 model.MyCourses = model.MyCourses.Where(c => c.CourseName.Contains(semester, StringComparison.OrdinalIgnoreCase)).ToList();
             if (!string.IsNullOrWhiteSpace(department))

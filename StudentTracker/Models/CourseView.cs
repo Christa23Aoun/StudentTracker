@@ -33,7 +33,7 @@ namespace StudentTracker.Models
         public IEnumerable<LookupItem> Departments { get; set; } = new List<LookupItem>();
         public IEnumerable<LookupItem> Semesters { get; set; } = new List<LookupItem>();
 
-        //  Added for dashboard display
+       
         public string? DepartmentName { get; set; }
         public string? SemesterName { get; set; }
     }

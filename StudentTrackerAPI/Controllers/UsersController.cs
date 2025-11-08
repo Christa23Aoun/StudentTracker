@@ -10,13 +10,13 @@ namespace StudentTrackerAPI.Controllers
     {
         private readonly IUserRepository _userRepo;
 
-        // ✅ Inject repository via constructor
+        
         public UsersController(IUserRepository userRepo)
         {
             _userRepo = userRepo;
         }
 
-        // ✅ Get all users
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -24,11 +24,10 @@ namespace StudentTrackerAPI.Controllers
             return Ok(users);
         }
 
-        // ✅ Get user by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var users = await _userRepo.GetAllAsync(); // or GetByIdAsync if added later
+            var users = await _userRepo.GetAllAsync(); 
             var user = users.FirstOrDefault(u => u.UserID == id);
             if (user == null)
                 return NotFound();
@@ -36,15 +35,12 @@ namespace StudentTrackerAPI.Controllers
             return Ok(user);
         }
 
-        // ✅ Create new user
         [HttpPost("create")]
         public async Task<IActionResult> Create(User user)
         {
-            // ✅ Ensure password field exists
             if (string.IsNullOrWhiteSpace(user.PasswordHash))
                 return BadRequest("Password is required.");
 
-            // ✅ Hash password before saving (use PasswordHash as input)
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
             var newId = await _userRepo.CreateAsync(user);
@@ -52,7 +48,6 @@ namespace StudentTrackerAPI.Controllers
         }
 
 
-        // ✅ Update user
         [HttpPut("update")]
         public async Task<IActionResult> Update(User user)
         {
@@ -61,7 +56,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok();
         }
 
-        // ✅ Delete user
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -73,11 +67,10 @@ namespace StudentTrackerAPI.Controllers
             return NotFound(new { message = $"⚠️ User with ID {id} not found or could not be deleted" });
         }
 
-        // ✅ Get user by email (used during login)
         [HttpGet("email/{email}")]
         public async Task<IActionResult> GetByEmail(string email)
         {
-            var users = await _userRepo.GetAllAsync(); // or use a GetByEmailAsync if you already implemented one
+            var users = await _userRepo.GetAllAsync(); 
             var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
 
             if (user == null)

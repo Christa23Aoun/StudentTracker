@@ -16,11 +16,10 @@ namespace StudentTracker.Controllers
 
         public AuthController(IHttpClientFactory factory, IConfiguration config)
         {
-            _client = factory.CreateClient("API"); // ✅ use named client ("API")
+            _client = factory.CreateClient("API");
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ---------- LOGIN (GET) ----------
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string? role = null)
@@ -29,7 +28,6 @@ namespace StudentTracker.Controllers
             return View();
         }
 
-        // ---------- LOGIN (POST) ----------
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -37,7 +35,6 @@ namespace StudentTracker.Controllers
         {
             Console.WriteLine("➡️ Login POST triggered");
 
-            // ✅ Debug ModelState
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("❌ Invalid model state");
@@ -49,14 +46,13 @@ namespace StudentTracker.Controllers
                     }
                 }
 
-                // Keep the selected role visible
                 ViewBag.Role = model.Role ?? "Student";
                 return View(model);
             }
 
             try
             {
-                // 🔹 Prepare payload for API
+                
                 var payload = JsonConvert.SerializeObject(model);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
                 var res = await _client.PostAsync($"{_apiBase}Auth/login", content);
@@ -72,7 +68,6 @@ namespace StudentTracker.Controllers
                     return View(model);
                 }
 
-                // 🔹 Fetch user details by email
                 var userRes = await _client.GetAsync($"{_apiBase}Users/email/{model.Email}");
                 if (!userRes.IsSuccessStatusCode)
                 {
@@ -88,7 +83,6 @@ namespace StudentTracker.Controllers
                     return View(model);
                 }
 
-                // 🔹 Determine RoleName based on RoleID
                 string roleName = user.RoleID switch
                 {
                     1 => "Admin",
@@ -97,14 +91,12 @@ namespace StudentTracker.Controllers
                     _ => "Unknown"
                 };
 
-                // 🔹 Save session
                 HttpContext.Session.SetString("UserName", user.FullName);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
 
-                // 🔹 Authenticate cookie
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.FullName),
@@ -115,7 +107,6 @@ namespace StudentTracker.Controllers
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync("CookieAuth", principal);
 
-                // ✅ Redirect based on role
                 return roleName switch
                 {
                     "Admin" => RedirectToAction("Dashboard", "Admin"),
@@ -131,7 +122,6 @@ namespace StudentTracker.Controllers
             }
         }
 
-        // ---------- ROLE ENTRY POINTS ----------
         [HttpGet, AllowAnonymous]
         public IActionResult LoginStudent()
         {
@@ -153,7 +143,6 @@ namespace StudentTracker.Controllers
             return View("Login");
         }
 
-        // ---------- REGISTER ----------
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register() => View();
@@ -201,17 +190,14 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ---------- LOGOUT ----------
+        
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            // 🧹 Clear session
             HttpContext.Session.Clear();
 
-            // 🧹 Sign out from cookie authentication
             await HttpContext.SignOutAsync("CookieAuth");
 
-            // ✅ Redirect to login page
             return RedirectToAction("Login", "Auth");
         }
 

@@ -73,7 +73,7 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ Add this new method
+       
         public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -82,7 +82,7 @@ namespace StudentTrackerDAL.Repositories
                 new { CourseID = courseId });
         }
 
-        // ✅ Add this new method
+   
         public async Task<decimal> GetAverageAttendanceByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);

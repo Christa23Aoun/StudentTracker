@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only logged-in users can see notifications
+    
     [Authorize]
     public class NotificationsController : Controller
     {
@@ -19,10 +19,10 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /Notifications
+     
         public async Task<IActionResult> Index()
         {
-            // Retrieve the logged-in user ID from session
+         
             var userId = HttpContext.Session.GetInt32("UserID");
             if (userId == null)
             {
@@ -30,7 +30,7 @@ namespace StudentTracker.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Call API
+        
             var res = await _client.GetAsync($"{_apiBase}Notifications/user/{userId}");
             if (!res.IsSuccessStatusCode)
             {

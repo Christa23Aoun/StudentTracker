@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var id = await _auth.RegisterAsync(dto);  // ✅ goes through AuthService (hashes automatically)
+            var id = await _auth.RegisterAsync(dto);  
             return Ok(new { Message = "User registered successfully", UserID = id });
         }
         catch (Exception ex)

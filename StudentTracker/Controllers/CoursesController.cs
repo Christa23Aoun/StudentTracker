@@ -70,7 +70,7 @@ public class CoursesController : Controller
             courseName = model.CourseName,
             creditHours = model.CreditHours,
             departmentID = model.DepartmentID,
-            teacherID = model.TeacherID,  // numeric for now
+            teacherID = model.TeacherID,  
             semesterID = model.SemesterID,
             isActive = model.IsActive
         });

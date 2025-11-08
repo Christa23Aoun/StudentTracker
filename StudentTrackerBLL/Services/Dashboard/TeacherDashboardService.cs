@@ -26,13 +26,10 @@ namespace StudentTrackerBLL.Services.Dashboard
             _grades = grades;
         }
 
-        // 🧩 Main method: gather all info for one teacher
         public async Task<TeacherDashboardDto> GetDashboardAsync(int teacherId)
         {
-            // 1️⃣ Get courses taught by the teacher
             var myCourses = await _courses.GetByTeacherIdAsync(teacherId);
 
-            // 2️⃣ Build DTO
             var dto = new TeacherDashboardDto
             {
                 CourseCount = myCourses?.Count ?? 0,
@@ -43,7 +40,6 @@ namespace StudentTrackerBLL.Services.Dashboard
 
             var courseRows = new List<TeacherCourseRowDto>();
 
-            // 3️⃣ For each course, fetch related info
             if (myCourses != null)
             {
                 foreach (var c in myCourses)
@@ -66,7 +62,6 @@ namespace StudentTrackerBLL.Services.Dashboard
 
                 dto.Courses = courseRows;
 
-                // 4️⃣ Global averages
                 if (courseRows.Count > 0)
                 {
                     dto.AverageGrade = Math.Round(courseRows.Average(x => x.AverageGrade), 1);
@@ -74,7 +69,6 @@ namespace StudentTrackerBLL.Services.Dashboard
                 }
             }
 
-            // 5️⃣ Temporary Recent Activities (mock until logs are linked)
             dto.RecentActivities = new List<RecentActivityDto>
             {
                 new() { Timestamp = DateTime.Now.AddHours(-2), Type = "Test", Description = "Added midterm for Algorithms" },
@@ -82,7 +76,6 @@ namespace StudentTrackerBLL.Services.Dashboard
                 new() { Timestamp = DateTime.Now.AddHours(-6), Type = "Attendance", Description = "Marked attendance for Programming II" }
             };
 
-            // 6️⃣ Sample chart data
             dto.AttendanceVsPerformance = new List<SeriesPointDto>
             {
                 new() { Label = "Algorithms", Y = 88 },

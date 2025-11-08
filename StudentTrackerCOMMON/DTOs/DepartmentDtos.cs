@@ -2,7 +2,7 @@
 
 namespace StudentTrackerCOMMON.DTOs
 {
-    // ✅ DTO for creating a department
+ 
     public class DepartmentCreateDto
     {
         [Required(ErrorMessage = "Department name is required.")]
@@ -13,7 +13,7 @@ namespace StudentTrackerCOMMON.DTOs
         public bool IsActive { get; set; } = true;
     }
 
-    // ✅ DTO for updating a department
+   
     public class DepartmentUpdateDto
     {
         [Required]

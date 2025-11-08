@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only authorized (teachers/admins) can manage tests
+   
     [Authorize]
     public class TestsController : Controller
     {
@@ -34,7 +34,6 @@ namespace StudentTracker.Controllers
         }
 
 
-        // GET: /Tests/Create
         public IActionResult Create() => View();
 
         [HttpPost]
@@ -59,7 +58,7 @@ namespace StudentTracker.Controllers
         }
 
 
-        // GET: /Tests/Delete/5
+        
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Tests/{id}");
@@ -74,7 +73,6 @@ namespace StudentTracker.Controllers
             return View(test);
         }
 
-        // POST: /Tests/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

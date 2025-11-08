@@ -17,7 +17,7 @@ namespace StudentTrackerDAL.Repositories
                  ?? throw new ArgumentNullException(nameof(config), "Missing database connection string");
         }
 
-        // ✅ Create new user
+     
         public async Task<int> CreateAsync(User user)
         {
             using var con = new SqlConnection(_connectionString);
@@ -50,7 +50,6 @@ namespace StudentTrackerDAL.Repositories
             return id;
         }
 
-        // ✅ Retrieve all users (for MVC list)
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
@@ -58,7 +57,6 @@ namespace StudentTrackerDAL.Repositories
                 "SELECT * FROM Users ORDER BY UserID DESC");
         }
 
-        // ✅ Retrieve user by email
         public async Task<User?> GetByEmailAsync(string email)
         {
             using var con = new SqlConnection(_connectionString);
@@ -68,7 +66,7 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ✅ Activate user account
+        
         public async Task<bool> ActivateAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -98,7 +96,7 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-        // ✅ Change role
+       
         public async Task<bool> SetRoleAsync(int userId, int roleId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -128,7 +126,7 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-        // ✅ Update existing user
+    
         public async Task<bool> UpdateAsync(User user)
         {
             using var con = new SqlConnection(_connectionString);
@@ -164,7 +162,7 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-        // ✅ Soft Delete User (recommended)
+       
         public async Task<bool> DeleteAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
