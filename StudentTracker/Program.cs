@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using StudentTrackerDAL.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ MVC
 builder.Services.AddControllersWithViews();
 
-// ✅ Distributed cache & session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -15,7 +13,6 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// ✅ Authentication & Authorization
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
@@ -25,13 +22,11 @@ builder.Services.AddAuthentication("CookieAuth")
 
 builder.Services.AddAuthorization();
 
-// ✅ HttpClient for API calls
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7199/api/");
 });
 
-// ✅ ApiSettings binding
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
