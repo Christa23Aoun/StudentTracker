@@ -96,6 +96,34 @@ namespace StudentTracker.Controllers
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
+                if (roleName == "Teacher")
+                {
+                    try
+                    {
+                        // Fetch teacher record by email from API
+                        var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{user.Email}");
+                        if (teacherRes.IsSuccessStatusCode)
+                        {
+                            var teacherJson = await teacherRes.Content.ReadAsStringAsync();
+                            var teacher = JsonConvert.DeserializeObject<TeacherView>(teacherJson);
+
+                            if (teacher != null)
+                            {
+                                HttpContext.Session.SetInt32("TeacherID", teacher.TeacherID);
+                                Console.WriteLine($"✅ Stored TeacherID in session: {teacher.TeacherID}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"⚠️ API returned {teacherRes.StatusCode} when fetching Teacher by email.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ Failed to fetch TeacherID dynamically: {ex.Message}");
+                    }
+                }
+
 
                 var claims = new List<Claim>
                 {
