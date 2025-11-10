@@ -4,12 +4,12 @@
     {
         public AdminDashboardSummary Summary { get; set; } = new();
 
-        // ✅ Already existing lists
+      
         public List<DepartmentDashboardView>? Departments { get; set; }
         public List<CourseDashboardView>? Courses { get; set; }
         public List<UserDashboardView>? Users { get; set; }
 
-        // ✅ New: Pending Grades and Attendance count
+   
         public List<AdminPendingGradeView>? PendingGrades { get; set; } = new();
         public int AttendanceCount { get; set; } = 0;
     }
@@ -50,7 +50,7 @@
         public bool IsActive { get; set; }
     }
 
-    // ✅ New: Pending Grades View (mini DTO)
+    
     public class AdminPendingGradeView
     {
         public int TestID { get; set; }

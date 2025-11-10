@@ -22,10 +22,7 @@ namespace StudentTrackerBLL.Services
             if (string.IsNullOrWhiteSpace(dto.Password))
                 throw new ArgumentException("Password is required.");
 
-            // Optionally: enforce minimum length/complexity here.
-
-            // BCrypt with default work factor (usually 10–12 in libs). You can pass a work factor if you like.
-            string hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+             string hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var user = new User
             {
@@ -33,8 +30,8 @@ namespace StudentTrackerBLL.Services
                 Email = email,
                 PasswordHash = hash,
                 RoleID = dto.RoleID,
-                IsActive = true,                 // good default
-                CreatedAt = DateTime.UtcNow,      // if your DB doesn’t set it
+                IsActive = true,                 
+                CreatedAt = DateTime.UtcNow,     
                 UpdatedAt = null
             };
 

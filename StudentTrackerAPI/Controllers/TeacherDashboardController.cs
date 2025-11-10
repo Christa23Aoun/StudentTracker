@@ -5,32 +5,42 @@ using StudentTrackerCOMMON.Interfaces.Repositories;
 namespace StudentTrackerAPI.Controllers
 {
     [ApiController]
-    [Route("api/TeacherDashboard")]
+    [Route("api/[controller]")]
     public class TeacherDashboardController : ControllerBase
     {
         private readonly ICourseRepository _courses;
         private readonly IAttendanceRepository _attendance;
         private readonly ITestGradeRepository _grades;
+        private readonly ITeacherRepository _teacherRepo;
 
         public TeacherDashboardController(
             ICourseRepository courses,
             IAttendanceRepository attendance,
-            ITestGradeRepository grades)
+            ITestGradeRepository grades,
+            ITeacherRepository teacherRepo)
         {
             _courses = courses;
             _attendance = attendance;
             _grades = grades;
+            _teacherRepo = teacherRepo;
         }
 
-        // ✅ Unified Teacher Dashboard endpoint
+        [HttpGet("byEmail/{email}")]
+        public async Task<IActionResult> GetByEmail(string email)
+        {
+            var teacher = await _teacherRepo.GetByEmailAsync(email);
+            if (teacher == null)
+                return NotFound(new { message = "Teacher not found." });
+
+            return Ok(teacher);
+        }
+
         [HttpGet("Teacher/{teacherId}")]
         public async Task<IActionResult> GetTeacherDashboard(int teacherId)
         {
-            // 1️⃣ Fetch teacher’s courses
             var courses = await _courses.GetByTeacherIdAsync(teacherId);
             int totalCourses = courses.Count();
 
-            // 2️⃣ Count students across all teacher’s courses
             int totalStudents = 0;
             foreach (var course in courses)
             {
@@ -38,11 +48,9 @@ namespace StudentTrackerAPI.Controllers
                 totalStudents += students.Count;
             }
 
-            // 3️⃣ Compute averages (temporary until linked with TestGrades & Attendance)
-            decimal avgGrade = 85;       // Placeholder
-            decimal attendanceRate = 90; // Placeholder
+            decimal avgGrade = 85;
+            decimal attendanceRate = 90;
 
-            // 4️⃣ Build sample activity list
             var activities = new List<RecentActivityDto>
             {
                 new() { Timestamp = DateTime.UtcNow.AddDays(-1), Description = "Recorded attendance for Algorithms class" },
@@ -50,7 +58,6 @@ namespace StudentTrackerAPI.Controllers
                 new() { Timestamp = DateTime.UtcNow.AddDays(-3), Description = "Updated grades for Data Structures" }
             };
 
-            // 5️⃣ Build and return DTO
             var dto = new TeacherDashboardDto
             {
                 CourseCount = totalCourses,

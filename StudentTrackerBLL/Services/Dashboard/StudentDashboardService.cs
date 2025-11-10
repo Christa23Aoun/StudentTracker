@@ -9,12 +9,10 @@ namespace StudentTrackerBLL.Services.Dashboard
     {
         public StudentDashboardService() { }
 
-        // This method now runs standalone – no DAL calls
         public async Task<StudentDashboardDTO> GetStudentDashboardAsync(int studentId)
         {
             await Task.Delay(100); // simulate async call
 
-            // Return static mock data so the API and MVC can load successfully
             return new StudentDashboardDTO
             {
                 StudentName = "Lynn El-Haly",

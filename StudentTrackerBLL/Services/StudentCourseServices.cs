@@ -13,14 +13,12 @@ namespace StudentTrackerBLL.Services
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        // ✅ Get all student-course records
         public async Task<IEnumerable<StudentCourse>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
             return await con.QueryAsync<StudentCourse>("SELECT * FROM StudentCourses");
         }
 
-        // ✅ Get by ID
         public async Task<StudentCourse?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -28,7 +26,6 @@ namespace StudentTrackerBLL.Services
             return await con.QueryFirstOrDefaultAsync<StudentCourse>(sql, new { ID = id });
         }
 
-        // ✅ Create
         public async Task<int> CreateAsync(StudentCourse entity)
         {
             using var con = new SqlConnection(_connectionString);
@@ -37,7 +34,6 @@ namespace StudentTrackerBLL.Services
             return await con.ExecuteAsync(sql, entity);
         }
 
-        // ✅ Update
         public async Task<int> UpdateAsync(StudentCourse entity)
         {
             using var con = new SqlConnection(_connectionString);
@@ -47,14 +43,12 @@ namespace StudentTrackerBLL.Services
             return await con.ExecuteAsync(sql, entity);
         }
 
-        // ✅ Delete
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
             return await con.ExecuteAsync("DELETE FROM StudentCourses WHERE StudentCourseID = @ID", new { ID = id });
         }
 
-        // ✅ Get all courses for a specific student (for Student Dashboard)
         public async Task<IEnumerable<dynamic>> GetCoursesByStudentAsync(int studentId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -78,7 +72,6 @@ namespace StudentTrackerBLL.Services
             return result;
         }
 
-        // ✅ Enroll a student in a course (for Student Dashboard)
         public async Task<bool> EnrollAsync(int studentId, int courseId)
         {
             using var con = new SqlConnection(_connectionString);

@@ -5,22 +5,18 @@ namespace StudentTracker.Models.ViewModels
 {
     public class StudentDashboardVM
     {
-        // ===== Top overview =====
         public string StudentName { get; set; } = string.Empty;
         public string CurrentSemester { get; set; } = string.Empty;
         public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
         public double AttendancePercent { get; set; }
 
-        // ===== Lists =====
         public List<CourseItemVM> MyCourses { get; set; } = new();
         public List<NotificationVM> Notifications { get; set; } = new();
 
-        // ===== Charts =====
         public List<GradePointVM> GradeProgress { get; set; } = new();
         public List<AttendancePointVM> AttendanceTrend { get; set; } = new();
 
-        // ===== Filters =====
         public List<string> Semesters { get; set; } = new();
         public List<string> Departments { get; set; } = new();
         public string? SelectedSemester { get; set; }

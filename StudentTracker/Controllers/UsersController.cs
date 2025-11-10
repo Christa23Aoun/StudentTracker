@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only Admins can manage user accounts
+    
     [Authorize(Roles = "Admin")]
     public class UsersController : BaseController
     {
@@ -19,7 +19,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ✅ List users (optionally filtered by role)
         [HttpGet]
         public async Task<IActionResult> Index(string? role)
         {
@@ -30,10 +29,9 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
-            // ✅ Keep only active users
             users = users.Where(u => u.IsActive).ToList();
 
-            // ✅ Filter by role if provided (match RoleID instead of string)
+            
             if (!string.IsNullOrWhiteSpace(role))
             {
                 role = role.ToLower();
@@ -50,11 +48,10 @@ namespace StudentTracker.Controllers
             return View(users);
         }
 
-        // ✅ Create user (GET)
         [HttpGet]
         public IActionResult Create() => View();
 
-        // ✅ Create user (POST)
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserView model)
@@ -65,7 +62,7 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
 
-            // ✅ Copy plain password to PasswordHash before sending to API
+          
             model.PasswordHash = model.Password;
 
             var payload = JsonConvert.SerializeObject(model);
@@ -80,7 +77,7 @@ namespace StudentTracker.Controllers
             {
                 TempData["Msg"] = "✅ User created successfully!";
 
-                // ✅ Automatically redirect to correct role list
+               
                 string targetRole = model.RoleID switch
                 {
                     1 => "Admin",
@@ -96,7 +93,7 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ✅ Edit user (GET)
+    
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -112,7 +109,7 @@ namespace StudentTracker.Controllers
             return View(user);
         }
 
-        // ✅ Edit user (POST)
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserView model)
@@ -134,7 +131,7 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ✅ Delete user (GET)
+       
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -151,7 +148,7 @@ namespace StudentTracker.Controllers
             return View(user);
         }
 
-        // ✅ Delete user (POST)
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int userId, string role)

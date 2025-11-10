@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only logged-in users can access student course management
+  
     [Authorize]
     public class StudentCoursesController : Controller
     {
@@ -19,7 +19,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /StudentCourses
         public async Task<IActionResult> Index()
         {
             var res = await _client.GetAsync($"{_apiBase}StudentCourses");
@@ -31,10 +30,8 @@ namespace StudentTracker.Controllers
             return View(data);
         }
 
-        // GET: /StudentCourses/Create
         public IActionResult Create() => View();
 
-        // POST: /StudentCourses/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StudentCourseView model)
@@ -56,7 +53,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /StudentCourses/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}StudentCourses/{id}");
@@ -71,7 +67,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /StudentCourses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

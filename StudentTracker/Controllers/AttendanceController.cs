@@ -19,7 +19,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /Attendance
         public async Task<IActionResult> Index()
         {
             var res = await _client.GetAsync($"{_apiBase}Attendance");
@@ -31,10 +30,8 @@ namespace StudentTracker.Controllers
             return View(data);
         }
 
-        // GET: /Attendance/Create
         public IActionResult Create() => View();
 
-        // POST: /Attendance/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AttendanceView model)
@@ -56,7 +53,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Attendance/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Attendance/{id}");
@@ -71,7 +67,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /Attendance/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

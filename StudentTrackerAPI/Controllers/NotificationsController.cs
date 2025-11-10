@@ -15,7 +15,7 @@ namespace StudentTrackerAPI.Controllers
             _repo = repo;
         }
 
-        // POST api/notifications/create
+        
         [HttpPost("create")]
         public async Task<IActionResult> Create(Notification notification)
         {
@@ -23,7 +23,7 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { Message = "Notification created", NotificationID = id });
         }
 
-        // GET api/notifications/user/{userId}
+       
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetForUser(int userId)
         {
@@ -31,7 +31,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(list);
         }
 
-        // POST api/notifications/{id}/read
         [HttpPost("{id}/read")]
         public async Task<IActionResult> MarkAsRead(int id)
         {

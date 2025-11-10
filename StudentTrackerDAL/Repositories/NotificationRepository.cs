@@ -22,7 +22,7 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
 
-            // 1️⃣ create the notification
+         
             var id = await con.ExecuteScalarAsync<int>(
                 "dbo.sp_Notification_Create",
                 new
@@ -33,7 +33,6 @@ namespace StudentTrackerDAL.Repositories
                 },
                 commandType: CommandType.StoredProcedure);
 
-            // 2️⃣ insert an AuditLog entry for tracking
             await con.ExecuteAsync(
                 "dbo.sp_AuditLog_Add",
                 new
@@ -47,7 +46,6 @@ namespace StudentTrackerDAL.Repositories
                 },
                 commandType: CommandType.StoredProcedure);
 
-            // 3️⃣ return the new notification ID
             return id;
         }
 

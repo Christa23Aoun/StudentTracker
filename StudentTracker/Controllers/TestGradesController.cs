@@ -6,7 +6,6 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only authorized users (teachers/admins) can access grades
     [Authorize]
     public class TestGradesController : Controller
     {
@@ -19,7 +18,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /TestGrades
         public async Task<IActionResult> Index()
         {
             var res = await _client.GetAsync($"{_apiBase}TestGrades");
@@ -31,10 +29,8 @@ namespace StudentTracker.Controllers
             return View(data);
         }
 
-        // GET: /TestGrades/Create
         public IActionResult Create() => View();
 
-        // POST: /TestGrades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestGradeView model)
@@ -66,7 +62,6 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // GET: /TestGrades/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}TestGrades/{id}");
@@ -81,7 +76,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /TestGrades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -5,18 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WTF University</title>
 
-    <!-- Google Fonts -->
+   
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Site CSS (with versioning to refresh cache) -->
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- ===== Header: Top Contact Bar ===== -->
     <div class="topbar">
         <div class="container topbar-inner">
             <div class="topbar-left">
@@ -26,7 +22,6 @@
         </div>
     </div>
 
-    <!-- ===== Header: Main Navigation ===== -->
     <header class="site-header">
         <div class="container nav">
             <div class="brand">
@@ -40,7 +35,7 @@
                 <a asp-controller="Site" asp-action="Admissions">Admissions</a>
                 <a asp-controller="Site" asp-action="Research">Research</a>
                 <a asp-controller="Site" asp-action="StudentLife">Student Life</a>
-                <a asp-controller="Site" asp-action="News">News</a>
+              
             </nav>
 
             <div class="nav-actions">
@@ -50,7 +45,6 @@
                     <button class="lang">FR</button>
                 </div>
 
-                <!-- 🔹 Connect Dropdown -->
                 <div class="connect-dropdown">
                     <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
                     <div class="connect-menu" id="connectMenu">
@@ -64,12 +58,11 @@
         </div>
     </header>
 
-    <!-- ===== Body content ===== -->
     <main role="main">
         @RenderBody()
     </main>
 
-    <!-- ===== Footer ===== -->
+ 
     <footer class="footer">
         <div class="container footer-inner">
             <div class="footer-brand">
@@ -81,11 +74,12 @@
             <div class="footer-links">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="#">Admissions</a></li>
-                    <li><a href="#">Faculties</a></li>
-                    <li><a href="#">Research</a></li>
-                    <li><a href="#">Student Life</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <a asp-controller="Site" asp-action="About">About</a>
+                    <a asp-controller="Site" asp-action="Faculties">Faculties</a>
+                    <a asp-controller="Site" asp-action="Admissions">Admissions</a>
+                    <a asp-controller="Site" asp-action="Research">Research</a>
+                    <a asp-controller="Site" asp-action="StudentLife">Student Life</a>
+
                 </ul>
             </div>
 
@@ -111,13 +105,11 @@
         </div>
     </footer>
 
-    <!-- ===== Scripts ===== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/app.js"></script>
 
-    <!-- 🔹 Connect Dropdown Logic -->
     <script>
         document.getElementById('connectBtn')?.addEventListener('click', function (e) {
             const menu = document.getElementById('connectMenu');
@@ -144,7 +136,6 @@
         });
     </script>
     <style>
-        /* Force footer to bottom and remove line */
         html, body {
             height: 100%;
             margin: 0;
@@ -163,7 +154,7 @@
             bottom: 0 !important;
             width: 100% !important;
             border-top: none !important;
-            background: #0a3252 !important; /* keep dark blue */
+            background: #0a3252 !important; 
             color: #fff;
             box-shadow: none !important;
         }

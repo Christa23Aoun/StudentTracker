@@ -28,14 +28,24 @@ namespace StudentTracker.Models
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public double AverageGrade { get; set; }
+        public double AttendanceRate { get; set; }
+        public int StudentCount { get; set; }
+        public List<StudentView> Students { get; set; } = new();
 
-   
+
         public IEnumerable<LookupItem> Departments { get; set; } = new List<LookupItem>();
         public IEnumerable<LookupItem> Semesters { get; set; } = new List<LookupItem>();
 
-        //  Added for dashboard display
+       
         public string? DepartmentName { get; set; }
         public string? SemesterName { get; set; }
+    }
+    public class StudentView
+    {
+        public string StudentName { get; set; } = string.Empty;
+        public double AverageGrade { get; set; }
+        public double AttendanceRate { get; set; }
     }
 
     public class LookupItem

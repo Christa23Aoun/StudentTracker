@@ -15,19 +15,18 @@ namespace StudentTracker.Controllers
             _logger = logger;
         }
 
-        // GET: /
+    
         public IActionResult Index()
         {
             return View();
         }
 
-        // GET: /Home/Privacy
         public IActionResult Privacy()
         {
             return View();
         }
 
-        // GET: /Home/Error
+       
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

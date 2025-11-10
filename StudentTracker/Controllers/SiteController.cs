@@ -27,7 +27,7 @@ namespace StudentTracker.Controllers
         public IActionResult StudentLife() => View();
         public IActionResult News() => View();
 
-        // ✅ Faculties Page — Show All Departments
+      
         public async Task<IActionResult> Faculties()
         {
             try

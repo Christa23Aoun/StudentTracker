@@ -25,7 +25,6 @@ public class SemesterView
 
     public DateTime CreatedAt { get; set; }
 
-    // For dropdown rendering
     public IEnumerable<AcademicYearOption> AcademicYears { get; set; } = new List<AcademicYearOption>();
 }
 

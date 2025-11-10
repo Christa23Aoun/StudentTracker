@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;    // ✅ for [Authorize]
+﻿using Microsoft.AspNetCore.Authorization;   
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
@@ -6,7 +6,6 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // Require login for all actions
     [Authorize]
     public class AcademicYearsController : Controller
     {
@@ -19,7 +18,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // GET: /AcademicYears
         public async Task<IActionResult> Index()
         {
             var res = await _client.GetAsync($"{_apiBase}AcademicYears");
@@ -31,10 +29,8 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // GET: /AcademicYears/Create
         public IActionResult Create() => View();
 
-        // POST: /AcademicYears/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AcademicYearView model)
@@ -62,7 +58,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /AcademicYears/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}AcademicYears/{id}");
@@ -77,7 +72,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /AcademicYears/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, AcademicYearView model)
@@ -109,7 +103,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /AcademicYears/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}AcademicYears/{id}");
@@ -124,7 +117,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /AcademicYears/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

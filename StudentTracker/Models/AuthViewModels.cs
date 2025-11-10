@@ -26,11 +26,9 @@ namespace StudentTracker.Models
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        // 🔹 Numeric role ID to match the API field
         [Required]
         public int RoleID { get; set; }
 
-        // Optional helper property for display
         public string? RoleName =>
             RoleID == 1 ? "Admin" :
             RoleID == 2 ? "Teacher" :

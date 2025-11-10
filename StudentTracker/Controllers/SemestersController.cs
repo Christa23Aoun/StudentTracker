@@ -6,7 +6,7 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-    // 🔒 Only authorized (logged-in) users can manage semesters
+    
     [Authorize]
     public class SemestersController : BaseController
     {
@@ -19,7 +19,7 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // Helper: fetch academic years for dropdown
+     
         private async Task<List<AcademicYearOption>> LoadAcademicYearsAsync()
         {
             var res = await _client.GetAsync($"{_apiBase}AcademicYears");
@@ -31,7 +31,7 @@ namespace StudentTracker.Controllers
             return list;
         }
 
-        // GET: /Semesters
+       
         public async Task<IActionResult> Index()
         {
             var res = await _client.GetAsync($"{_apiBase}Semesters");
@@ -43,7 +43,7 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // GET: /Semesters/Create
+       
         public async Task<IActionResult> Create()
         {
             var model = new SemesterView
@@ -53,7 +53,6 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // POST: /Semesters/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SemesterView model)
@@ -87,7 +86,7 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Semesters/Edit/5
+    
         public async Task<IActionResult> Edit(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
@@ -103,7 +102,7 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /Semesters/Edit/5
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SemesterView model)
@@ -141,7 +140,7 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Semesters/Delete/5
+      
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Semesters/{id}");
@@ -156,7 +155,7 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // POST: /Semesters/Delete/5
+       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

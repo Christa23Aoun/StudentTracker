@@ -45,7 +45,7 @@
         public bool IsActive { get; set; }
     }
 
-    // ✅ renamed to avoid ambiguity
+    // renamed to avoid ambiguity
     public class AdminPendingGradeDto
     {
         public int TestGradeID { get; set; }
