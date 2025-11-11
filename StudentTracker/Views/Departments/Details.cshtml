@@ -1,0 +1,196 @@
+﻿@model StudentTracker.Models.DepartmentView
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .details-container {
+        width: 85%;
+        max-width: 1000px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.8);
+        border-radius: 25px;
+        padding: 50px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(25px);
+    }
+
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    h1 {
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .btn-back {
+        display: inline-block;
+        padding: 10px 22px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #008cff, #005fc4);
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-back:hover {
+            background: linear-gradient(135deg, #005fc4, #008cff);
+            transform: translateY(-2px);
+        }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 20px 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+    .label {
+        font-weight: 600;
+        color: #aee0ff;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .value {
+        font-size: 1.1rem;
+        color: #fff;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .bg-success {
+        background: rgba(0, 255, 170, 0.15);
+        color: #00e676;
+    }
+
+    .bg-danger {
+        background: rgba(255, 100, 100, 0.15);
+        color: #ff7b7b;
+    }
+
+    .courses-list {
+        background: rgba(0, 60, 130, 0.4);
+        border-radius: 15px;
+        padding: 25px;
+    }
+
+        .courses-list h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #aee0ff;
+        }
+
+        .courses-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .courses-list li {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+            .courses-list li:hover {
+                background: rgba(255, 255, 255, 0.12);
+            }
+</style>
+
+<div class="details-container">
+    <div class="header-row">
+        <h1>🏛 Department Details</h1>
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn-back">⬅️ Back to Dashboard</a>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <span class="label">Department ID</span>
+            <span class="value">@Model.DepartmentID</span>
+        </div>
+
+        <div class="info-card">
+            <span class="label">Department Name</span>
+            <span class="value">@Model.DepartmentName</span>
+        </div>
+
+        <div class="info-card">
+            <span class="label">Status</span>
+            @if (Model.IsActive)
+            {
+            <span class="badge bg-success">Active</span>
+            }
+            else
+            {
+            <span class="badge bg-danger">Inactive</span>
+            }
+        </div>
+
+        <div class="info-card">
+            <span class="label">Created At</span>
+            <span class="value">@Model.CreatedAt.ToString("yyyy-MM-dd")</span>
+        </div>
+
+        <div class="info-card">
+            <span class="label">Total Courses</span>
+            <span class="value">@Model.CourseCount</span>
+        </div>
+    </div>
+
+    <div class="courses-list">
+        <h3>📚 Courses in this Department</h3>
+        @if (!string.IsNullOrWhiteSpace(Model.CourseNames))
+    {
+        <ul>
+            @foreach (var course in Model.CourseNames.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+            <li>@course.Trim()</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">No courses found for this department.</p>
+    }
+    </div>
+
+</div>

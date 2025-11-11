@@ -36,29 +36,27 @@
                             <i class="fa-solid fa-building-columns fa-2x"></i>
                         </div>
                         <h5 class="fw-bold">@dept.DepartmentName</h5>
+
                         <p class="text-muted small mb-3">
-                            @(string.IsNullOrWhiteSpace(dept.Description)
-                                                ? "Description not available."
-                                                : dept.Description)
-                </p>
-                <span class="badge @(dept.IsActive ? "bg-success" : "bg-secondary") px-3 py-2">
-                    @(dept.IsActive ? "Active" : "Inactive")
-                </span>
-            </div>
-        </div>
-                }
+                            Total Courses: <strong>@dept.CourseCount</strong>
+                        </p>
+
+                        <span class="badge @(dept.IsActive ? "bg-success" : "bg-secondary") px-3 py-2">
+                            @(dept.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>
 
 <style>
-    /* ===== Hero Section ===== */
     .faculties-hero {
         background: linear-gradient(135deg, rgba(13, 75, 132, 0.95), rgba(10, 56, 98, 0.95)), url('/images/uniHome.jpg') center/cover no-repeat;
         color: #fff;
     }
 
-    /* ===== Department Block ===== */
     .department-block {
         background: #fff;
         border: 3px solid #0d4b84;

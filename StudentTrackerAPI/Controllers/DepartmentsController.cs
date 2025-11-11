@@ -1,69 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerCOMMON.DTOs;
-using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Models;
+using System.Threading.Tasks;
 
-namespace StudentTrackerAPI.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class DepartmentsController : ControllerBase
+namespace StudentTrackerAPI.Controllers
 {
-    private readonly IDepartmentService _service;
-
-    public DepartmentsController(IDepartmentService service)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class DepartmentsController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IDepartmentRepository _departmentRepo;
 
-  
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var departments = await _service.GetAllAsync();
-        return Ok(departments);
-    }
+        public DepartmentsController(IDepartmentRepository departmentRepo)
+        {
+            _departmentRepo = departmentRepo;
+        }
 
-   
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var department = await _service.GetByIdAsync(id);
-        if (department == null) return NotFound(new { message = "Department not found" });
-        return Ok(department);
-    }
+        // GET: api/departments
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _departmentRepo.GetAllAsync();
+            return Ok(list);
+        }
 
- 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] DepartmentCreateDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // GET: api/departments/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var list = await _departmentRepo.GetAllAsync();
+            var dep = list.FirstOrDefault(d => d.DepartmentID == id);
 
-        var newId = await _service.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = newId }, new { id = newId, message = "Department created successfully" });
-    }
+            if (dep == null)
+                return NotFound();
 
-  
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] DepartmentUpdateDto dto)
-    {
-        if (id != dto.DepartmentID)
-            return BadRequest("Mismatched Department ID");
+            return Ok(dep);
+        }
 
-        var result = await _service.UpdateAsync(dto);
-        if (result == 0)
-            return NotFound(new { message = "Department not found or not updated" });
 
-        return Ok(new { message = "Department updated successfully" });
-    }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var result = await _service.DeleteAsync(id);
-        if (result == 0)
-            return NotFound(new { message = "Department not found or already deleted" });
+        // POST: api/departments
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Department department)
+        {
+            var name = department?.DepartmentName?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Department name is required.");
 
-        return Ok(new { message = "Department deleted successfully" });
+            var id = await _departmentRepo.CreateAsync(name);
+            if (id <= 0) return StatusCode(500, "Failed to create department.");
+
+            return Ok(new { DepartmentID = id, Message = "Department created successfully." });
+        }
+
+        // PUT: api/departments/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Department department)
+        {
+            if (department == null || id != department.DepartmentID)
+                return BadRequest("Department ID mismatch.");
+
+            var name = department.DepartmentName?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Department name is required.");
+
+            var rows = await _departmentRepo.UpdateAsync(id, name);
+            if (rows <= 0) return NotFound("Department not found or update failed.");
+
+            return Ok(new { Message = "Department updated successfully." });
+        }
+
+        // DELETE: api/departments/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var rows = await _departmentRepo.DeleteAsync(id);
+            if (rows <= 0) return NotFound("Department not found or delete failed.");
+
+            return Ok(new { Message = "Department deleted successfully." });
+        }
     }
 }

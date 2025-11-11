@@ -28,8 +28,12 @@
     {
         public int DepartmentID { get; set; }
         public string DepartmentName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
         public int CourseCount { get; set; }
+        public string CourseNames { get; set; } = string.Empty;
     }
+
 
     public class CourseDashboardView
     {
