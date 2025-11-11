@@ -2,10 +2,8 @@
 @{
     ViewData["Title"] = "Users";
 }
-<!-- unchanged markup -->
 
 <style>
-    /* ===== Background: identical tone to Admin Dashboard ===== */
     body {
         background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
         font-family: 'Segoe UI', sans-serif;
@@ -14,21 +12,19 @@
         padding: 0;
     }
 
-    /* ===== Wrapper ===== */
     .users-wrapper {
         width: 85%;
         max-width: 1200px;
         margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75); /* darker blue, blurred look */
+        background: rgba(0, 45, 90, 0.75);
         border-radius: 22px;
-        backdrop-filter: blur(30px); /* 💠 stronger blur, less shine */
+        backdrop-filter: blur(30px);
         -webkit-backdrop-filter: blur(30px);
         padding: 50px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* ===== Page Header ===== */
     .page-header {
         text-align: center;
         margin-bottom: 40px;
@@ -41,13 +37,12 @@
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
-    /* ===== Buttons Row ===== */
     .buttons-row {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 18px;
-        margin-bottom: 35px;
+        margin-bottom: 20px;
         flex-wrap: wrap;
     }
 
@@ -84,10 +79,65 @@
             box-shadow: 0 0 20px rgba(0, 140, 255, 0.5);
         }
 
-    /* ===== Table Section ===== */
+    .filter-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .select-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.199 5.383 2.372 5 2.704 5h10.592a.5.5 0 0 1 .354.854l-4.796 5.482a.5.5 0 0 1-.707 0z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+    select.form-select {
+        padding: 10px 36px 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(0, 40, 85, 0.6);
+        color: #ffffff;
+        font-weight: 600;
+        min-width: 160px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+        transition: border-color 0.3s ease, background 0.3s ease;
+    }
+
+        select.form-select:hover,
+        select.form-select:focus {
+            border-color: rgba(0, 174, 255, 0.8);
+            background: rgba(0, 40, 85, 0.8);
+            outline: none;
+        }
+
+        select.form-select option {
+            background-color: #002b66;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
     .table-container {
         overflow-x: auto;
-        background: rgba(0, 40, 85, 0.85); /* darker opaque blue */
+        background: rgba(0, 40, 85, 0.85);
         border-radius: 18px;
         padding: 25px;
         backdrop-filter: blur(20px);
@@ -124,7 +174,6 @@
         transition: 0.3s;
     }
 
-    /* ===== Status Badges ===== */
     .badge {
         display: inline-block;
         padding: 6px 14px;
@@ -143,7 +192,6 @@
         color: #ff7b7b;
     }
 
-    /* ===== Action Buttons ===== */
     .action-btn {
         display: inline-block;
         border-radius: 8px;
@@ -176,7 +224,6 @@
             transform: translateY(-2px);
         }
 
-    /* ===== Alerts ===== */
     .alert {
         border-radius: 12px;
         padding: 10px 15px;
@@ -201,20 +248,16 @@
         color: #aee0ff;
     }
 
-    /* ===== Responsive ===== */
     @@media (max-width: 768px) {
-        .buttons-row
+        .buttons-row {
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .btn {
-        width: 100%;
-        text-align: center;
-    }
-
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 
@@ -223,6 +266,7 @@
         <h2>
             @(ViewBag.RoleFilter == "Student" ? "🎓 All Students" :
                 ViewBag.RoleFilter == "Teacher" ? "👨‍🏫 All Teachers" :
+                ViewBag.RoleFilter == "Admin" ? "🧑‍💼 All Admins" :
                 "👥 All Users")
         </h2>
     </div>
@@ -231,6 +275,27 @@
         <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
         <a asp-action="Create" class="btn btn-add">➕ Add New User</a>
     </div>
+
+    <form method="get" asp-action="Index" class="filter-row">
+        <div class="select-wrapper">
+            <select name="role" class="form-select w-auto">
+                <option value="All" selected="@(ViewBag.RoleFilter == "All")">All Roles</option>
+                <option value="Admin" selected="@(ViewBag.RoleFilter == "admin")">Admins</option>
+                <option value="Teacher" selected="@(ViewBag.RoleFilter == "teacher")">Teachers</option>
+                <option value="Student" selected="@(ViewBag.RoleFilter == "student")">Students</option>
+            </select>
+        </div>
+
+        <div class="select-wrapper">
+            <select name="status" class="form-select w-auto">
+                <option value="All" selected="@(ViewBag.StatusFilter == "All")">All</option>
+                <option value="Active" selected="@(ViewBag.StatusFilter == "Active")">Active</option>
+                <option value="Inactive" selected="@(ViewBag.StatusFilter == "Inactive")">Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-add">🔍 Apply Filter</button>
+    </form>
 
     @if (TempData["Msg"] != null)
     {
@@ -245,7 +310,6 @@
             Showing only <strong>@ViewBag.RoleFilter</strong>s
         </div>
     }
-
 
     <div class="table-container">
         <table>
@@ -264,7 +328,7 @@
                 {
                     foreach (var u in Model)
                     {
-                        <tr>
+                        <tr class="@(u.IsActive ? "" : "table-danger")">
                             <td>@u.UserID</td>
                             <td>@u.FullName</td>
                             <td>@u.Email</td>
@@ -308,7 +372,6 @@
 </div>
 
 <script>
-    // Auto-hide alert messages
     setTimeout(() => {
         const alertBox = document.querySelector('.alert');
         if (alertBox) {

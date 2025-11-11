@@ -11,29 +11,47 @@ public class DepartmentRepository : IDepartmentRepository
     private readonly ISqlConnectionFactory _factory;
     public DepartmentRepository(ISqlConnectionFactory factory) => _factory = factory;
 
+
     public async Task<IEnumerable<Department>> GetAllAsync()
     {
         using var conn = _factory.Create();
 
         var sql = @"
-        SELECT DepartmentID, DepartmentName, CreatedAt,
-               ISNULL(Description, 'Description not available.') AS Description,
-               ISNULL(IsActive, 0) AS IsActive
-        FROM Departments
-        ORDER BY DepartmentName;";
+        SELECT 
+            d.DepartmentID,
+            d.DepartmentName,
+            d.CreatedAt,
+            CAST(ISNULL(d.IsActive, 0) AS BIT) AS IsActive,
+            COUNT(c.CourseID) AS CourseCount,
+            STRING_AGG(c.CourseName, ', ') AS CourseNames
+        FROM Departments d
+        LEFT JOIN Courses c ON c.DepartmentID = d.DepartmentID
+        GROUP BY d.DepartmentID, d.DepartmentName, d.CreatedAt, d.IsActive
+        ORDER BY d.DepartmentName;";
 
         return await conn.QueryAsync<Department>(sql);
     }
 
 
+
+
+
     public async Task<Department?> GetByIdAsync(int id)
     {
         using var conn = _factory.Create();
-        return await conn.QueryFirstOrDefaultAsync<Department>(
-            "dbo.Departments_GetById",
-            new { DepartmentID = id },
-            commandType: System.Data.CommandType.StoredProcedure);
+
+        var sql = @"
+        SELECT 
+            d.DepartmentID,
+            d.DepartmentName,
+            d.CreatedAt,
+            CAST(ISNULL(d.IsActive, 0) AS BIT) AS IsActive
+        FROM Departments d
+        WHERE d.DepartmentID = @id;";
+
+        return await conn.QueryFirstOrDefaultAsync<Department>(sql, new { id });
     }
+
 
     public async Task<int> CreateAsync(string departmentName)
     {

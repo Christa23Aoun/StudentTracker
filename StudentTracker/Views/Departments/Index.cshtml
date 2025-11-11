@@ -1,243 +1,188 @@
 ﻿@model IEnumerable<StudentTracker.Models.DepartmentView>
-
 @{
     ViewData["Title"] = "Departments";
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
+        background: linear-gradient(135deg, #001a33, #003c8f);
         font-family: 'Segoe UI', sans-serif;
         color: #fff;
         margin: 0;
         padding: 0;
     }
 
-    .departments-wrapper {
-        text-align: center;
-        padding: 80px 0;
-        width: 90%;
+    .departments-container {
+        width: 85%;
         max-width: 1200px;
-        margin: 0 auto;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 22px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        padding: 50px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     }
 
-    .page-header {
-        margin-bottom: 40px;
-    }
-
-        .page-header h2 {
-            font-weight: 700;
-            font-size: 2.3rem;
-            color: #fff;
-        }
-
-        .page-header p {
-            color: #cfd8dc;
-            font-size: 1.05rem;
-            margin-top: 8px;
-        }
-
-    .buttons-row {
+    .header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 30px;
         flex-wrap: wrap;
-        margin-bottom: 25px;
+        gap: 10px;
     }
 
-    .btn {
+    h1 {
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .btn-dashboard {
         display: inline-block;
-        padding: 10px 20px;
-        border-radius: 8px;
+        padding: 10px 22px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #008cff, #005fc4);
+        color: #fff;
         font-weight: 600;
         text-decoration: none;
-        color: #fff;
         transition: all 0.3s ease;
-        border: none;
     }
 
-    .btn-back {
-        background: rgba(255, 255, 255, 0.15);
-    }
-
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .btn-dashboard:hover {
+            background: linear-gradient(135deg, #005fc4, #008cff);
             transform: translateY(-2px);
         }
-
-    .btn-add {
-        background: linear-gradient(135deg, #00bcd4, #1976d2);
-        box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
-    }
-
-        .btn-add:hover {
-            background: linear-gradient(135deg, #1976d2, #00bcd4);
-            transform: translateY(-2px);
-            box-shadow: 0 0 18px rgba(0, 188, 212, 0.6);
-        }
-
-    .table-container {
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-radius: 20px;
-        padding: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        overflow-x: auto;
-    }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin: 0 auto;
         color: #fff;
+        text-align: center;
     }
 
     th, td {
         padding: 14px;
-        text-align: center;
         border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     thead {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(0, 90, 170, 0.5);
     }
 
-    th {
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        color: #aee0ff;
+    tr:hover {
+        background: rgba(255, 255, 255, 0.05);
     }
 
-    tbody tr:hover {
-        background: rgba(255, 255, 255, 0.08);
-        transition: 0.3s;
-    }
-
-    .action-btn {
-        text-decoration: none;
-        font-weight: 600;
-        border-radius: 8px;
+    .badge {
+        display: inline-block;
         padding: 6px 12px;
-        margin: 0 4px;
-        transition: 0.3s;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .bg-success {
+        background: rgba(0, 255, 170, 0.15);
+        color: #00e676;
+    }
+
+    .bg-danger {
+        background: rgba(255, 100, 100, 0.15);
+        color: #ff7b7b;
+    }
+
+    .info-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-info {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #007bff, #005fc4);
         color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
 
-    .edit {
-        background: rgba(56, 189, 248, 0.2);
-        border: 1px solid rgba(56, 189, 248, 0.4);
-    }
-
-        .edit:hover {
-            background: rgba(56, 189, 248, 0.4);
+        .btn-info:hover {
+            background: linear-gradient(135deg, #005fc4, #007bff);
             transform: translateY(-2px);
         }
 
-    .delete {
-        background: rgba(248, 113, 113, 0.2);
-        border: 1px solid rgba(248, 113, 113, 0.4);
+    .btn-delete {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ff4d4d, #c62828);
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
 
-        .delete:hover {
-            background: rgba(248, 113, 113, 0.4);
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #c62828, #ff4d4d);
             transform: translateY(-2px);
         }
-
-    .alert {
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin: 10px 0 20px 0;
-        font-weight: 500;
-        text-align: center;
-        backdrop-filter: blur(8px);
-    }
-
-    .alert-success {
-        background: rgba(0, 255, 170, 0.2);
-        color: #baffda;
-    }
-
-    .alert-danger {
-        background: rgba(255, 80, 80, 0.2);
-        color: #ffb3b3;
-    }
-
-    @@media (max-width: 768px) {
-        .buttons-row {
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .table-container {
-            padding: 15px;
-        }
-    }
 </style>
 
-<div class="departments-wrapper">
-    <div class="page-header">
-        <h2>🏛️ Departments</h2>
-        <p>Manage all university departments and their details.</p>
+<div class="departments-container">
+    <div class="header-row">
+        <h1>🏛 Departments Overview</h1>
+        <div>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn-dashboard">⬅️ Back to Dashboard</a>
+            <a asp-action="Create" class="btn-dashboard">➕ Add Department</a>
+        </div>
     </div>
 
-    <div class="buttons-row">
-        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
-        <a asp-action="Create" class="btn btn-add">➕ Add Department</a>
-    </div>
-
-    @if (TempData["Msg"] != null)
-    {
-        var msg = TempData["Msg"].ToString();
-        var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
-        <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
-    }
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Department Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var d in Model)
-                    {
-                        <tr>
-                            <td>@d.DepartmentID</td>
-                            <td>@d.DepartmentName</td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@d.DepartmentID" class="action-btn edit">✏️ Edit</a>
-                                <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="action-btn delete">🗑️ Delete</a>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Department Name</th>
+                <th>Status</th>
+                <th>Course Count</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var d in Model)
                 {
                     <tr>
-                        <td colspan="3" class="text-center text-muted py-4">No departments found.</td>
+                        <td>@d.DepartmentID</td>
+                        <td>@d.DepartmentName</td>
+                        <td>
+                            @if (d.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>@d.CourseCount</td>
+                        <td>
+                            <div class="info-buttons">
+                                <a asp-action="Details" asp-route-id="@d.DepartmentID" class="btn-info">ℹ️ Info</a>
+                                <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="btn-delete">🗑️ Delete</a>
+                            </div>
+                        </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-muted py-4">No departments found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
-
-<script>
-    // Auto-hide alert messages
-    setTimeout(() => {
-        const alertBox = document.querySelector('.alert');
-        if (alertBox) {
-            alertBox.style.opacity = '0';
-            setTimeout(() => alertBox.remove(), 600);
-        }
-    }, 3000);
-</script>

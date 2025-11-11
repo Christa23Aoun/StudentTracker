@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace StudentTracker.Controllers
 {
@@ -22,17 +26,33 @@ namespace StudentTracker.Controllers
         {
             try
             {
-                var res = await _client.GetAsync($"{_apiBase}Dashboard/Admin");
+                var model = new AdminDashboardViewModel();
 
-                if (!res.IsSuccessStatusCode)
+                // ===== 1. Summary Section =====
+                var summaryRes = await _client.GetAsync($"{_apiBase}Dashboard/AdminSummary");
+                if (summaryRes.IsSuccessStatusCode)
                 {
-                    ViewBag.Error = "Failed to fetch admin dashboard data.";
-                    return View("~/Views/Dashboard/Admin.cshtml", new AdminDashboardViewModel());
+                    var json = await summaryRes.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<dynamic>(json);
+
+                    model.Summary.TotalStudents = data.totalStudents;
+                    model.Summary.TotalTeachers = data.totalActiveTeachers;
+                    model.Summary.ActiveCourses = data.activeCoursesThisSemester;
                 }
 
-                var json = await res.Content.ReadAsStringAsync();
-                var model = JsonConvert.DeserializeObject<AdminDashboardViewModel>(json)
-                             ?? new AdminDashboardViewModel();
+                // ===== 2. Departments Section =====
+                var deptRes = await _client.GetAsync($"{_apiBase}Departments");
+                if (deptRes.IsSuccessStatusCode)
+                {
+                    var deptJson = await deptRes.Content.ReadAsStringAsync();
+                    var departments = JsonConvert.DeserializeObject<List<DepartmentDashboardView>>(deptJson);
+
+                    if (departments != null)
+                    {
+                        model.Departments = departments;
+                        model.Summary.Departments = departments.Count;
+                    }
+                }
 
                 return View("~/Views/Dashboard/Admin.cshtml", model);
             }

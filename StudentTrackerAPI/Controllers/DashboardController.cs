@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -7,19 +8,51 @@ namespace StudentTrackerAPI.Controllers
     [Route("api/[controller]")]
     public class DashboardController : ControllerBase
     {
-        private readonly IAdminDashboardService _adminService;
+        private readonly IUserRepository _users;
+        private readonly ICourseRepository _courses;
 
-        public DashboardController(IAdminDashboardService adminService)
+        public DashboardController(IUserRepository users, ICourseRepository courses)
         {
-            _adminService = adminService;
+            _users = users;
+            _courses = courses;
         }
 
-        
-        [HttpGet("Admin")]
-        public async Task<IActionResult> GetAdminDashboard()
+        [HttpGet("AdminSummary")]
+        public async Task<IActionResult> GetAdminSummary()
         {
-            var dashboard = await _adminService.GetAdminDashboardAsync();
-            return Ok(dashboard);
+            var users = await _users.GetAllAsync();
+            var courses = await _courses.GetAllAsync();
+
+            int totalStudents = 0;
+            int totalActiveTeachers = 0;
+            int activeCourses = 0;
+
+            foreach (var user in users)
+            {
+                if (user.RoleID == 3)
+                {
+                    totalStudents++;
+                }
+                else if (user.RoleID == 2 && user.IsActive)
+                {
+                    totalActiveTeachers++;
+                }
+            }
+
+            foreach (var course in courses)
+            {
+                if (course.IsActive)
+                {
+                    activeCourses++;
+                }
+            }
+
+            return Ok(new
+            {
+                totalStudents = totalStudents,
+                totalActiveTeachers = totalActiveTeachers,
+                activeCoursesThisSemester = activeCourses
+            });
         }
     }
 }
