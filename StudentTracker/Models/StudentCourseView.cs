@@ -7,5 +7,6 @@
         public int CourseID { get; set; }
         public double? AverageGrade { get; set; }
         public double? AttendanceRate { get; set; }
+        public string StudentName { get; set; } = string.Empty;
     }
 }

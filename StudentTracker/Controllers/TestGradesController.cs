@@ -18,19 +18,39 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        public async Task<IActionResult> Index()
+        // ✅ Show list of grades (optionally by course)
+        public async Task<IActionResult> Index(int? courseId)
         {
-            var res = await _client.GetAsync($"{_apiBase}TestGrades");
-            if (!res.IsSuccessStatusCode)
-                return View(new List<TestGradeView>());
+            ViewBag.CourseID = courseId;
+            var list = new List<TestGradeView>();
 
-            var json = await res.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<List<TestGradeView>>(json) ?? new();
-            return View(data);
+            string endpoint = courseId.HasValue
+                ? $"{_apiBase}TestGrades/byCourse/{courseId}"
+                : $"{_apiBase}TestGrades";
+
+            var res = await _client.GetAsync(endpoint);
+            if (res.IsSuccessStatusCode)
+            {
+                var json = await res.Content.ReadAsStringAsync();
+                list = JsonConvert.DeserializeObject<List<TestGradeView>>(json) ?? new();
+            }
+
+            return View(list);
         }
 
-        public IActionResult Create() => View();
+        // ✅ Display grade creation form (with optional course prefilled)
+        public IActionResult Create(int? courseId)
+        {
+            ViewBag.CourseID = courseId;
+            var model = new TestGradeView();
 
+            if (courseId.HasValue)
+                model.CourseID = courseId.Value;
+
+            return View(model);
+        }
+
+        // ✅ Handle grade creation
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestGradeView model)
@@ -47,12 +67,10 @@ namespace StudentTracker.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Msg"] = "✅ Test grade added successfully!";
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
                 }
-                else
-                {
-                    ViewBag.Error = "Failed to save test grade.";
-                }
+
+                ViewBag.Error = "Failed to save test grade.";
             }
             catch (Exception ex)
             {
@@ -62,30 +80,34 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        // ✅ Confirm deletion
+        public async Task<IActionResult> Delete(int id, int? courseId)
         {
+            ViewBag.CourseID = courseId;
+
             var res = await _client.GetAsync($"{_apiBase}TestGrades/{id}");
             if (!res.IsSuccessStatusCode)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { courseId });
 
             var json = await res.Content.ReadAsStringAsync();
             var item = JsonConvert.DeserializeObject<TestGradeView>(json);
             if (item == null)
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { courseId });
 
             return View(item);
         }
 
+        // ✅ Delete grade and redirect back
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int? courseId)
         {
             var res = await _client.DeleteAsync($"{_apiBase}TestGrades/{id}");
             TempData["Msg"] = res.IsSuccessStatusCode
                 ? "Test grade deleted successfully."
                 : "Failed to delete test grade.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { courseId });
         }
     }
 }

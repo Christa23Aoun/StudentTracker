@@ -1,4 +1,4 @@
-﻿@model StudentTracker.Models.CourseView
+﻿@* @model StudentTracker.Models.CourseView
 @{
     ViewData["Title"] = $"{Model.CourseName} Details";
 }
@@ -154,5 +154,117 @@
         <a href="#" class="btn">Add Test</a>
         <a href="#" class="btn">View Grades</a>
         <a href="@Url.Action("Dashboard", "Teacher")" class="btn" style="background:#555;">Back</a>
+    </div>
+</div>
+ *@
+
+@model StudentTracker.Models.CourseView
+@{
+    ViewData["Title"] = $"{Model.CourseName} Details";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001f3f, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .course-details-wrapper {
+        padding: 60px 5%;
+        text-align: center;
+    }
+
+    .course-header {
+        margin-bottom: 40px;
+    }
+
+        .course-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .course-header p {
+            color: #cfd8dc;
+            margin: 0;
+        }
+
+    .course-info {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 25px 40px;
+        min-width: 200px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    }
+
+        .info-card h4 {
+            margin: 0;
+            color: #90caf9;
+        }
+
+    .actions {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .btn {
+        background: #2196f3;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn:hover {
+            background: #1769aa;
+        }
+
+    .back-btn {
+        background: #555;
+    }
+</style>
+
+<div class="course-details-wrapper">
+    <div class="course-header">
+        <h2>@Model.CourseName (@Model.CourseCode)</h2>
+        <p>@Model.DepartmentName — Semester: @Model.SemesterName</p>
+    </div>
+
+    <div class="course-info">
+        <div class="info-card">
+            <h4>📊 Average Grade</h4>
+            <p>@Model.AverageGrade %</p>
+        </div>
+        <div class="info-card">
+            <h4>🕒 Attendance Rate</h4>
+            <p>@Model.AttendanceRate %</p>
+        </div>
+        <div class="info-card">
+            <h4>👩‍🎓 Students</h4>
+            <p>@Model.StudentCount</p>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a asp-controller="Attendance" asp-action="Create" asp-route-courseId="@Model.CourseID" class="btn">📋 Mark Attendance</a>
+        <a asp-controller="Tests" asp-action="Create" asp-route-courseId="@Model.CourseID" class="btn">➕ Add Test</a>
+        <a asp-controller="TestGrades" asp-action="Index" asp-route-courseId="@Model.CourseID" class="btn">🏅 View Grades</a>
+        <a asp-controller="Teacher" asp-action="Dashboard" class="btn back-btn">⬅ Back to Dashboard</a>
     </div>
 </div>

@@ -6,7 +6,6 @@ using System.Text;
 
 namespace StudentTracker.Controllers
 {
-   
     [Authorize]
     public class TestsController : Controller
     {
@@ -19,10 +18,17 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        public async Task<IActionResult> Index()
+        // ✅ Show all tests (optionally filtered by course)
+        public async Task<IActionResult> Index(int? courseId)
         {
-            var response = await _client.GetAsync($"{_apiBase}Tests");
+            ViewBag.CourseID = courseId;
             var list = new List<TestView>();
+
+            string endpoint = courseId.HasValue
+                ? $"{_apiBase}Tests/byCourse/{courseId}"
+                : $"{_apiBase}Tests";
+
+            var response = await _client.GetAsync(endpoint);
 
             if (response.IsSuccessStatusCode)
             {
@@ -33,9 +39,19 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
+        // ✅ Display test creation form (with optional course prefilled)
+        public IActionResult Create(int? courseId)
+        {
+            ViewBag.CourseID = courseId;
+            var model = new TestView();
 
-        public IActionResult Create() => View();
+            if (courseId.HasValue)
+                model.CourseID = courseId.Value;
 
+            return View(model);
+        }
+
+        // ✅ Handle test creation
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
@@ -50,15 +66,14 @@ namespace StudentTracker.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["Msg"] = "✅ Test created successfully!";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
             }
 
             ViewBag.Error = "Failed to create test.";
             return View(model);
         }
 
-
-        
+        // ✅ Confirm deletion
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Tests/{id}");
@@ -73,6 +88,7 @@ namespace StudentTracker.Controllers
             return View(test);
         }
 
+        // ✅ Delete test permanently
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

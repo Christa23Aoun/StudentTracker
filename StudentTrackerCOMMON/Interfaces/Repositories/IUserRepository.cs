@@ -6,6 +6,8 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
     {
         Task<int> CreateAsync(User user);
         Task<User?> GetByEmailAsync(string email);
+        Task<User?> GetByIdAsync(int userId);
+
         Task<bool> ActivateAsync(int userId);
         Task<bool> SetRoleAsync(int userId, int roleId);
 

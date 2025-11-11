@@ -92,5 +92,15 @@ namespace StudentTrackerDAL.Repositories
 
             return result ?? 0;
         }
+        // ✅ Fetch enrolled students for a given course
+        public async Task<IEnumerable<dynamic>> GetStudentsByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync(
+                "sp_GetStudentsByCourseID",
+                new { CourseID = courseId },
+                commandType: CommandType.StoredProcedure);
+        }
+
     }
 }

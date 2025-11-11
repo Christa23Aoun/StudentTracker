@@ -11,6 +11,10 @@ namespace StudentTrackerBLL.Services
         {
             _repository = new AttendanceRepository(connectionString);
         }
+        public async Task<IEnumerable<dynamic>> GetStudentsByCourseAsync(int courseId)
+        {
+            return await _repository.GetStudentsByCourseAsync(courseId);
+        }
 
         public async Task<IEnumerable<Attendance>> GetAllAsync() => await _repository.GetAllAsync();
         public async Task<Attendance?> GetByIdAsync(int id) => await _repository.GetByIdAsync(id);

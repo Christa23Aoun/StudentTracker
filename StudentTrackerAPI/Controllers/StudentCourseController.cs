@@ -1,55 +1,48 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerBLL.Services;
 using StudentTrackerCOMMON.Models;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace StudentTrackerAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class StudentCoursesController : ControllerBase
     {
         private readonly StudentCourseService _service;
+        private readonly string _connectionString;
 
         public StudentCoursesController(IConfiguration config)
         {
-            string conn = config.GetConnectionString("DefaultConnection");
-            _service = new StudentCourseService(conn);
+            _connectionString = config.GetConnectionString("DefaultConnection");
+            _service = new StudentCourseService(_connectionString);
         }
 
-      
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var data = await _service.GetAllAsync();
-            return Ok(data);
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
-     
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var item = await _service.GetByIdAsync(id);
-            if (item == null) return NotFound();
-            return Ok(item);
+            return item is null ? NotFound() : Ok(item);
         }
 
-       
         [HttpPost]
-        public async Task<IActionResult> Create(StudentCourse model)
+        public async Task<IActionResult> Create([FromBody] StudentCourse model)
         {
             await _service.CreateAsync(model);
             return Ok("Student course created successfully");
         }
 
-    
         [HttpPut]
-        public async Task<IActionResult> Update(StudentCourse model)
+        public async Task<IActionResult> Update([FromBody] StudentCourse model)
         {
             await _service.UpdateAsync(model);
             return Ok("Student course updated successfully");
         }
 
-     
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -57,23 +50,18 @@ namespace StudentTrackerAPI.Controllers
             return Ok("Student course deleted successfully");
         }
 
-       
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserId(int userId)
+        [HttpGet("byCourse/{courseId}")]
+        public async Task<IActionResult> GetByCourse(int courseId)
         {
-            var data = await _service.GetCoursesByStudentAsync(userId);
-            return Ok(data);
-        }
+            using var con = new SqlConnection(_connectionString);
+            var sql = @"
+                SELECT sc.StudentCourseID, sc.StudentID, sc.CourseID, u.FullName AS StudentName
+                FROM StudentCourses sc
+                INNER JOIN Users u ON u.UserID = sc.StudentID
+                WHERE sc.CourseID = @CourseID";
 
-   
-        [HttpPost("enroll")]
-        public async Task<IActionResult> Enroll([FromQuery] int userId, [FromQuery] int courseId)
-        {
-            var success = await _service.EnrollAsync(userId, courseId);
-            if (!success)
-                return BadRequest("Enrollment failed (already enrolled or invalid IDs)");
-
-            return Ok("Student enrolled successfully");
+            var result = await con.QueryAsync(sql, new { CourseID = courseId });
+            return Ok(result);
         }
     }
 }

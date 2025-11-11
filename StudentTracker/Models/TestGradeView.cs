@@ -7,5 +7,6 @@
         public int StudentID { get; set; }
         public double Score { get; set; }  
         public bool IsValidated { get; set; }  
+        public int CourseID { get; set; }
     }
 }

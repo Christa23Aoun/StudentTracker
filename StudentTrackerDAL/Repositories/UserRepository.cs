@@ -49,6 +49,13 @@ namespace StudentTrackerDAL.Repositories
 
             return id;
         }
+        public async Task<User?> GetByIdAsync(int userId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryFirstOrDefaultAsync<User>(
+                "SELECT * FROM Users WHERE UserID = @UserID",
+                new { UserID = userId });
+        }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
