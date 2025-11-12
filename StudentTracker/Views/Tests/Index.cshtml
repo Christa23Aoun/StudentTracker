@@ -1,76 +1,58 @@
 ﻿@model IEnumerable<StudentTracker.Models.TestView>
-
 @{
     ViewData["Title"] = "Tests";
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
+        background: linear-gradient(135deg, #001a33, #003c8f);
         font-family: 'Segoe UI', sans-serif;
         color: #fff;
         margin: 0;
         padding: 0;
     }
 
-    .tests-wrapper {
-        text-align: center;
-        padding: 80px 0;
-        width: 90%;
+    .tests-container {
         max-width: 1200px;
-        margin: 0 auto;
+        margin: 80px auto;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
     }
 
-    .page-header {
-        margin-bottom: 40px;
+    h2 {
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #aee0ff;
     }
-
-        .page-header h2 {
-            font-weight: 700;
-            font-size: 2.3rem;
-            color: #fff;
-        }
-
-        .page-header p {
-            color: #cfd8dc;
-            font-size: 1.05rem;
-            margin-top: 8px;
-        }
 
     .btn-add {
+        display: inline-block;
         background: linear-gradient(135deg, #00bcd4, #1976d2);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
         font-weight: 600;
-        padding: 10px 25px;
         text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+        transition: 0.3s;
+        float: right;
+        margin-bottom: 20px;
     }
 
         .btn-add:hover {
             background: linear-gradient(135deg, #1976d2, #00bcd4);
             transform: translateY(-2px);
-            box-shadow: 0 0 18px rgba(0, 188, 212, 0.6);
         }
-
-    .table-container {
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-radius: 20px;
-        padding: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        overflow-x: auto;
-    }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin: 0 auto;
         color: #fff;
+        margin-top: 15px;
     }
 
     th, td {
@@ -84,14 +66,13 @@
     }
 
     th {
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
         color: #aee0ff;
+        text-transform: uppercase;
+        font-size: 0.9rem;
     }
 
     tbody tr:hover {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.1);
         transition: 0.3s;
     }
 
@@ -118,7 +99,7 @@
     .alert {
         border-radius: 12px;
         padding: 10px 15px;
-        margin: 10px 0 20px 0;
+        margin-bottom: 20px;
         font-weight: 500;
         text-align: center;
         backdrop-filter: blur(8px);
@@ -133,18 +114,14 @@
         background: rgba(255, 80, 80, 0.2);
         color: #ffb3b3;
     }
-
 </style>
 
-<div class="tests-wrapper">
-    <div class="page-header">
-        <h2>🧪 Tests</h2>
-        <p>Manage all tests and their evaluation details.</p>
-    </div>
+<div class="tests-container">
+    <h2>🧪 All Tests</h2>
 
-    <div class="mb-4 text-end">
-        <a asp-action="Create" class="btn-add">➕ Add Test</a>
-    </div>
+    <a asp-action="Create" class="btn-add">➕ Add Test</a>
+
+    <div class="clearfix"></div>
 
     @if (TempData["Msg"] != null)
     {
@@ -153,46 +130,42 @@
         <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
     }
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Course ID</th>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Weight</th>
-                    <th>Max Score</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.TestID</td>
-                            <td>@item.CourseID</td>
-                            <td>@item.TestName</td>
-                            <td>@item.TestDate.ToShortDateString()</td>
-                            <td>@item.Weight</td>
-                            <td>@item.MaxScore</td>
-                            <td>
-                                <a asp-action="Delete" asp-route-id="@item.TestID" class="action-btn delete">🗑️ Delete</a>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Course</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Weight (%)</th>
+                <th>Max Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
                 {
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No tests found.</td>
+                        <td>@item.TestID</td>
+                        <td>@item.CourseID</td>
+                        <td>@item.TestName</td>
+                        <td>@item.TestDate.ToShortDateString()</td>
+                        <td>@item.Weight</td>
+                        <td>@item.MaxScore</td>
+                        <td>
+                            <a asp-action="Delete" asp-route-id="@item.TestID" class="action-btn delete">🗑 Delete</a>
+                        </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
+            }
+            else
+            {
+                <tr><td colspan="7" class="text-muted py-3">No tests available.</td></tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <script>

@@ -105,17 +105,17 @@
     <h2>🗓️ Attendance Records</h2>
 
     <div class="text-center mb-3">
-        <a class="btn-primary" href="/Attendance/Create">➕ Add Attendance</a>
+        <a class="btn-primary" href="/Attendance/Create">📋 Mark Attendance</a>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Student ID</th>
-                <th>Course ID</th>
+                <th>Student</th>
+                <th>Course</th>
                 <th>Date</th>
-                <th>Present</th>
+                <th>Status</th>
                 <th>Validated</th>
                 <th>Actions</th>
             </tr>
@@ -127,11 +127,11 @@
                 {
                     <tr>
                         <td>@item.AttendanceID</td>
-                        <td>@item.StudentID</td>
-                        <td>@item.CourseID</td>
+                        <td>@item.StudentName</td>
+                        <td>@item.CourseName</td>
                         <td>@item.AttendanceDate.ToShortDateString()</td>
                         <td class="@(item.IsPresent ? "status-yes" : "status-no")">
-                            @(item.IsPresent ? "Yes ✅" : "No ❌")
+                            @(item.IsPresent ? "Present ✅" : "Absent ❌")
                         </td>
                         <td class="@(item.IsValidated ? "status-yes" : "status-no")">
                             @(item.IsValidated ? "Yes ✅" : "No ❌")

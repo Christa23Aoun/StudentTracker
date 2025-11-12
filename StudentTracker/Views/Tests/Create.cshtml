@@ -1,51 +1,152 @@
 ﻿@model StudentTracker.Models.TestView
-
 @{
     ViewData["Title"] = "Create Test";
 }
 
-<div class="container mt-5" style="max-width:700px;">
-    <h2 class="text-center text-primary mb-4">🧪 Create New Test</h2>
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .test-form-wrapper {
+        max-width: 750px;
+        margin: 80px auto;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 45px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 35px;
+        font-weight: 700;
+        color: #aee0ff;
+    }
+
+    label {
+        font-weight: 600;
+        color: #cfe6ff;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+            outline: none;
+        }
+
+    .btn-save {
+        background: linear-gradient(135deg, #00c853, #009624);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 150px;
+    }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            box-shadow: 0 0 15px rgba(0, 255, 120, 0.6);
+        }
+
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 150px;
+    }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 25px;
+    }
+
+    .alert {
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        text-align: center;
+        backdrop-filter: blur(8px);
+    }
+
+    .alert-danger {
+        background: rgba(255, 80, 80, 0.2);
+        color: #ffb3b3;
+    }
+</style>
+
+<div class="test-form-wrapper">
+    <h2>🧪 Create a New Test</h2>
 
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+        <div class="alert alert-danger">@ViewBag.Error</div>
     }
 
-    <form asp-action="Create" method="post" class="shadow-sm p-4 rounded bg-light">
-        <div class="mb-3">
-            <label class="form-label">Course ID</label>
+    <form asp-action="Create" method="post">
+        <div>
+            <label>Course ID</label>
             <input asp-for="CourseID" class="form-control" placeholder="Enter course ID" required />
             <span asp-validation-for="CourseID" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Test Name</label>
-            <input asp-for="TestName" class="form-control" placeholder="Enter test name" required />
+        <div>
+            <label>Test Name</label>
+            <input asp-for="TestName" class="form-control" placeholder="e.g. Midterm Exam" required />
             <span asp-validation-for="TestName" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Test Date</label>
+        <div>
+            <label>Test Date</label>
             <input asp-for="TestDate" type="date" class="form-control" required />
             <span asp-validation-for="TestDate" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Weight</label>
-            <input asp-for="Weight" type="number" step="0.1" class="form-control" placeholder="Enter test weight" required />
+        <div>
+            <label>Weight (%)</label>
+            <input asp-for="Weight" type="number" step="0.1" class="form-control" placeholder="e.g. 20" required />
             <span asp-validation-for="Weight" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Max Score</label>
-            <input asp-for="MaxScore" type="number" step="0.1" class="form-control" placeholder="Enter maximum score" required />
+        <div>
+            <label>Max Score</label>
+            <input asp-for="MaxScore" type="number" step="0.1" class="form-control" placeholder="e.g. 100" required />
             <span asp-validation-for="MaxScore" class="text-danger"></span>
         </div>
 
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-success px-4">Save</button>
-            <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+        <div class="btn-group">
+            <button type="submit" class="btn-save">💾 Save</button>
+            <a asp-action="Index" class="btn-cancel">✖ Cancel</a>
         </div>
     </form>
 </div>

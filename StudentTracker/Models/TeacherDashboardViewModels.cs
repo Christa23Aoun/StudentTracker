@@ -20,6 +20,8 @@
 
     public class TeacherDashboardView
     {
+        public int TeacherID { get; set; }
+
         public string TeacherName { get; set; } = string.Empty;
         public string TeacherEmail { get; set; } = string.Empty;
         public int TotalCourses { get; set; }

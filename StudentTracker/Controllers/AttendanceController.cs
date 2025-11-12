@@ -18,64 +18,118 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ✅ Show attendance records (optionally filtered by course)
         public async Task<IActionResult> Index(int? courseId)
         {
-            ViewBag.CourseID = courseId;
-            var list = new List<AttendanceView>();
+            var teacherEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(teacherEmail))
+                return RedirectToAction("Login", "Auth");
 
-            string endpoint = courseId.HasValue
-                ? $"{_apiBase}Attendance/byCourse/{courseId}"
-                : $"{_apiBase}Attendance";
+            var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{teacherEmail}");
+            if (!teacherRes.IsSuccessStatusCode)
+                return RedirectToAction("Dashboard", "Teacher");
 
-            var res = await _client.GetAsync(endpoint);
-            if (res.IsSuccessStatusCode)
+            var teacherJson = await teacherRes.Content.ReadAsStringAsync();
+            var teacher = JsonConvert.DeserializeObject<TeacherDashboardView>(teacherJson);
+            int teacherId = teacher?.TeacherID ?? 0;
+
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/byTeacher/{teacherId}");
+            var courseList = new List<CourseView>();
+            if (courseRes.IsSuccessStatusCode)
             {
-                var json = await res.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<AttendanceView>>(json) ?? new();
+                var cJson = await courseRes.Content.ReadAsStringAsync();
+                courseList = JsonConvert.DeserializeObject<List<CourseView>>(cJson) ?? new();
             }
 
+            var list = new List<AttendanceView>();
+            if (courseId.HasValue)
+            {
+                var res = await _client.GetAsync($"{_apiBase}Attendance/byCourse/{courseId}");
+                if (res.IsSuccessStatusCode)
+                {
+                    var json = await res.Content.ReadAsStringAsync();
+                    list = JsonConvert.DeserializeObject<List<AttendanceView>>(json) ?? new();
+                }
+            }
+
+            ViewBag.TeacherCourses = courseList;
+            ViewBag.CourseID = courseId;
             return View(list);
         }
 
-        // ✅ Display attendance creation form (with optional course prefilled)
-        public IActionResult Create(int? courseId)
+        [HttpGet]
+        public async Task<IActionResult> Create(int courseId)
         {
-            ViewBag.CourseID = courseId;
-            var model = new AttendanceView();
+            var teacherEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(teacherEmail))
+                return RedirectToAction("Login", "Auth");
 
-            if (courseId.HasValue)
-                model.CourseID = courseId.Value;
+            var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{teacherEmail}");
+            var teacherJson = await teacherRes.Content.ReadAsStringAsync();
+            var teacher = JsonConvert.DeserializeObject<TeacherDashboardView>(teacherJson);
 
-            return View(model);
-        }
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+            if (!courseRes.IsSuccessStatusCode)
+                return RedirectToAction("Dashboard", "Teacher");
 
-        // ✅ Handle attendance creation
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AttendanceView model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
+            var cJson = await courseRes.Content.ReadAsStringAsync();
+            var course = JsonConvert.DeserializeObject<CourseView>(cJson);
 
-            var payload = JsonConvert.SerializeObject(model);
-            var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            var res = await _client.PostAsync($"{_apiBase}Attendance", content);
-
-            if (!res.IsSuccessStatusCode)
+            if (course == null || course.TeacherID != teacher?.TeacherID)
             {
-                ModelState.AddModelError("", "Failed to add attendance record.");
-                return View(model);
+                TempData["Msg"] = "⚠️ You are not authorized to mark attendance for this course.";
+                return RedirectToAction("Dashboard", "Teacher");
             }
 
-            TempData["Msg"] = "✅ Attendance record created successfully.";
-            return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
+            ViewBag.CourseID = course.CourseID;
+            ViewBag.CourseName = course.CourseName;
+
+            var studentRes = await _client.GetAsync($"{_apiBase}StudentCourses/byCourse/{courseId}");
+            if (!studentRes.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "⚠️ No students found for this course.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var json = await studentRes.Content.ReadAsStringAsync();
+            var students = JsonConvert.DeserializeObject<List<StudentCourseView>>(json) ?? new();
+
+            var list = students.Select(s => new AttendanceView
+            {
+                StudentID = s.StudentID,
+                StudentName = s.StudentName,
+                CourseID = courseId,
+                CourseName = course.CourseName,
+                AttendanceDate = DateTime.Today,
+                Status = "Present"
+            }).ToList();
+
+            return View("~/Views/Attendance/Create.cshtml", list);
         }
 
-        // ✅ Confirm deletion
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(DateTime AttendanceDate, TimeSpan SessionTime, List<AttendanceView> attendanceList)
+        {
+            if (attendanceList == null || !attendanceList.Any())
+                return RedirectToAction(nameof(Index));
+
+            foreach (var record in attendanceList)
+            {
+                record.AttendanceDate = AttendanceDate + SessionTime;
+                record.IsValidated = true;
+                record.IsPresent = record.Status == "Present";
+
+                var payload = JsonConvert.SerializeObject(record);
+                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+                await _client.PostAsync($"{_apiBase}Attendance", content);
+            }
+
+            TempData["Msg"] = "✅ Attendance saved successfully!";
+            return RedirectToAction(nameof(Index), new { courseId = attendanceList.First().CourseID });
+        }
+
         public async Task<IActionResult> Delete(int id, int? courseId)
         {
-            ViewBag.CourseID = courseId;
             var res = await _client.GetAsync($"{_apiBase}Attendance/{id}");
             if (!res.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index), new { courseId });
@@ -88,7 +142,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // ✅ Delete attendance and redirect back
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int? courseId)
@@ -99,50 +152,6 @@ namespace StudentTracker.Controllers
                 : "❌ Failed to delete attendance record.";
 
             return RedirectToAction(nameof(Index), new { courseId });
-        }
-
-        // ✅ NEW: Step 1 — Display students of a course for marking
-        [HttpGet]
-        public async Task<IActionResult> Mark(int courseId)
-        {
-            ViewBag.CourseID = courseId;
-
-            var studentRes = await _client.GetAsync($"{_apiBase}StudentCourse/byCourse/{courseId}");
-            if (!studentRes.IsSuccessStatusCode)
-                return RedirectToAction(nameof(Index));
-
-            var json = await studentRes.Content.ReadAsStringAsync();
-            var students = JsonConvert.DeserializeObject<List<StudentCourseView>>(json) ?? new();
-
-            var list = students.Select(s => new AttendanceView
-            {
-                StudentID = s.StudentID,
-                CourseID = courseId,
-                StudentName = s.StudentName,
-                AttendanceDate = DateTime.Today
-            }).ToList();
-
-            return View("~/Views/Attendance/Mark.cshtml", list);
-        }
-
-        // ✅ NEW: Step 2 — Save attendance for all students
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Mark(DateTime AttendanceDate, TimeSpan SessionTime, List<AttendanceView> attendanceList)
-        {
-            if (attendanceList == null || !attendanceList.Any())
-                return RedirectToAction(nameof(Index));
-
-            foreach (var record in attendanceList)
-            {
-                record.AttendanceDate = AttendanceDate + SessionTime;
-                var payload = JsonConvert.SerializeObject(record);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
-                await _client.PostAsync($"{_apiBase}Attendance", content);
-            }
-
-            TempData["Msg"] = "✅ Attendance saved successfully!";
-            return RedirectToAction(nameof(Index), new { courseId = attendanceList.First().CourseID });
         }
     }
 }

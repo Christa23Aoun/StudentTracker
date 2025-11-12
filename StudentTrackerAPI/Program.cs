@@ -15,10 +15,9 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Student Tracker API", Version = "v1" });
 });
 
-// 🔹 Add factory
 builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 
-// 🔹 Normal repositories
+
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -26,12 +25,11 @@ builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
 builder.Services.AddScoped<ISemesterRepository, SemesterRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-// 🔹 Manual string-based repositories
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IAttendanceRepository>(_ => new AttendanceRepository(connectionString));
 builder.Services.AddScoped<ITestGradeRepository>(_ => new TestGradeRepository(connectionString));
 
-// 🔹 Services
+
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();

@@ -6,6 +6,7 @@
         public int StudentID { get; set; }
         public int CourseID { get; set; }
         public DateTime AttendanceDate { get; set; }
+        public string CourseName { get; set; } = string.Empty;
         public bool IsPresent { get; set; }
         public bool IsValidated { get; set; }
 
