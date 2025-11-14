@@ -160,12 +160,11 @@
 //            return View("~/Views/Teacher/Dashboard.cshtml", dashboard);
 //        }
 //    }
-//}
+//}using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
-using System.Security.Claims;
 
 namespace StudentTracker.Controllers
 {
@@ -181,116 +180,72 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
+        // ============================
+        // DASHBOARD
+        // ============================
         public async Task<IActionResult> Dashboard()
         {
-            var teacherId = HttpContext.Session.GetInt32("TeacherID") ?? HttpContext.Session.GetInt32("UserID");
+            var teacherId = HttpContext.Session.GetInt32("UserID");
             var teacherName = HttpContext.Session.GetString("UserName");
             var teacherEmail = HttpContext.Session.GetString("UserEmail");
 
-            // 🔍 Debug lines to confirm actual values during runtime
-            Console.WriteLine($"🎯 TeacherID in session: {HttpContext.Session.GetInt32("TeacherID")}");
-            Console.WriteLine($"🎯 UserID in session: {HttpContext.Session.GetInt32("UserID")}");
-
             if (teacherId == null)
-            {
-                TempData["Error"] = "Please log in first.";
                 return RedirectToAction("LoginTeacher", "Auth");
+
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/byTeacher/{teacherId}");
+            var courseList = new List<CourseView>();
+
+            if (courseRes.IsSuccessStatusCode)
+            {
+                var json = await courseRes.Content.ReadAsStringAsync();
+                courseList = JsonConvert.DeserializeObject<List<CourseView>>(json) ?? new();
             }
 
-            ViewBag.TeacherName = teacherName ?? "Unknown Teacher";
-            ViewBag.TeacherEmail = teacherEmail ?? "unknown@mail.com";
-
-            var courses = new List<TeacherCourseRowView>();
-
-            try
+            var vm = new TeacherDashboardView
             {
-                var response = await _client.GetAsync($"{_apiBase}Courses/byTeacher/{teacherId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var apiCourses = JsonConvert.DeserializeObject<List<CourseView>>(json) ?? new();
-
-                    var courseTasks = apiCourses.Select(async c =>
-                    {
-                        var row = new TeacherCourseRowView
-                        {
-                            CourseID = c.CourseID,
-                            CourseCode = c.CourseCode,
-                            CourseName = c.CourseName,
-                            DepartmentName = c.DepartmentName ?? string.Empty,
-                            SemesterName = c.SemesterName ?? string.Empty,
-                            StudentCount = 0,
-                            AverageGrade = 0,
-                            AttendanceRate = 0
-                        };
-
-                        var studentCountUri = $"{_apiBase}StudentCourse/countByCourse/{c.CourseID}";
-                        var averageUri = $"{_apiBase}TestGrades/averageByCourse/{c.CourseID}";
-                        var attendanceUri = $"{_apiBase}Attendance/rateByCourse/{c.CourseID}";
-
-                        var tCount = _client.GetAsync(studentCountUri);
-                        var tAvg = _client.GetAsync(averageUri);
-                        var tAtt = _client.GetAsync(attendanceUri);
-
-                        await Task.WhenAll(tCount, tAvg, tAtt);
-
-                        if (tCount.Result.IsSuccessStatusCode)
-                        {
-                            var cJson = await tCount.Result.Content.ReadAsStringAsync();
-                            if (int.TryParse(cJson, out var sc))
-                                row.StudentCount = sc;
-                        }
-
-                        if (tAvg.Result.IsSuccessStatusCode)
-                        {
-                            var aJson = await tAvg.Result.Content.ReadAsStringAsync();
-                            if (double.TryParse(aJson, out var avg))
-                                row.AverageGrade = avg;
-                        }
-
-                        if (tAtt.Result.IsSuccessStatusCode)
-                        {
-                            var attJson = await tAtt.Result.Content.ReadAsStringAsync();
-                            if (double.TryParse(attJson, out var att))
-                                row.AttendanceRate = att;
-                        }
-
-                        return row;
-                    }).ToList();
-
-                    var resolved = await Task.WhenAll(courseTasks);
-                    courses.AddRange(resolved);
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = "Could not load courses from API: " + ex.Message;
-            }
-
-            var dashboard = new TeacherDashboardView
-            {
-                TeacherName = teacherName ?? "Teacher",
-                TeacherEmail = teacherEmail ?? string.Empty,
-                TotalCourses = courses.Count,
-                TotalStudents = courses.Sum(c => c.StudentCount),
-                AverageGrade = courses.Any() ? Math.Round(courses.Average(c => c.AverageGrade), 2) : 0,
-                AttendanceRate = courses.Any() ? Math.Round(courses.Average(c => c.AttendanceRate), 2) : 0,
-                Courses = courses.ToList(),
-                RecentActivities = new List<RecentActivityView>()
+                TeacherID = teacherId.Value,
+                TeacherName = teacherName ?? "",
+                TeacherEmail = teacherEmail ?? "",
+                TotalCourses = courseList.Count,
+                Courses = courseList
             };
 
-            return View("~/Views/Teacher/Dashboard.cshtml", dashboard);
+            return View("~/Views/Teacher/Dashboard.cshtml", vm);
         }
 
+        // ============================
+        // COURSE DETAILS PAGE
+        // ============================
         [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
-            var response = await _client.GetAsync($"{_apiBase}Courses/{id}");
-            if (!response.IsSuccessStatusCode) return NotFound();
+            var res = await _client.GetAsync($"{_apiBase}Courses/details/{id}");
 
-            var json = await response.Content.ReadAsStringAsync();
+            if (!res.IsSuccessStatusCode)
+                return NotFound();
+
+            var json = await res.Content.ReadAsStringAsync();
             var course = JsonConvert.DeserializeObject<CourseView>(json);
+
             return View("~/Views/Teacher/CourseDetails.cshtml", course);
+        }
+
+        // ============================
+        // NEW: STUDENTS IN THIS COURSE
+        // ============================
+        [HttpGet]
+        public async Task<IActionResult> StudentsInCourse(int courseId)
+        {
+            var res = await _client.GetAsync($"{_apiBase}StudentCourses/byCourse/{courseId}");
+            if (!res.IsSuccessStatusCode)
+                return NotFound();
+
+            var json = await res.Content.ReadAsStringAsync();
+            var students = JsonConvert.DeserializeObject<List<StudentCourseView>>(json) ?? new();
+
+            ViewBag.CourseID = courseId;
+
+            return View("~/Views/Teacher/StudentsInCourse.cshtml", students);
         }
     }
 }

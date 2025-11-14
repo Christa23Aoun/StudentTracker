@@ -1,4 +1,4 @@
-﻿@* @model StudentTracker.Models.TeacherDashboardView
+﻿@model StudentTracker.Models.TeacherDashboardView
 @{
     ViewData["Title"] = "Teacher Dashboard";
 }
@@ -39,264 +39,7 @@
         gap: 25px;
         width: 90%;
         max-width: 1100px;
-        margin: 0 auto 60px auto;
-    }
-
-    .card {
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border-radius: 20px;
-        padding: 30px 20px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        transition: all 0.3s ease;
-        color: #fff;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 191, 255, 0.4);
-        }
-
-        .card h5 {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .card h3 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
-        }
-
-    .courses {
-        border-top: 4px solid #2196f3;
-    }
-
-    .students {
-        border-top: 4px solid #00e676;
-    }
-
-    .grades {
-        border-top: 4px solid #ffb300;
-    }
-
-    .attendance {
-        border-top: 4px solid #29b6f6;
-    }
-
-    /* Tables - light text on dark background */
-    .data-section {
-        width: 90%;
-        max-width: 1100px;
-        margin: 0 auto;
-        text-align: left;
-    }
-
-        .data-section h4 {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-    .table {
-        color: #f0f4f8 !important;
-        background: rgba(255, 255, 255, 0.05);
-        border-collapse: separate;
-        border-spacing: 0;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-        .table th {
-            background: rgba(255, 255, 255, 0.15);
-            color: #e3f2fd !important;
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .table td {
-            color: #f9fbff !important;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transition: 0.3s;
-        }
-
-
-    .recent-activities {
-        width: 90%;
-        max-width: 1100px;
-        margin: 50px auto;
-        text-align: left;
-    }
-
-        .recent-activities h5 {
-            color: #fff;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .recent-activities ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .recent-activities li {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            color: #cfd8dc;
-            display: flex;
-            justify-content: space-between;
-        }
-
-            .recent-activities li span {
-                font-size: 0.9rem;
-                opacity: 0.8;
-            }
-</style>
-
-<div class="teacher-dashboard-wrapper">
-    <div class="teacher-dashboard-header">
-        <h2>👨‍🏫 Teacher Dashboard</h2>
-        <p>Welcome back, <strong>@Model.TeacherName</strong> — managing your classes and students efficiently.</p>
-        <small class="text-light opacity-75">@Model.TeacherEmail</small>
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="summary-cards">
-        <div class="card courses">
-            <h5>📘 My Courses</h5>
-            <h3>@Model.TotalCourses</h3>
-        </div>
-        <div class="card students">
-            <h5>👩‍🎓 Students Enrolled</h5>
-            <h3>@Model.TotalStudents</h3>
-        </div>
-        <div class="card grades">
-            <h5>📊 Average Grade</h5>
-            <h3>@(Model.AverageGrade > 0 ? $"{Model.AverageGrade:0.##}%" : "—")</h3>
-        </div>
-        <div class="card attendance">
-            <h5>🕒 Attendance Rate</h5>
-            <h3>@(Model.AttendanceRate > 0 ? $"{Model.AttendanceRate:0.##}%" : "—")</h3>
-        </div>
-    </div>
-
-    <!-- Courses Table -->
-    <div class="data-section">
-        <h4>📚 My Courses</h4>
-        @if (Model.Courses?.Any() == true)
-        {
-            <table class="table table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Course</th>
-                        <th>Department</th>
-                        <th>Semester</th>
-                        <th>Students</th>
-                        <th>Average</th>
-                        <th>Attendance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var c in Model.Courses)
-                    {
-                        <tr>
-                            <td>@c.CourseCode</td>
-                            <td>@c.CourseName</td>
-                            <td>@c.DepartmentName</td>
-                            <td>@c.SemesterName</td>
-                            <td>@c.StudentCount</td>
-                            <td>@(c.AverageGrade > 0 ? $"{c.AverageGrade:0.##}%" : "—")</td>
-                            <td>@(c.AttendanceRate > 0 ? $"{c.AttendanceRate:0.##}%" : "—")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-light opacity-75 text-center">No courses found for this teacher.</p>
-        }
-    </div>
-
-    <!-- Recent Activities -->
-    <div class="recent-activities">
-        <h5>🕓 Recent Activities</h5>
-        @if (Model.RecentActivities?.Any() == true)
-        {
-            <ul>
-                @foreach (var a in Model.RecentActivities)
-                {
-                    <li>
-                        <span>@a.Description</span>
-                        <span>@a.Date.ToShortDateString()</span>
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p class="text-light opacity-75">No recent activities yet.</p>
-        }
-    </div>
-</div>
- *@
-@model StudentTracker.Models.TeacherDashboardView
-@{
-    ViewData["Title"] = "Teacher Dashboard";
-}
-
-<style>
-    body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
-        margin: 0;
-        padding: 0;
-    }
-
-    .teacher-dashboard-wrapper {
-        padding: 70px 0;
-        text-align: center;
-    }
-
-    .teacher-dashboard-header {
-        margin-bottom: 40px;
-    }
-
-        .teacher-dashboard-header h2 {
-            font-weight: 700;
-            font-size: 2.3rem;
-            color: #fff;
-        }
-
-        .teacher-dashboard-header p {
-            color: #cfd8dc;
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-
-    .summary-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 25px;
-        width: 90%;
-        max-width: 1100px;
-        margin: 0 auto 60px auto;
+        margin: 0 auto 40px auto;
     }
 
     .card {
@@ -317,18 +60,6 @@
 
     .courses {
         border-top: 4px solid #2196f3;
-    }
-
-    .students {
-        border-top: 4px solid #00e676;
-    }
-
-    .grades {
-        border-top: 4px solid #ffb300;
-    }
-
-    .attendance {
-        border-top: 4px solid #29b6f6;
     }
 
     .course-grid {
@@ -381,28 +112,17 @@
             <h5>📘 My Courses</h5>
             <h3>@Model.TotalCourses</h3>
         </div>
-        <div class="card students">
-            <h5>👩‍🎓 Students Enrolled</h5>
-            <h3>@Model.TotalStudents</h3>
-        </div>
-        <div class="card grades">
-            <h5>📊 Average Grade</h5>
-            <h3>@(Model.AverageGrade > 0 ? $"{Model.AverageGrade:0.##}%" : "—")</h3>
-        </div>
-        <div class="card attendance">
-            <h5>🕒 Attendance Rate</h5>
-            <h3>@(Model.AttendanceRate > 0 ? $"{Model.AttendanceRate:0.##}%" : "—")</h3>
-        </div>
     </div>
 
     <h4 style="margin-top:40px;">📚 My Courses</h4>
 
-    @if (Model.Courses?.Any() == true)
+    @if (Model.Courses != null && Model.Courses.Any())
     {
         <div class="course-grid">
             @foreach (var c in Model.Courses)
             {
-                <div class="course-card" onclick="window.location.href='@Url.Action("CourseDetails", "Teacher", new { id = c.CourseID })'">
+                <div class="course-card"
+                     onclick="window.location.href='@Url.Action("CourseDetails", "Teacher", new { id = c.CourseID })'">
                     <div class="course-code">@c.CourseCode</div>
                     <div class="course-name">@c.CourseName</div>
                 </div>
@@ -411,6 +131,8 @@
     }
     else
     {
-        <p class="text-light opacity-75 text-center mt-4">No courses found for this teacher.</p>
+        <p class="text-light opacity-75 text-center mt-4">
+            No courses found for this teacher.
+        </p>
     }
 </div>

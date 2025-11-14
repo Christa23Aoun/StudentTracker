@@ -1,60 +1,157 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentTrackerCOMMON.DTOs;
-using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Models;
 
-namespace StudentTrackerAPI.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class CoursesController : ControllerBase
+namespace StudentTrackerAPI.Controllers
 {
-    private readonly ICourseService _service;
-    public CoursesController(ICourseService service) => _service = service;
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CoursesController : ControllerBase
     {
-        var item = await _service.GetByIdAsync(id);
-        return item is null ? NotFound() : Ok(item);
-    }
+        private readonly ICourseRepository _courses;
+        private readonly IAttendanceRepository _attendance;
+        private readonly ITestGradeRepository _grades;
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CourseCreateDto dto)
-    {
-        var id = await _service.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id }, new { id, message = "Course created" });
-    }
+        public CoursesController(
+            ICourseRepository courses,
+            IAttendanceRepository attendance,
+            ITestGradeRepository grades)
+        {
+            _courses = courses;
+            _attendance = attendance;
+            _grades = grades;
+        }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CourseUpdateDto dto)
-    {
-        if (id != dto.CourseID) return BadRequest("ID mismatch");
-        await _service.UpdateAsync(dto);
-        return Ok(new { id, message = "Course updated" });
-    }
+        // ========== BASIC CRUD (already used by Admin) ==========
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _service.DeleteAsync(id);
-        return Ok(new { id, message = "Course deleted" });
-    }
-    
-    [HttpGet("byTeacher/{teacherId:int}")]
-    public async Task<IActionResult> GetByTeacher(int teacherId)
-    {
-        var items = await _service.GetByTeacherIdAsync(teacherId);
-        return Ok(items);
-    }
-   
-    [HttpGet("stats/{teacherId:int}")]
-    public async Task<IActionResult> GetCourseStats(int teacherId)
-    {
-        var stats = await _service.GetCourseStatsByTeacherAsync(teacherId);
-        return Ok(stats);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _courses.GetAllAsync();
+            return Ok(list);
+        }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var item = await _courses.GetByIdAsync(id);
+            return item is null ? NotFound() : Ok(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Course course)
+        {
+            var id = await _courses.CreateAsync(course);
+            return Ok(new { CourseID = id });
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Course course)
+        {
+            course.CourseID = id;
+            await _courses.UpdateAsync(course);
+            return Ok(new { message = "Course updated successfully" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _courses.DeleteAsync(id);
+            return Ok(new { message = "Course deleted successfully" });
+        }
+
+        // ========== ENDPOINTS FOR TEACHER DASHBOARD ==========
+
+        // Used by TeacherController.Dashboard -> Courses/byTeacher/{teacherId}
+        [HttpGet("byTeacher/{teacherId}")]
+        public async Task<IActionResult> GetByTeacher(int teacherId)
+        {
+            var rawCourses = await _courses.GetByTeacherIdAsync(teacherId);
+            var result = new List<object>();
+
+            foreach (var c in rawCourses)
+            {
+                var students = await _courses.GetEnrolledStudentsAsync(c.CourseID);
+                var studentCount = students.Count;
+
+                double avgGrade = 0;
+                double attendanceRate = 0;
+
+                try
+                {
+                    avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(c.CourseID));
+                }
+                catch { }
+
+                try
+                {
+                    attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(c.CourseID));
+                }
+                catch { }
+
+                result.Add(new
+                {
+                    c.CourseID,
+                    c.CourseCode,
+                    c.CourseName,
+                    c.DepartmentID,
+                    c.SemesterID,
+                    c.TeacherID,
+                    c.IsActive,
+                    c.CreatedAt,
+                    c.UpdatedAt,
+                    StudentCount = studentCount,
+                    AverageGrade = avgGrade,
+                    AttendanceRate = attendanceRate
+                });
+            }
+
+            return Ok(result);
+        }
+
+        // Used by TeacherController.CourseDetails -> Courses/details/{id}
+        [HttpGet("details/{id}")]
+        public async Task<IActionResult> GetDetails(int id)
+        {
+            var courseItem = await _courses.GetByIdAsync(id);
+            if (courseItem == null)
+                return NotFound();
+
+            var students = await _courses.GetEnrolledStudentsAsync(courseItem.CourseID);
+            var studentCount = students.Count;
+
+            double avgGrade = 0;
+            double attendanceRate = 0;
+
+            try
+            {
+                avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(courseItem.CourseID));
+            }
+            catch { }
+
+            try
+            {
+                attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(courseItem.CourseID));
+            }
+            catch { }
+
+            var dto = new
+            {
+                courseItem.CourseID,
+                courseItem.CourseCode,
+                courseItem.CourseName,
+                courseItem.DepartmentID,
+                courseItem.SemesterID,
+                courseItem.TeacherID,
+                courseItem.IsActive,
+                courseItem.DepartmentName,
+                courseItem.SemesterName,
+                StudentCount = studentCount,
+                AverageGrade = avgGrade,
+                AttendanceRate = attendanceRate
+            };
+
+            return Ok(dto);
+        }
+    }
 }

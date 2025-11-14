@@ -1,0 +1,100 @@
+﻿@model List<StudentTracker.Models.StudentCourseView>
+
+@{
+    ViewData["Title"] = "Students in Course";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001f3f, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    }
+
+    .wrapper {
+        margin: 60px auto;
+        width: 85%;
+        max-width: 900px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: rgba(255,255,255,0.2);
+        padding: 12px;
+        text-align: center;
+    }
+
+    td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    tr:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .back {
+        margin-top: 25px;
+        display: block;
+        text-align: center;
+        background: #555;
+        padding: 10px 15px;
+        border-radius: 8px;
+        width: 200px;
+        margin-left: auto;
+        margin-right: auto;
+        text-decoration: none;
+        color: white;
+    }
+</style>
+
+<div class="wrapper">
+    <h2>👩‍🎓 Students Enrolled</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student Name</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model.Any())
+            {
+                int i = 1;
+                foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@s.StudentName</td>
+                    </tr>
+                    i++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="2">No students enrolled.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a class="back" asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@ViewBag.CourseID">
+        ⬅ Back to Course
+    </a>
+</div>

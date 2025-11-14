@@ -95,10 +95,14 @@
             <h4>🕒 Attendance Rate</h4>
             <p>@Model.AttendanceRate %</p>
         </div>
-        <div class="info-card">
-            <h4>👩‍🎓 Students</h4>
-            <p>@Model.StudentCount</p>
-        </div>
+        <a asp-controller="Teacher" asp-action="StudentsInCourse" asp-route-courseId="@Model.CourseID"
+           style="text-decoration:none; color:inherit;">
+            <div class="info-card" style="cursor:pointer;">
+                <h4>👩‍🎓 Students</h4>
+                <p>@Model.StudentCount (View List)</p>
+            </div>
+        </a>
+
     </div>
 
     <div class="actions">
