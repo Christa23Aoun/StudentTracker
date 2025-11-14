@@ -16,100 +16,7 @@
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 <body>
-
-    <!-- ===== Header: Top Contact Bar ===== -->
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left">
-                <span><i class="fa-solid fa-phone"></i> +961 70 413 003</span>
-                <span><i class="fa-solid fa-envelope"></i> info@wtf.edu.lb</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== Header: Main Navigation ===== -->
-    <header class="site-header">
-        <div class="container nav">
-            <div class="brand">
-                <div class="brand-title">WTF</div>
-                <div class="brand-sub">We’re The Future (Inshallah)</div>
-            </div>
-
-            <nav class="main-nav" aria-label="Primary">
-                <a href="#">About</a>
-                <a href="#">Faculties</a>
-                <a href="#">Admissions</a>
-                <a href="#">Research</a>
-                <a href="#">Student Life</a>
-                <a href="#">News</a>
-            </nav>
-
-            <div class="nav-actions">
-                <div class="lang-switch">
-                    <button class="lang active">EN</button>
-                    <span>|</span>
-                    <button class="lang">FR</button>
-                </div>
-                <a class="btn primary" asp-controller="Auth" asp-action="Login">Se connecter</a>
-                <button class="menu-toggle" aria-label="Open menu">☰</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- ===== Body content ===== -->
-    <main role="main">
-        @RenderBody()
-    </main>
-
-    <!-- ===== Footer ===== -->
-    <footer class="footer">
-        <div class="container footer-inner">
-            <div class="footer-brand">
-                <h3>WTF</h3>
-                <p class="tagline">We’re The Future (Inshallah)</p>
-                <p class="motto">Building Tomorrow, Today</p>
-            </div>
-
-            <div class="footer-links">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="#">Admissions</a></li>
-                    <li><a href="#">Faculties</a></li>
-                    <li><a href="#">Research</a></li>
-                    <li><a href="#">Student Life</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-contact">
-                <h4>Contact Us</h4>
-                <p><i class="fa-solid fa-phone"></i> +961 70 413 000</p>
-                <p><i class="fa-solid fa-envelope"></i> info@wtf.edu.lb</p>
-                <p><i class="fa-solid fa-location-dot"></i> Beirut, Lebanon</p>
-                <div class="footer-social">
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="https://wa.me/96170413009" target="_blank" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp"></i>
-                    </a>
-                    <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>© 2025 WTF University – All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <!-- ===== Scripts ===== -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/app.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-
+    ...
 </body>
 </html>
  *@
@@ -125,35 +32,91 @@
     <link rel="stylesheet" href="~/StudentTracker.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <
+    ...
+</body>
+</html>
+ *@
 
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">StudentTracker</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+@*
+    Old layout kept for reference — now replaced with the unified home layout.
+*@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WTF University</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #001a33, #003c8f);">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-white" asp-controller="Home" asp-action="Index">
+                    WTF University
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li><a asp-controller="Auth" asp-action="Logout">Logout</a></li>
 
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-white" asp-controller="Departments" asp-action="Index">Departments</a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-white" asp-controller="Courses" asp-action="Index">Courses</a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="btn"
+                                            style="background: linear-gradient(135deg, #ff1744, #d50000);
+                                                   border: none;
+                                                   border-radius: 10px;
+                                                   color: white;
+                                                   padding: 8px 18px;
+                                                   font-weight: 600;
+                                                   cursor: pointer;
+                                                   transition: all 0.3s ease;">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item mx-2">
+                                <a class="btn btn-primary fw-semibold" asp-controller="Auth" asp-action="Login">
+                                    Login
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-    <footer class="footer text-muted">
-        <div class="container text-center">
-            &copy; 2025 - StudentTracker
+
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <footer class="footer text-center text-white py-3 mt-auto"
+            style="background: linear-gradient(135deg, #001a33, #003c8f);">
+        <div class="container">
+            © 2025 WTF University – All Rights Reserved.
         </div>
     </footer>
 
@@ -163,26 +126,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
- *@
-@*
-    Old layout kept for reference — now replaced with the unified home layout.
-*@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WTF University</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
-</head>
-<body>
-    @RenderBody()
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
-

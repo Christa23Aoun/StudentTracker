@@ -7,7 +7,8 @@
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
 
-        public int CourseCount { get; set; }              // number of courses in department
-        public string? CourseNames { get; set; }          // comma-separated list of course names
+        public int CourseCount { get; set; }              
+        public string? CourseNames { get; set; }
+        public List<CourseView>? Courses { get; set; } = new();
     }
 }

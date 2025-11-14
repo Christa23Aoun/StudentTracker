@@ -1,11 +1,7 @@
 ﻿@model StudentTracker.Models.LoginView
 
 @{
-    var role = (string?)ViewBag.Role
-               ?? Context.Request.Query["role"].ToString()
-               ?? "Student";
-
-    ViewData["Title"] = $"Login - {role}";
+    ViewData["Title"] = "Login";
 }
 
 <style>
@@ -17,11 +13,6 @@
         margin: 0;
         padding: 0;
         overflow-x: hidden;
-    }
-
-    footer, hr {
-        border: none;
-        background: none;
     }
 
     .login-box {
@@ -97,22 +88,13 @@
         a:hover {
             text-decoration: underline;
         }
-
-    .role-badge {
-        font-weight: 600;
-        color: #aee0ff;
-        display: block;
-        margin-bottom: 10px;
-    }
 </style>
 
 <div class="login-box">
-    <h3>🔐 Login – @role</h3>
+    <h3>🔐 Login</h3>
 
     <form asp-controller="Auth" asp-action="Login" method="post">
         @Html.AntiForgeryToken()
-
-        <input asp-for="Role" type="hidden" value="@role" />
 
         <div class="mb-3 text-start">
             <label class="form-label">Email</label>
@@ -127,8 +109,12 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Login</button>
-    </form>
 
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert mt-3">@ViewBag.Error</div>
+        }
+    </form>
 </div>
 
 @section Scripts {

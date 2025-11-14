@@ -1,0 +1,142 @@
+﻿@model StudentTracker.Models.EnrollmentViewModel
+
+@{
+    ViewData["Title"] = "Enroll Student";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .enroll-wrapper {
+        width: 85%;
+        max-width: 1200px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 22px;
+        backdrop-filter: blur(30px);
+        padding: 50px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .accordion-button {
+        background-color: rgba(255,255,255,0.1);
+        color: #fff;
+        font-weight: 600;
+    }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+    .list-group-item {
+        background-color: transparent;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .already-enrolled {
+        opacity: 0.6;
+        background: rgba(0,255,100,0.15);
+        border: 1px solid rgba(0,255,100,0.3);
+    }
+
+    .badge-enrolled {
+        background: rgba(0,255,100,0.15);
+        color: #00ff88;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .btn-primary {
+        background-color: #00b36b;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background-color: #009657;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-secondary:hover {
+            background-color: #565e64;
+        }
+</style>
+
+<div class="enroll-wrapper">
+    <h2 class="text-center mb-4">Enroll Student</h2>
+    <h4 class="text-center mb-4">@Model.StudentName (@Model.StudentID)</h4>
+
+    <form asp-action="Enroll" asp-controller="Enrollments" method="post">
+        <input type="hidden" asp-for="StudentID" />
+        <input type="hidden" asp-for="ReturnRole" />
+        <input type="hidden" asp-for="ReturnStatus" />
+
+        <div class="accordion" id="departmentsAccordion">
+            @for (int i = 0; i < Model.Departments.Count; i++)
+            {
+                var dep = Model.Departments[i];
+                var collapseId = $"collapse{i}";
+
+                <div class="accordion-item bg-transparent mb-3">
+                    <h2 class="accordion-header" id="heading@i">
+                        <button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#@collapseId"
+                                aria-expanded="false" aria-controls="@collapseId">
+                            @dep.DepartmentName
+                        </button>
+                    </h2>
+
+                    <div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#departmentsAccordion">
+                        <div class="accordion-body">
+                            <ul class="list-group">
+                                @foreach (var course in dep.Courses)
+                                {
+                                    bool already = Model.EnrolledCourseIds.Contains(course.CourseID);
+
+                                    <li class="list-group-item d-flex align-items-center @(already ? "already-enrolled" : "")">
+                                        <input type="checkbox"
+                                               name="SelectedCourses"
+                                               value="@course.CourseID"
+                                               class="form-check-input me-2"
+                                        @(already ? "disabled" : "") />
+
+                                        <label>@course.CourseName</label>
+
+                                        @if (already)
+                                        {
+                                            <span class="badge-enrolled">✓ Already Enrolled</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary px-5 py-2 me-3">Enroll Selected</button>
+            <a asp-controller="Users" asp-action="Index"
+               asp-route-role="@Model.ReturnRole"
+               asp-route-status="@Model.ReturnStatus"
+               class="btn btn-secondary px-5 py-2">Cancel</a>
+        </div>
+    </form>
+</div>

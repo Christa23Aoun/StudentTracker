@@ -24,7 +24,9 @@ namespace StudentTracker.Controllers
         [AllowAnonymous]
         public IActionResult Login(string? role = null)
         {
-            ViewBag.Role = role ?? "Student";
+            role = string.IsNullOrWhiteSpace(role) ? "Student" : role;
+            ViewBag.Role = role;
+            ViewData["Title"] = $"Login - {role}";
             return View();
         }
 
@@ -33,33 +35,17 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginView model)
         {
-            Console.WriteLine("➡️ Login POST triggered");
-
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("❌ Invalid model state");
-                foreach (var kv in ModelState)
-                {
-                    foreach (var err in kv.Value.Errors)
-                    {
-                        Console.WriteLine($"❌ Field: {kv.Key} - Error: {err.ErrorMessage}");
-                    }
-                }
-
                 ViewBag.Role = model.Role ?? "Student";
                 return View(model);
             }
 
             try
             {
-                
                 var payload = JsonConvert.SerializeObject(model);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
                 var res = await _client.PostAsync($"{_apiBase}Auth/login", content);
-
-                Console.WriteLine($"🔍 Login API response: {res.StatusCode}");
-                string apiReply = await res.Content.ReadAsStringAsync();
-                Console.WriteLine($"🔍 API reply body: {apiReply}");
 
                 if (!res.IsSuccessStatusCode)
                 {
@@ -96,26 +82,18 @@ namespace StudentTracker.Controllers
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
+
                 if (roleName == "Teacher")
                 {
                     try
                     {
-                        // Fetch teacher record by email from API
                         var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{user.Email}");
                         if (teacherRes.IsSuccessStatusCode)
                         {
                             var teacherJson = await teacherRes.Content.ReadAsStringAsync();
                             var teacher = JsonConvert.DeserializeObject<TeacherView>(teacherJson);
-
                             if (teacher != null)
-                            {
                                 HttpContext.Session.SetInt32("TeacherID", teacher.TeacherID);
-                                Console.WriteLine($"✅ Stored TeacherID in session: {teacher.TeacherID}");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"⚠️ API returned {teacherRes.StatusCode} when fetching Teacher by email.");
                         }
                     }
                     catch (Exception ex)
@@ -123,7 +101,6 @@ namespace StudentTracker.Controllers
                         Console.WriteLine($"❌ Failed to fetch TeacherID dynamically: {ex.Message}");
                     }
                 }
-
 
                 var claims = new List<Claim>
                 {
@@ -154,6 +131,7 @@ namespace StudentTracker.Controllers
         public IActionResult LoginStudent()
         {
             ViewBag.Role = "Student";
+            ViewData["Title"] = "Login - Student";
             return View("Login");
         }
 
@@ -161,6 +139,7 @@ namespace StudentTracker.Controllers
         public IActionResult LoginTeacher()
         {
             ViewBag.Role = "Teacher";
+            ViewData["Title"] = "Login - Teacher";
             return View("Login");
         }
 
@@ -168,6 +147,7 @@ namespace StudentTracker.Controllers
         public IActionResult LoginAdmin()
         {
             ViewBag.Role = "Admin";
+            ViewData["Title"] = "Login - Admin";
             return View("Login");
         }
 
@@ -180,21 +160,8 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterView model)
         {
-            Console.WriteLine($"📧 Email: {model.Email}");
-            Console.WriteLine($"🔑 Password: {model.Password}");
-            Console.WriteLine($"🎭 Role: {model.Role}");
-
             if (!ModelState.IsValid)
-            {
-                foreach (var kv in ModelState)
-                {
-                    foreach (var err in kv.Value.Errors)
-                    {
-                        Console.WriteLine($"❌ Field: {kv.Key} - Error: {err.ErrorMessage}");
-                    }
-                }
                 return View(model);
-            }
 
             try
             {
@@ -218,16 +185,12 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        
         [Authorize]
         public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Clear();
-
             await HttpContext.SignOutAsync("CookieAuth");
-
             return RedirectToAction("Login", "Auth");
         }
-
     }
 }

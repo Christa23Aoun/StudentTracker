@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
 using System.Text;
+using System.Text.Json;
 
 namespace StudentTracker.Controllers
 {
-  
     [Authorize]
     public class StudentCoursesController : Controller
     {
@@ -49,7 +49,7 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
 
-            TempData["Msg"] = "Student course created successfully.";
+            TempData["Msg"] = "✅ Student course created successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -73,10 +73,62 @@ namespace StudentTracker.Controllers
         {
             var res = await _client.DeleteAsync($"{_apiBase}StudentCourses/{id}");
             TempData["Msg"] = res.IsSuccessStatusCode
-                ? "Student course deleted successfully."
-                : "Failed to delete student course.";
+                ? "✅ Student course deleted successfully."
+                : "⚠️ Failed to delete student course.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Enroll(int studentId)
+        {
+            var studentRes = await _client.GetAsync($"{_apiBase}Users/{studentId}");
+            if (!studentRes.IsSuccessStatusCode)
+                return View("Error");
+
+            var studentJson = await studentRes.Content.ReadAsStringAsync();
+            var student = JsonConvert.DeserializeObject<UserView>(studentJson);
+
+            var depRes = await _client.GetAsync($"{_apiBase}Departments");
+            if (!depRes.IsSuccessStatusCode)
+                return View("Error");
+
+            var depJson = await depRes.Content.ReadAsStringAsync();
+            var deps = JsonConvert.DeserializeObject<List<DepartmentView>>(depJson) ?? new();
+
+            var departmentCourses = new List<DepartmentCoursesView>();
+            foreach (var d in deps)
+            {
+                var depCourses = new DepartmentCoursesView
+                {
+                    DepartmentName = d.DepartmentName,
+                    Courses = new List<SimpleCourseView>()
+                };
+
+                if (d.Courses != null)
+                {
+                    foreach (var c in d.Courses)
+                    {
+                        depCourses.Courses.Add(new SimpleCourseView
+                        {
+                            CourseID = c.CourseID,
+                            CourseName = c.CourseName,
+                            DepartmentName = d.DepartmentName
+                        });
+                    }
+                }
+
+                departmentCourses.Add(depCourses);
+            }
+
+            var model = new EnrollmentViewModel
+            {
+                StudentID = studentId,
+                StudentName = student?.FullName ?? "Unknown Student",
+                Departments = departmentCourses
+            };
+
+            return View("~/Views/Enrollments/Enroll.cshtml", model);
         }
     }
 }

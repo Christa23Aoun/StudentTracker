@@ -6,7 +6,7 @@ public interface ICourseRepository
 {
     Task<IEnumerable<CourseListItem>> GetAllAsync();
     Task<CourseListItem?> GetByIdAsync(int id);
-    Task<int> CreateAsync(Course entity);  // basic write model
+    Task<int> CreateAsync(Course entity);  
     Task<int> UpdateAsync(Course entity);
     Task<int> DeleteAsync(int id);
     Task<List<Course>> GetByTeacherIdAsync(int teacherId);

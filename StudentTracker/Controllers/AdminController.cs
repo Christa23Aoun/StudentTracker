@@ -28,7 +28,6 @@ namespace StudentTracker.Controllers
             {
                 var model = new AdminDashboardViewModel();
 
-                // ===== 1. Summary Section =====
                 var summaryRes = await _client.GetAsync($"{_apiBase}Dashboard/AdminSummary");
                 if (summaryRes.IsSuccessStatusCode)
                 {
@@ -40,7 +39,6 @@ namespace StudentTracker.Controllers
                     model.Summary.ActiveCourses = data.activeCoursesThisSemester;
                 }
 
-                // ===== 2. Departments Section =====
                 var deptRes = await _client.GetAsync($"{_apiBase}Departments");
                 if (deptRes.IsSuccessStatusCode)
                 {

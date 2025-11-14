@@ -19,7 +19,6 @@
         background: rgba(0, 45, 90, 0.75);
         border-radius: 22px;
         backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
         padding: 50px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -62,22 +61,10 @@
         color: #e2eeff;
     }
 
-        .btn-back:hover {
-            background: rgba(120, 180, 255, 0.4);
-            transform: translateY(-2px);
-        }
-
     .btn-add {
         background: linear-gradient(135deg, #008cff, #005fc4);
         color: #fff;
-        box-shadow: 0 0 10px rgba(0, 140, 255, 0.3);
     }
-
-        .btn-add:hover {
-            background: linear-gradient(135deg, #005fc4, #008cff);
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(0, 140, 255, 0.5);
-        }
 
     .filter-row {
         display: flex;
@@ -88,25 +75,6 @@
         flex-wrap: wrap;
     }
 
-    .select-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-
-        .select-wrapper::after {
-            content: '';
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.199 5.383 2.372 5 2.704 5h10.592a.5.5 0 0 1 .354.854l-4.796 5.482a.5.5 0 0 1-.707 0z'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-
     select.form-select {
         padding: 10px 36px 10px 14px;
         border-radius: 10px;
@@ -116,24 +84,8 @@
         font-weight: 600;
         min-width: 160px;
         appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
         cursor: pointer;
-        transition: border-color 0.3s ease, background 0.3s ease;
     }
-
-        select.form-select:hover,
-        select.form-select:focus {
-            border-color: rgba(0, 174, 255, 0.8);
-            background: rgba(0, 40, 85, 0.8);
-            outline: none;
-        }
-
-        select.form-select option {
-            background-color: #002b66;
-            color: #ffffff;
-            font-weight: 500;
-        }
 
     .table-container {
         overflow-x: auto;
@@ -141,8 +93,6 @@
         border-radius: 18px;
         padding: 25px;
         backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
@@ -162,24 +112,10 @@
         background: rgba(0, 90, 170, 0.5);
     }
 
-    th {
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        color: #cfe6ff;
-        letter-spacing: 0.6px;
-    }
-
-    tbody tr:hover {
-        background: rgba(0, 90, 160, 0.25);
-        transition: 0.3s;
-    }
-
     .badge {
-        display: inline-block;
         padding: 6px 14px;
         border-radius: 10px;
         font-weight: 600;
-        font-size: 0.9rem;
     }
 
     .bg-success-subtle {
@@ -193,12 +129,11 @@
     }
 
     .action-btn {
-        display: inline-block;
-        border-radius: 8px;
         padding: 6px 14px;
+        border-radius: 8px;
         margin: 0 4px;
-        text-decoration: none;
         font-weight: 600;
+        display: inline-block;
         transition: all 0.3s ease;
     }
 
@@ -208,56 +143,16 @@
         border: 1px solid rgba(79, 195, 247, 0.25);
     }
 
-        .edit:hover {
-            background: rgba(79, 195, 247, 0.25);
-            transform: translateY(-2px);
-        }
-
     .delete {
         color: #ef9a9a;
         background: rgba(239, 154, 154, 0.15);
         border: 1px solid rgba(239, 154, 154, 0.25);
     }
 
-        .delete:hover {
-            background: rgba(239, 154, 154, 0.25);
-            transform: translateY(-2px);
-        }
-
-    .alert {
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin: 10px 0 20px 0;
-        font-weight: 500;
-        text-align: center;
-        backdrop-filter: blur(10px);
-    }
-
-    .alert-success {
-        background: rgba(0, 255, 170, 0.15);
-        color: #baffda;
-    }
-
-    .alert-danger {
-        background: rgba(255, 80, 80, 0.15);
-        color: #ffb3b3;
-    }
-
-    .alert-info {
-        background: rgba(0, 190, 255, 0.15);
+    .enroll {
         color: #aee0ff;
-    }
-
-    @@media (max-width: 768px) {
-        .buttons-row {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn {
-            width: 100%;
-            text-align: center;
-        }
+        background: rgba(100, 180, 255, 0.15);
+        border: 1px solid rgba(100, 180, 255, 0.25);
     }
 </style>
 
@@ -277,38 +172,79 @@
     </div>
 
     <form method="get" asp-action="Index" class="filter-row">
-        <div class="select-wrapper">
-            <select name="role" class="form-select w-auto">
-                <option value="All" selected="@(ViewBag.RoleFilter == "All")">All Roles</option>
-                <option value="Admin" selected="@(ViewBag.RoleFilter == "admin")">Admins</option>
-                <option value="Teacher" selected="@(ViewBag.RoleFilter == "teacher")">Teachers</option>
-                <option value="Student" selected="@(ViewBag.RoleFilter == "student")">Students</option>
-            </select>
-        </div>
+        <select name="role" class="form-select w-auto">
+            @if (ViewBag.RoleFilter == "All")
+            {
+                <option value="All" selected>All Roles</option>
+            }
+            else
+            {
+                <option value="All">All Roles</option>
+            }
 
-        <div class="select-wrapper">
-            <select name="status" class="form-select w-auto">
-                <option value="All" selected="@(ViewBag.StatusFilter == "All")">All</option>
-                <option value="Active" selected="@(ViewBag.StatusFilter == "Active")">Active</option>
-                <option value="Inactive" selected="@(ViewBag.StatusFilter == "Inactive")">Inactive</option>
-            </select>
-        </div>
+            @if (ViewBag.RoleFilter == "Admin")
+            {
+                <option value="Admin" selected>Admins</option>
+            }
+            else
+            {
+                <option value="Admin">Admins</option>
+            }
+
+            @if (ViewBag.RoleFilter == "Teacher")
+            {
+                <option value="Teacher" selected>Teachers</option>
+            }
+            else
+            {
+                <option value="Teacher">Teachers</option>
+            }
+
+            @if (ViewBag.RoleFilter == "Student")
+            {
+                <option value="Student" selected>Students</option>
+            }
+            else
+            {
+                <option value="Student">Students</option>
+            }
+        </select>
+
+        <select name="status" class="form-select w-auto">
+            @if (ViewBag.StatusFilter == "All")
+            {
+                <option value="All" selected>All</option>
+            }
+            else
+            {
+                <option value="All">All</option>
+            }
+
+            @if (ViewBag.StatusFilter == "Active")
+            {
+                <option value="Active" selected>Active</option>
+            }
+            else
+            {
+                <option value="Active">Active</option>
+            }
+
+            @if (ViewBag.StatusFilter == "Inactive")
+            {
+                <option value="Inactive" selected>Inactive</option>
+            }
+            else
+            {
+                <option value="Inactive">Inactive</option>
+            }
+        </select>
 
         <button type="submit" class="btn btn-add">🔍 Apply Filter</button>
     </form>
 
     @if (TempData["Msg"] != null)
     {
-        var msg = TempData["Msg"].ToString();
-        var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
-        <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
-    }
-
-    @if (ViewBag.RoleFilter != null)
-    {
-        <div class="alert alert-info">
-            Showing only <strong>@ViewBag.RoleFilter</strong>s
-        </div>
+        <div class="alert alert-success">@TempData["Msg"]</div>
     }
 
     <div class="table-container">
@@ -323,47 +259,54 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+
             <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var u in Model)
-                    {
-                        <tr class="@(u.IsActive ? "" : "table-danger")">
-                            <td>@u.UserID</td>
-                            <td>@u.FullName</td>
-                            <td>@u.Email</td>
-                            <td>
-                                @(
-                                    u.RoleID switch
-                                    {
-                                        1 => "Admin 🧑‍💼",
-                                        2 => "Teacher 👨‍🏫",
-                                        3 => "Student 👩‍🎓",
-                                        _ => "Unknown ❔"
-                                    }
-                                    )
-                            </td>
-                            <td>
-                                @if (u.IsActive)
-                                {
-                                    <span class="badge bg-success-subtle">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger-subtle">Inactive</span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@u.UserID" class="action-btn edit">✏️ Edit</a>
-                                <a asp-action="Delete" asp-route-id="@u.UserID" class="action-btn delete">🗑️ Delete</a>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
+                @foreach (var u in Model)
                 {
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No users found.</td>
+                        <td>@u.UserID</td>
+                        <td>@u.FullName</td>
+                        <td>@u.Email</td>
+                        <td>
+                            @(u.RoleID == 1 ? "Admin 🧑‍💼" :
+                                u.RoleID == 2 ? "Teacher 👨‍🏫" :
+                                "Student 👩‍🎓")
+                        </td>
+
+                        <td>
+                            @Html.Raw(u.IsActive
+                                     ? "<span class='badge bg-success-subtle'>Active</span>"
+                                     : "<span class='badge bg-danger-subtle'>Inactive</span>")
+                        </td>
+
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@u.UserID"
+                               asp-route-role="@ViewBag.RoleFilter"
+                               asp-route-status="@ViewBag.StatusFilter"
+                               class="action-btn edit">
+                                ✏️ Edit
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@u.UserID"
+                               asp-route-role="@ViewBag.RoleFilter"
+                               asp-route-status="@ViewBag.StatusFilter"
+                               class="action-btn delete">
+                                🗑️ Delete
+                            </a>
+
+                            @if (u.RoleID == 3)
+                            {
+                                <a asp-action="Enroll"
+                                   asp-route-id="@u.UserID"
+                                   asp-route-role="@ViewBag.RoleFilter"
+                                   asp-route-status="@ViewBag.StatusFilter"
+                                   class="action-btn enroll">
+                                    🎓 Enroll
+                                </a>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

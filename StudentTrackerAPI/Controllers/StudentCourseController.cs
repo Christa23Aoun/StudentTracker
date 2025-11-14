@@ -53,5 +53,15 @@ namespace StudentTrackerAPI.Controllers
             var result = await con.QueryAsync(sql, new { CourseID = courseId });
             return Ok(result);
         }
+        [HttpPost("enroll")]
+        public async Task<IActionResult> Enroll([FromBody] StudentCourse model)
+        {
+            if (model == null || model.StudentID == 0 || model.CourseID == 0)
+                return BadRequest("Invalid enrollment data.");
+
+            await _service.CreateAsync(model);
+            return Ok("Enrollment successful");
+        }
+
     }
 }
