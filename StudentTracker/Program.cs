@@ -19,6 +19,34 @@ builder.Services.AddAuthentication("CookieAuth")
     {
         options.LoginPath = "/Auth/Login";
         options.AccessDeniedPath = "/Auth/Login";
+
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                var path = context.Request.Path.Value?.ToLower();
+
+                // USER NOT AUTHENTICATED AND TRYING TO ACCESS ADMIN
+                if (!context.HttpContext.User.Identity.IsAuthenticated &&
+                    path != null &&
+                    path.StartsWith("/admin"))
+                {
+                    context.Response.Redirect("/Auth/LoginAdmin");
+                    return Task.CompletedTask;
+                }
+
+                // Default for others → login
+                if (!context.HttpContext.User.Identity.IsAuthenticated)
+                {
+                    context.Response.Redirect("/Auth/Login");
+                    return Task.CompletedTask;
+                }
+
+                // If authenticated but not authorized → access denied
+                context.Response.Redirect("/Auth/Login");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -50,7 +78,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
-// DEFAULT ROUTE → Home/Index (NOT login)
+// DEFAULT ROUTE → Home/Index
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

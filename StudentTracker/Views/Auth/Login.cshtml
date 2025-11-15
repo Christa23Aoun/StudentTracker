@@ -1,7 +1,7 @@
 ﻿@model StudentTracker.Models.LoginView
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = ViewData["Title"] ?? "Login";
 }
 
 <style>
@@ -29,8 +29,14 @@
 
     h3 {
         font-weight: 700;
-        margin-bottom: 30px;
+        margin-bottom: 10px;
         color: #fff;
+    }
+
+    .login-role-label {
+        font-size: 0.9rem;
+        color: #cfe6ff;
+        margin-bottom: 20px;
     }
 
     label {
@@ -79,22 +85,23 @@
         background: rgba(255,80,80,0.2);
         color: #ffb3b3;
     }
-
-    a {
-        color: #aee0ff;
-        text-decoration: none;
-    }
-
-        a:hover {
-            text-decoration: underline;
-        }
 </style>
 
 <div class="login-box">
     <h3>🔐 Login</h3>
 
+    @if (ViewBag.Role != null)
+    {
+        <div class="login-role-label">
+            You are logging in as: <strong>@ViewBag.Role</strong>
+        </div>
+    }
+
     <form asp-controller="Auth" asp-action="Login" method="post">
         @Html.AntiForgeryToken()
+
+        <!-- Keep selected role (Student / Teacher / Admin) when using role-specific login -->
+        <input type="hidden" name="Role" value="@ViewBag.Role" />
 
         <div class="mb-3 text-start">
             <label class="form-label">Email</label>

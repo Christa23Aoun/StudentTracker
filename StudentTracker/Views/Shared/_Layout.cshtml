@@ -1,51 +1,10 @@
-﻿@* <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StudentTracker</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Site CSS -->
-    <link rel="stylesheet" href="~/css/styles.css" />
-</head>
-<body>
-    ...
-</body>
-</html>
- *@
-
-@* <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StudentTracker</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/StudentTracker.styles.css" asp-append-version="true" />
-</head>
-<body>
-    ...
-</body>
-</html>
- *@
-
-@*
-    Old layout kept for reference — now replaced with the unified home layout.
-*@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WTF University</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -70,7 +29,7 @@
                             <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <!-- Visible ONLY for Admin -->
+                        <!-- Admin-only navigation -->
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item mx-2">
@@ -81,7 +40,7 @@
                             </li>
                         }
 
-                        <!-- Logout for authenticated users -->
+                        <!-- Authenticated: Logout -->
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
