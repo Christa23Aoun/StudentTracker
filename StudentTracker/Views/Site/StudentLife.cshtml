@@ -1,5 +1,126 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Student Life";
 }
+
+<section style="
+    background: linear-gradient(135deg, #001a33, #003c8f);
+    padding: 80px 20px;
+    color: white;
+    text-align: center;
+">
+    <h1 class="fw-bold" style="font-size: 48px;">Student Life at WTF University</h1>
+    <p style="max-width: 900px; margin: 20px auto; font-size: 18px;">
+        Student life at WTF University is vibrant, diverse, and full of opportunities. From academic excellence
+        to leadership, clubs, competitions, and campus activities — students grow personally, socially,
+        and professionally.
+    </p>
+</section>
+
+<div class="container my-5">
+
+    <!-- Section Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color:#003c8f;">Life Beyond the Classroom</h2>
+        <p style="max-width:700px; margin:auto; color:#5b7083;">
+            Our campus experience is designed to help students build friendships, explore passions,
+            and develop leadership skills while maintaining academic success.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Clubs -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-users fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Student Clubs & Societies</h5>
+                    <p class="text-muted">
+                        Technology club, robotics team, business society, arts & design club, volunteer groups
+                        and cultural associations.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leadership -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-lightbulb fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Leadership Development</h5>
+                    <p class="text-muted">
+                        Workshops, mentorships, public speaking sessions, leadership camps,
+                        and student council initiatives.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-calendar-alt fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Campus Events & Activities</h5>
+                    <p class="text-muted">
+                        Hackathons, competitions, cultural nights, charity events, open days,
+                        and academic exhibitions.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sports -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-volleyball-ball fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Sports & Fitness</h5>
+                    <p class="text-muted">
+                        Basketball, volleyball, football, fitness club, yoga sessions, and inter-faculty tournaments.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-hand-holding-heart fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Student Support Services</h5>
+                    <p class="text-muted">
+                        Academic advising, psychological support, tutoring, mentoring,
+                        and career development guidance.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-globe fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Campus Community</h5>
+                    <p class="text-muted">
+                        A welcoming and collaborative environment where students feel
+                        supported, connected, and inspired.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-5">
+        <h3 class="fw-bold" style="color:#003c8f;">Become Part of Our Community</h3>
+        <p class="text-muted">Your journey starts here. Explore a campus full of creativity, innovation, and opportunity.</p>
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-success px-4 py-2 fw-semibold" style="border-radius:12px;">
+            Join WTF University
+        </a>
+    </div>
+
+</div>

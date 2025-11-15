@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Learn More";
+}
+
+<section class="hero-section" style="
+    background: linear-gradient(135deg, #001a33, #003c8f);
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+">
+    <h1 class="fw-bold" style="font-size: 48px;">Learn More</h1>
+    <p style="max-width: 900px; margin: 20px auto; font-size: 18px;">
+        Discover the vision, mission, and development story behind the
+        Student Attendance and Performance Tracker (SAPT) — a full academic management platform
+        designed and built by WTF University’s software development team.
+    </p>
+</section>
+
+<div class="container my-5">
+
+    <!-- About the Project -->
+    <div class="mb-5">
+        <h2 class="fw-bold" style="color:#003c8f;">About the Project</h2>
+        <p style="color:#5b7083; font-size: 17px; margin-top:10px;">
+            The <strong>Student Attendance and Performance Tracker (SAPT)</strong> is a full-stack
+            academic management platform built using ASP.NET Core MVC, a Web API layer, SQL Server,
+            and a structured five-layer architecture (MVC, API, BLL, DAL, COMMON).
+            It automates attendance tracking, grade management, course assignment, student dashboards,
+            teacher dashboards, and admin operations — ensuring smooth and accurate academic monitoring
+            across the university.
+        </p>
+
+        <p style="color:#5b7083; font-size: 17px;">
+            The system includes role-based authentication for Admins, Teachers, and Students,
+            and uses secure API communication, Dapper, stored procedures, sessions, and real-time
+            data retrieval through HttpClient.
+            The project aims to improve transparency, academic organization, and operational efficiency
+            while offering a modern, responsive UI inspired by professional university platforms.
+        </p>
+    </div>
+
+    <!-- Development Team -->
+    <div class="mb-5">
+        <h2 class="fw-bold" style="color:#003c8f;">Development Team</h2>
+
+        <div class="row g-4 mt-3">
+
+
+            <div class="col-md-4">
+                <div class="card shadow" style="border-radius:18px;">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user-graduate fa-3x mb-3" style="color:#003c8f;"></i>
+                        <h5 class="fw-bold">Christa-Maria Aoun</h5>
+                        <p class="text-muted">
+                            Developer — Teacher Dashboard & Academic Structure
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow" style="border-radius:18px;">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user-graduate fa-3x mb-3" style="color:#003c8f;"></i>
+                        <h5 class="fw-bold">Lynn El Haly</h5>
+                        <p class="text-muted">
+                            Developer — User & Access Management
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow" style="border-radius:18px;">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-user-graduate fa-3x mb-3" style="color:#003c8f;"></i>
+                        <h5 class="fw-bold">Roy Chahoud</h5>
+                        <p class="text-muted">
+                            Developer — Admin Dashboard, Reports & Analytics
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-4">
+        <a asp-controller="Home" asp-action="Index"
+           class="btn btn-primary px-4 py-2 fw-semibold"
+           style="border-radius:12px;">
+            Back to Home
+        </a>
+    </div>
+
+</div>

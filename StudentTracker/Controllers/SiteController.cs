@@ -22,6 +22,15 @@ namespace StudentTracker.Controllers
             ViewData["Title"] = "Admissions – WTF University";
             return View();
         }
+        public IActionResult Programs()
+        {
+            return View();
+        }
+
+        public IActionResult LearnMore()
+        {
+            return View();
+        }
 
         public IActionResult Research() => View();
         public IActionResult StudentLife() => View();
