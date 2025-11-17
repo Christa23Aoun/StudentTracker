@@ -18,7 +18,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ✅ Show list of grades (optionally by course)
         public async Task<IActionResult> Index(int? courseId)
         {
             ViewBag.CourseID = courseId;
@@ -38,7 +37,6 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // ✅ Display grade creation form (with optional course prefilled)
         public IActionResult Create(int? courseId)
         {
             ViewBag.CourseID = courseId;
@@ -50,11 +48,12 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ✅ Handle grade creation
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestGradeView model)
         {
+            model.IsValidated = false;
+
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -66,7 +65,7 @@ namespace StudentTracker.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["Msg"] = "✅ Test grade added successfully!";
+                    TempData["Msg"] = "Test grade added successfully.";
                     return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
                 }
 
@@ -80,7 +79,6 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ✅ Confirm deletion
         public async Task<IActionResult> Delete(int id, int? courseId)
         {
             ViewBag.CourseID = courseId;
@@ -97,7 +95,6 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        // ✅ Delete grade and redirect back
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int? courseId)
@@ -108,6 +105,88 @@ namespace StudentTracker.Controllers
                 : "Failed to delete test grade.";
 
             return RedirectToAction(nameof(Index), new { courseId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BulkCreate(int courseId)
+        {
+            var students = new List<StudentCourseView>();
+            var tests = new List<TestView>();
+
+            var studentRes = await _client.GetAsync($"{_apiBase}StudentCourses/byCourse/{courseId}");
+            if (studentRes.IsSuccessStatusCode)
+            {
+                var json = await studentRes.Content.ReadAsStringAsync();
+                students = JsonConvert.DeserializeObject<List<StudentCourseView>>(json) ?? new();
+            }
+
+            var testsRes = await _client.GetAsync($"{_apiBase}Tests");
+            if (testsRes.IsSuccessStatusCode)
+            {
+                var json = await testsRes.Content.ReadAsStringAsync();
+                var allTests = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
+                tests = allTests.Where(t => t.CourseID == courseId).ToList();
+            }
+
+            var vm = new BulkTestGradesView
+            {
+                CourseID = courseId,
+                AvailableTests = tests,
+                Students = students
+                    .Select(s => new StudentGradeInput
+                    {
+                        StudentID = s.StudentID,
+                        StudentName = s.StudentName,
+                        Score = null,
+                        IsValidated = false
+                    })
+                    .ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BulkCreate(BulkTestGradesView model)
+        {
+            if (model.SelectedTestID <= 0)
+                ModelState.AddModelError("SelectedTestID", "Please select a test.");
+
+            if (!ModelState.IsValid)
+            {
+                var testsRes = await _client.GetAsync($"{_apiBase}Tests");
+                if (testsRes.IsSuccessStatusCode)
+                {
+                    var json = await testsRes.Content.ReadAsStringAsync();
+                    var allTests = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
+                    model.AvailableTests = allTests.Where(t => t.CourseID == model.CourseID).ToList();
+                }
+
+                return View(model);
+            }
+
+            foreach (var row in model.Students)
+            {
+                if (row.Score.HasValue)
+                {
+                    var grade = new TestGradeView
+                    {
+                        TestID = model.SelectedTestID,
+                        StudentID = row.StudentID,
+                        Score = row.Score.Value,
+                        IsValidated = false,
+                        CourseID = model.CourseID
+                    };
+
+                    var json = JsonConvert.SerializeObject(grade);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    await _client.PostAsync($"{_apiBase}TestGrades", content);
+                }
+            }
+
+            TempData["Msg"] = "Test grades saved successfully.";
+            return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
         }
     }
 }

@@ -1,0 +1,143 @@
+﻿@model StudentTracker.Models.BulkTestGradesView
+@{
+    ViewData["Title"] = "Add Grades";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bulk-wrapper {
+        max-width: 1000px;
+        margin: 60px auto;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 35px 40px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(20px);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 700;
+        color: #aee0ff;
+    }
+
+    label {
+        font-weight: 600;
+        color: #cfe6ff;
+    }
+
+    .form-select,
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 8px 10px;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 25px;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    th {
+        color: #b3e5fc;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #00c853, #009624);
+        color: white;
+        border-radius: 10px;
+        padding: 10px 25px;
+        min-width: 150px;
+    }
+
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 25px;
+        min-width: 150px;
+    }
+
+    .actions-row {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+</style>
+
+<div class="bulk-wrapper">
+    <h2>➕ Add Grades for Course @Model.CourseID</h2>
+
+    <form asp-action="BulkCreate" method="post">
+        <input type="hidden" asp-for="CourseID" />
+
+        <div class="mb-3">
+            <label>Select Test</label>
+            <select asp-for="SelectedTestID" class="form-select">
+                <option value="">-- Choose a test --</option>
+                @foreach (var t in Model.AvailableTests)
+                {
+                    <option value="@t.TestID">@t.TestName (@t.TestDate.ToShortDateString()) - @t.Weight% (Max @t.MaxScore)</option>
+                }
+            </select>
+        </div>
+
+        @if (Model.Students.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>ID</th>
+                        <th>Score</th>
+                        <th>Validated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Students.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.Students[i].StudentName
+                                <input type="hidden" asp-for="Students[i].StudentName" />
+                            </td>
+                            <td>
+                                @Model.Students[i].StudentID
+                                <input type="hidden" asp-for="Students[i].StudentID" />
+                            </td>
+                            <td>
+                                <input asp-for="Students[i].Score" class="form-control" />
+                            </td>
+                            <td>
+                                <input type="hidden" asp-for="Students[i].IsValidated" value="false" />
+                                <span style="color:#ccc;">Pending</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <div class="actions-row">
+            <button type="submit" class="btn-save">Save Grades</button>
+            <a asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@Model.CourseID" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>

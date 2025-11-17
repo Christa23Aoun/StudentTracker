@@ -80,10 +80,17 @@
         margin-right: auto;
     }
 
-        .btn-save:hover {
-            background: #00e676;
-            box-shadow: 0 0 15px rgba(0,255,120,0.5);
-        }
+    .btn-cancel {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px 25px;
+        display: block;
+        width: 200px;
+        margin: 15px auto 0 auto;
+        text-align: center;
+        font-weight: 600;
+    }
 </style>
 
 <div class="attendance-container">
@@ -92,6 +99,7 @@
 
     <form asp-action="Create" method="post">
         <input type="hidden" name="courseId" value="@courseId" />
+
         <div class="session-inputs">
             <div>
                 <label>Date:</label>
@@ -102,6 +110,7 @@
                 <input type="time" name="SessionTime" class="form-control" required />
             </div>
         </div>
+
         <table>
             <thead>
                 <tr><th>Student</th><th>Status</th></tr>
@@ -127,6 +136,8 @@
                 }
             </tbody>
         </table>
+
         <button type="submit" class="btn-save">💾 Save Attendance</button>
+        <a asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@courseId" class="btn-cancel">✖ Cancel</a>
     </form>
 </div>

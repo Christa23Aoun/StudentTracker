@@ -42,14 +42,7 @@
         border-radius: 10px;
         padding: 10px;
         margin-bottom: 20px;
-        transition: 0.3s;
     }
-
-        .form-control:focus {
-            border-color: #2196f3;
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
-            outline: none;
-        }
 
     .btn-save {
         background: linear-gradient(135deg, #00c853, #009624);
@@ -58,30 +51,18 @@
         border-radius: 10px;
         padding: 12px 25px;
         font-weight: 600;
-        transition: all 0.3s ease;
         width: 150px;
     }
-
-        .btn-save:hover {
-            background: linear-gradient(135deg, #00e676, #00c853);
-            box-shadow: 0 0 15px rgba(0, 255, 120, 0.6);
-        }
 
     .btn-cancel {
         background: rgba(255, 255, 255, 0.15);
         color: #fff;
-        border: none;
         border-radius: 10px;
         padding: 12px 25px;
         font-weight: 600;
-        transition: all 0.3s ease;
         width: 150px;
+        text-align: center;
     }
-
-        .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
 
     .btn-group {
         display: flex;
@@ -90,67 +71,46 @@
         margin-top: 25px;
     }
 
-    .alert {
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        font-weight: 500;
+    .course-label {
+        color: #bbdefb;
+        font-weight: 600;
+        margin-bottom: 15px;
         text-align: center;
-        backdrop-filter: blur(8px);
-    }
-
-    .alert-danger {
-        background: rgba(255, 80, 80, 0.2);
-        color: #ffb3b3;
+        font-size: 1.1rem;
     }
 </style>
 
 <div class="test-form-wrapper">
     <h2>🧪 Create a New Test</h2>
 
-    @if (ViewBag.Error != null)
-    {
-        <div class="alert alert-danger">@ViewBag.Error</div>
-    }
+    <div class="course-label">Course: @ViewBag.CourseID</div>
 
     <form asp-action="Create" method="post">
-        <div>
-            <label>Course ID</label>
-            <input asp-for="CourseID" class="form-control" placeholder="Enter course ID" required />
-            <span asp-validation-for="CourseID" class="text-danger"></span>
-        </div>
+        <input type="hidden" asp-for="CourseID" />
 
         <div>
             <label>Test Name</label>
-            <input asp-for="TestName" class="form-control" placeholder="e.g. Midterm Exam" required />
-            <span asp-validation-for="TestName" class="text-danger"></span>
+            <input asp-for="TestName" class="form-control" required />
         </div>
 
         <div>
             <label>Test Date</label>
             <input asp-for="TestDate" type="date" class="form-control" required />
-            <span asp-validation-for="TestDate" class="text-danger"></span>
         </div>
 
         <div>
             <label>Weight (%)</label>
-            <input asp-for="Weight" type="number" step="0.1" class="form-control" placeholder="e.g. 20" required />
-            <span asp-validation-for="Weight" class="text-danger"></span>
+            <input asp-for="Weight" type="number" step="0.1" class="form-control" required />
         </div>
 
         <div>
             <label>Max Score</label>
-            <input asp-for="MaxScore" type="number" step="0.1" class="form-control" placeholder="e.g. 100" required />
-            <span asp-validation-for="MaxScore" class="text-danger"></span>
+            <input asp-for="MaxScore" type="number" step="0.1" class="form-control" required />
         </div>
 
         <div class="btn-group">
             <button type="submit" class="btn-save">💾 Save</button>
-            <a asp-action="Index" class="btn-cancel">✖ Cancel</a>
+            <a asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@ViewBag.CourseID" class="btn-cancel">✖ Cancel</a>
         </div>
     </form>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
