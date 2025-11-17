@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
-using System.Collections.Generic;
+using System.Text;
 
 namespace StudentTracker.Controllers
 {
@@ -14,10 +14,13 @@ namespace StudentTracker.Controllers
 
         public UsersController(IHttpClientFactory factory, IConfiguration config)
         {
-            _client = factory.CreateClient();
+            _client = factory.CreateClient("API");
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
+        // ===========================
+        // USERS LIST
+        // ===========================
         [HttpGet]
         public async Task<IActionResult> Index(string? role = "All", string status = "All")
         {
@@ -29,6 +32,7 @@ namespace StudentTracker.Controllers
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
             var filtered = new List<UserView>();
+
             foreach (var u in users)
             {
                 if (role?.ToLower() == "teacher" && u.RoleID != 2) continue;
@@ -47,10 +51,132 @@ namespace StudentTracker.Controllers
             return View("Index", filtered);
         }
 
+        // ===========================
+        // CREATE USER (GET)
+        // ===========================
+        [HttpGet]
+        public IActionResult Create(string? roleFilter = null)
+        {
+            // Pass the selected filter (Student, Teacher, Admin)
+            ViewBag.RoleFilter = roleFilter ?? "All";
+            return View();
+        }
+
+        // ===========================
+        // CREATE USER (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(UserView model, string roleFilter)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                // ⭐ MAP Password → PasswordHash (API requirement)
+                var apiModel = new
+                {
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    PasswordHash = model.Password,  // <-- FIXED
+                    RoleID = model.RoleID,
+                    IsActive = model.IsActive
+                };
+
+                var json = JsonConvert.SerializeObject(apiModel);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // ⭐ USE CORRECT ROUTE → /api/Users/create
+                var res = await _client.PostAsync($"{_apiBase}Users/create", content);
+
+                if (res.IsSuccessStatusCode)
+                {
+                    TempData["Msg"] = $"{roleFilter} created successfully!";
+                    return RedirectToAction("Index", new { role = roleFilter });
+                }
+
+                ViewBag.Error = "Failed to create user. Please try again.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Server error: " + ex.Message;
+                return View(model);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, string? role = "All", string status = "All")
+        {
+            var res = await _client.GetAsync($"{_apiBase}Users/{id}");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Failed to fetch user.";
+                return RedirectToAction("Index", new { role, status });
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UserView>(json);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Index", new { role, status });
+            }
+
+            ViewBag.RoleFilter = role;
+            ViewBag.StatusFilter = status;
+
+            return View("Edit", user);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(UserView model, string roleFilter, string statusFilter)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                // If password is empty → do NOT update password
+                var payload = new
+                {
+                    model.UserID,
+                    model.FullName,
+                    model.Email,
+                    PasswordHash = string.IsNullOrWhiteSpace(model.Password) ? null : model.Password,
+                    model.RoleID,
+                    model.IsActive
+                };
+
+                var json = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var res = await _client.PutAsync($"{_apiBase}Users/update", content);
+
+                if (res.IsSuccessStatusCode)
+                {
+                    TempData["Msg"] = "User updated successfully!";
+                    return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
+                }
+
+                ViewBag.Error = "Failed to update user. Try again.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Server error: " + ex.Message;
+                return View(model);
+            }
+        }
+
+        // ===========================
+        // ENROLL
+        // ===========================
         [HttpGet]
         public IActionResult Enroll(int id, string? role = "All", string status = "All")
         {
-            return RedirectToAction("Enroll", "StudentCourses", new { studentId = id, role = role, status = status });
+            return RedirectToAction("Enroll", "StudentCourses", new { studentId = id, role, status });
         }
+
     }
 }

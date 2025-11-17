@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Discover Our Programs";
+}
+
+<section class="hero-section" style="
+    background: linear-gradient(135deg, #001a33, #003c8f);
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+">
+    <h1 class="fw-bold" style="font-size: 48px;">Discover Our Programs</h1>
+    <p style="max-width: 800px; margin: 20px auto; font-size: 18px;">
+        At WTF University, we empower students with future-oriented academic programs that blend
+        innovation, technology, and real-world skills. Our mission is to develop leaders, creators, and problem-solvers
+        ready to make an impact.
+    </p>
+</section>
+
+<div class="container my-5">
+
+    <!-- Section Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" style="color:#003c8f;">Our Academic Pathways</h2>
+        <p style="max-width:650px; margin:auto; color:#5b7083;">
+            Explore our diverse range of undergraduate programs designed to ignite curiosity,
+            develop critical thinking, and shape tomorrow's innovators.
+        </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="row g-4">
+
+        <!-- Program Card 1 -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-laptop-code fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h4 class="fw-bold">Computer Science</h4>
+                    <p class="text-muted">
+                        Learn programming, algorithms, networking, AI, and software engineering —
+                        preparing you for a high-demand tech career.
+                    </p>
+                    <a class="btn btn-primary" style="border-radius:10px;">Explore Track</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Program Card 2 -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-chart-line fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h4 class="fw-bold">Business & Management</h4>
+                    <p class="text-muted">
+                        A dynamic program focusing on leadership, entrepreneurship,
+                        finance, and organizational strategy.
+                    </p>
+                    <a class="btn btn-primary" style="border-radius:10px;">Discover More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Program Card 3 -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-flask fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h4 class="fw-bold">Applied Sciences</h4>
+                    <p class="text-muted">
+                        Engage in laboratory work, research projects, and scientific exploration
+                        across multiple STEM disciplines.
+                    </p>
+                    <a class="btn btn-primary" style="border-radius:10px;">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA Section -->
+    <div class="text-center mt-5">
+        <h3 class="fw-bold" style="color:#003c8f;">Ready to Begin Your Journey?</h3>
+        <p class="text-muted">Join WTF University — We’re The Future (Inshallah).</p>
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-success px-4 py-2 fw-semibold" style="border-radius:12px;">
+            Apply Now
+        </a>
+    </div>
+</div>

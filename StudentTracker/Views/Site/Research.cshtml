@@ -1,5 +1,136 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Research";
 }
+
+<section style="
+    background: linear-gradient(135deg, #001a33, #003c8f);
+    padding: 80px 20px;
+    color: white;
+    text-align: center;
+">
+    <h1 class="fw-bold" style="font-size: 48px;">Research at WTF University</h1>
+    <p style="max-width: 850px; margin: 15px auto; font-size: 18px;">
+        At WTF University, research is at the heart of innovation. Our mission is to empower students and faculty
+        to explore cutting-edge ideas, develop impactful solutions, and contribute to the scientific, technological,
+        and social progress of our community and region.
+    </p>
+</section>
+
+<div class="container my-5">
+
+    <!-- Research Vision -->
+    <div class="mb-5">
+        <h2 class="fw-bold" style="color:#003c8f;">Our Research Vision</h2>
+        <p style="color:#5b7083; font-size: 16px;">
+            WTF University is committed to creating a vibrant research culture grounded in creativity,
+            interdisciplinary collaboration, and real-world impact. Our research initiatives span areas
+            such as computer science, cybersecurity, education, artificial intelligence, engineering
+            technologies, environmental science, and digital transformation.
+        </p>
+        <p style="color:#5b7083; font-size: 16px;">
+            Students and faculty work closely in laboratories, innovation hubs, and collaborative research
+            groups to turn innovative ideas into tangible projects, tools, and solutions.
+        </p>
+    </div>
+
+    <!-- Research Areas Grid -->
+    <h3 class="fw-bold mb-4" style="color:#003c8f;">Key Research Areas</h3>
+
+    <div class="row g-4">
+
+        <!-- AI -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-brain fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Artificial Intelligence</h5>
+                    <p class="text-muted">
+                        Machine learning, neural networks, intelligent systems, and predictive analytics
+                        developed for education, healthcare, finance, and smart cities.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cybersecurity -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-shield-alt fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Cybersecurity & Digital Safety</h5>
+                    <p class="text-muted">
+                        Research on threat detection, secure authentication, encryption, IoT security,
+                        and building resilient digital infrastructure.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Science -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-database fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Data Science & Analytics</h5>
+                    <p class="text-muted">
+                        Big data, visualization, decision-making models, and analytical techniques
+                        applied to modern industries.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Engineering -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-cogs fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Engineering & Technology</h5>
+                    <p class="text-muted">
+                        Research on automation, embedded systems, renewable energy, and modern
+                        engineering technologies.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-graduation-cap fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Educational Research</h5>
+                    <p class="text-muted">
+                        Innovation in teaching and learning, digital classrooms, student performance
+                        tracking, curriculum development, and assessment tools.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sustainability -->
+        <div class="col-md-4">
+            <div class="card shadow-lg" style="border-radius:18px;">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-leaf fa-3x mb-3" style="color:#003c8f;"></i>
+                    <h5 class="fw-bold">Environment & Sustainability</h5>
+                    <p class="text-muted">
+                        Research on environmental protection, green technologies, climate change,
+                        and sustainable development strategies.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA Section -->
+    <div class="text-center mt-5">
+        <h3 class="fw-bold" style="color:#003c8f;">Want to Join Our Research Community?</h3>
+        <p class="text-muted">Students and faculty are welcome to participate in ongoing projects and research labs.</p>
+        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary px-4 py-2 fw-semibold" style="border-radius:12px;">
+            Join a Research Group
+        </a>
+    </div>
+
+</div>

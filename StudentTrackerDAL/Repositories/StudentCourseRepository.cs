@@ -47,6 +47,49 @@ namespace StudentTrackerDAL.Repositories
         public async Task<StudentCourse?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
+
+            try
+            {
+                return await con.QueryFirstOrDefaultAsync<StudentCourse>(
+                    "sp_GetStudentCourseByID",
+                    new { StudentCourseID = id },
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+            catch (SqlException)
+            {
+                return await con.QueryFirstOrDefaultAsync<StudentCourse>(
+                    "SELECT * FROM StudentCourses WHERE StudentCourseID = @ID",
+                    new { ID = id }
+                );
+            }
+        }
+        public async Task<IEnumerable<dynamic>> GetByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+        SELECT 
+            sc.StudentCourseID,
+            sc.StudentID,
+            sc.CourseID,
+            u.FullName AS StudentName
+        FROM StudentCourses sc
+        INNER JOIN Users u ON u.UserID = sc.StudentID
+        WHERE sc.CourseID = @CourseID AND u.RoleID = 3
+        ORDER BY u.FullName";
+
+            return await con.QueryAsync(sql, new { CourseID = courseId });
+        }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = "DELETE FROM StudentCourses WHERE StudentCourseID = @ID";
+            return await con.ExecuteAsync(sql, new { ID = id });
+        }
+
             return await con.QueryFirstOrDefaultAsync<StudentCourse>(
                 "SELECT * FROM StudentCourses WHERE StudentCourseID = @Id",
                 new { Id = id });
@@ -112,6 +155,14 @@ namespace StudentTrackerDAL.Repositories
                 INNER JOIN Users u ON u.UserID = sc.StudentID 
                 WHERE sc.CourseID = @CourseID AND u.RoleID = 3;";
 
+            var sql = @"
+        SELECT COUNT(*) 
+        FROM StudentCourses sc
+        INNER JOIN Courses c ON c.CourseID = sc.CourseID
+        INNER JOIN Users u ON u.UserID = sc.StudentID
+        WHERE c.TeacherID = @TeacherID AND u.RoleID = 3";
+
+            return await con.ExecuteScalarAsync<int>(sql, new { TeacherID = teacherId });
             return await con.ExecuteScalarAsync<int>(sql, new { CourseID = courseId });
         }
 
@@ -130,5 +181,8 @@ namespace StudentTrackerDAL.Repositories
 
             return await con.ExecuteScalarAsync<int>(sql, new { TeacherID = teacherId });
         }
+
     }
+
+}
 }

@@ -168,7 +168,12 @@
 
     <div class="buttons-row">
         <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
-        <a asp-action="Create" class="btn btn-add">➕ Add New User</a>
+        <a asp-action="Create"
+           asp-route-roleFilter="@ViewBag.RoleFilter"
+           class="btn btn-add">
+            ➕ Add New @(ViewBag.RoleFilter == "Student" ? "Student" :
+                        ViewBag.RoleFilter == "Teacher" ? "Teacher" : "User")
+        </a>
     </div>
 
     <form method="get" asp-action="Index" class="filter-row">

@@ -1,7 +1,12 @@
 ﻿@model StudentTracker.Models.UserView
 
 @{
-    ViewData["Title"] = "Edit User";
+    string roleName =
+        Model.RoleID == 1 ? "Admin" :
+        Model.RoleID == 2 ? "Teacher" :
+        "Student";
+
+    ViewData["Title"] = $"Edit {roleName}";
 }
 
 <style>
@@ -37,8 +42,7 @@
         margin-bottom: 6px;
     }
 
-    .form-control,
-    .form-select {
+    .form-control {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.25);
         color: #fff;
@@ -46,30 +50,20 @@
         padding: 12px;
         margin-bottom: 20px;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
-        .form-select option {
-            background-color: #00284d;
-            color: #fff;
-            font-weight: 500;
-            padding: 10px;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus {
             border-color: #2196f3;
-            box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
+            box-shadow: 0 0 12px rgba(33,150,243,0.6);
             outline: none;
         }
 
-    .form-check {
-        margin-top: 10px;
-        margin-bottom: 25px;
-    }
-
-    .form-check-label {
-        margin-left: 5px;
-        font-weight: 500;
+    .disabled-field {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        cursor: not-allowed;
     }
 
     .btn-row {
@@ -109,25 +103,23 @@
 </style>
 
 <div class="form-container">
-    <h2>✏️ Edit User</h2>
+    <h2>✏️ Edit @roleName</h2>
 
     <form asp-action="Edit" method="post">
+
         <input type="hidden" asp-for="UserID" />
+        <input type="hidden" asp-for="RoleID" />
 
         <label class="form-label">Full Name</label>
-        <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
+        <input asp-for="FullName" class="form-control" required />
 
         <label class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" placeholder="Enter email" />
+        <input asp-for="Email" class="form-control" type="email" required />
 
         <label class="form-label">Role</label>
-        <select asp-for="RoleID" class="form-select">
-            <option value="1">Admin</option>
-            <option value="2">Teacher</option>
-            <option value="3">Student</option>
-        </select>
+        <input class="form-control disabled-field" value="@roleName" disabled />
 
-        <div class="form-check">
+        <div class="form-check mt-3">
             <input class="form-check-input" asp-for="IsActive" />
             <label class="form-check-label" asp-for="IsActive">Active</label>
         </div>
@@ -136,6 +128,7 @@
             <a asp-action="Index" class="btn btn-secondary">⬅️ Back</a>
             <button type="submit" class="btn btn-success">💾 Save Changes</button>
         </div>
+
     </form>
 </div>
 
