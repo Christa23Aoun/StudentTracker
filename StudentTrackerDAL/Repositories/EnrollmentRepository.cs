@@ -1,8 +1,9 @@
-﻿// StudentTrackerDAL/Repositories/EnrollmentRepository.cs
-using Dapper;
+﻿using Dapper;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Infrastructure;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StudentTrackerDAL.Repositories
 {
@@ -11,15 +12,20 @@ namespace StudentTrackerDAL.Repositories
         private readonly ISqlConnectionFactory _factory;
         public EnrollmentRepository(ISqlConnectionFactory factory) => _factory = factory;
 
-        public async Task<IEnumerable<Course>> GetCoursesByStudentAsync(int studentId)
+        public async Task<IEnumerable<StudentCourse>> GetCoursesByStudentAsync(int studentId)
         {
             using var con = _factory.Create();
             var sql = @"
-                SELECT c.*
-                FROM StudentCourses sc
-                INNER JOIN Courses c ON c.CourseID = sc.CourseID
-                WHERE sc.StudentID = @StudentID;";
-            return await con.QueryAsync<Course>(sql, new { StudentID = studentId });
+                SELECT 
+                    StudentCourseID,
+                    StudentID,
+                    CourseID,
+                    EnrollmentDate,
+                    IsActive,
+                    DroppedAt
+                FROM StudentCourses
+                WHERE StudentID = @StudentID;";
+            return await con.QueryAsync<StudentCourse>(sql, new { StudentID = studentId });
         }
 
         public async Task<IEnumerable<User>> GetStudentsByCourseAsync(int courseId)
@@ -39,10 +45,17 @@ namespace StudentTrackerDAL.Repositories
             var sql = @"
                 IF NOT EXISTS (SELECT 1 FROM StudentCourses WHERE StudentID=@StudentID AND CourseID=@CourseID)
                 BEGIN
-                    INSERT INTO StudentCourses(StudentID, CourseID, EnrolledAt) VALUES(@StudentID, @CourseID, SYSDATETIME());
+                    INSERT INTO StudentCourses(StudentID, CourseID, EnrollmentDate, IsActive, DroppedAt)
+                    VALUES(@StudentID, @CourseID, SYSDATETIME(), 1, NULL);
                     SELECT 1;
                 END
-                ELSE SELECT 0;";
+                ELSE 
+                BEGIN
+                    UPDATE StudentCourses
+                    SET IsActive = 1, DroppedAt = NULL
+                    WHERE StudentID=@StudentID AND CourseID=@CourseID;
+                    SELECT 1;
+                END";
             return await con.ExecuteScalarAsync<int>(sql, new { StudentID = studentId, CourseID = courseId });
         }
 
@@ -50,6 +63,16 @@ namespace StudentTrackerDAL.Repositories
         {
             using var con = _factory.Create();
             var sql = "DELETE FROM StudentCourses WHERE StudentID=@StudentID AND CourseID=@CourseID;";
+            return await con.ExecuteAsync(sql, new { StudentID = studentId, CourseID = courseId });
+        }
+
+        public async Task<int> ReEnrollAsync(int studentId, int courseId)
+        {
+            using var con = _factory.Create();
+            var sql = @"
+                UPDATE StudentCourses
+                SET IsActive = 1, DroppedAt = NULL
+                WHERE StudentID = @StudentID AND CourseID = @CourseID;";
             return await con.ExecuteAsync(sql, new { StudentID = studentId, CourseID = courseId });
         }
 
@@ -63,14 +86,23 @@ namespace StudentTrackerDAL.Repositories
                 var sql = @"
                     IF NOT EXISTS (SELECT 1 FROM StudentCourses WHERE StudentID=@StudentID AND CourseID=@CourseID)
                     BEGIN
-                        INSERT INTO StudentCourses(StudentID, CourseID, EnrolledAt) VALUES(@StudentID, @CourseID, SYSDATETIME());
+                        INSERT INTO StudentCourses(StudentID, CourseID, EnrollmentDate, IsActive, DroppedAt)
+                        VALUES(@StudentID, @CourseID, SYSDATETIME(), 1, NULL);
                         SELECT 1;
                     END
-                    ELSE SELECT 0;";
+                    ELSE
+                    BEGIN
+                        UPDATE StudentCourses
+                        SET IsActive = 1, DroppedAt = NULL
+                        WHERE StudentID=@StudentID AND CourseID=@CourseID;
+                        SELECT 1;
+                    END";
+
                 foreach (var cid in courseIds)
                 {
                     count += await con.ExecuteScalarAsync<int>(sql, new { StudentID = studentId, CourseID = cid }, tx);
                 }
+
                 tx.Commit();
                 return count;
             }

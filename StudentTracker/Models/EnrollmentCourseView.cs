@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace StudentTrackerCOMMON.Models
+﻿namespace StudentTracker.Models
 {
-    public class StudentCourse
+    public class EnrollmentCourseView
     {
         public int StudentCourseID { get; set; }
         public int StudentID { get; set; }

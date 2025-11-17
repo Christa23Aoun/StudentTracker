@@ -40,22 +40,57 @@
         background-color: transparent;
         color: #fff;
         border: 1px solid rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .already-enrolled {
-        opacity: 0.6;
-        background: rgba(0,255,100,0.15);
-        border: 1px solid rgba(0,255,100,0.3);
-    }
-
-    .badge-enrolled {
-        background: rgba(0,255,100,0.15);
-        color: #00ff88;
-        padding: 4px 10px;
+    .badge-active {
+        background: rgba(0,255,100,0.25);
+        color: #00ff8c;
+        padding: 5px 12px;
         border-radius: 8px;
         font-weight: 600;
         margin-left: 10px;
     }
+
+    .badge-dropped {
+        background: rgba(255,215,0,0.25);
+        color: #ffd700;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .btn-small {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-left: 10px;
+        font-size: 0.9rem;
+    }
+
+    .btn-unenroll {
+        background-color: rgba(255, 80, 80, 0.3);
+        color: #ff6b6b;
+    }
+
+        .btn-unenroll:hover {
+            background-color: rgba(255, 80, 80, 0.6);
+        }
+
+    .btn-reenroll {
+        background-color: rgba(255, 215, 0, 0.3);
+        color: #ffd700;
+    }
+
+        .btn-reenroll:hover {
+            background-color: rgba(255, 215, 0, 0.55);
+        }
 
     .btn-primary {
         background-color: #00b36b;
@@ -79,7 +114,7 @@
 </style>
 
 <div class="enroll-wrapper">
-    <h2 class="text-center mb-4">Enroll Student</h2>
+    <h2 class="text-center mb-3">Enroll Student</h2>
     <h4 class="text-center mb-4">@Model.StudentName (@Model.StudentID)</h4>
 
     <form asp-action="Enroll" asp-controller="Enrollments" method="post">
@@ -105,25 +140,60 @@
                     <div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#departmentsAccordion">
                         <div class="accordion-body">
                             <ul class="list-group">
+
                                 @foreach (var course in dep.Courses)
                                 {
-                                    bool already = Model.EnrolledCourseIds.Contains(course.CourseID);
+                                    bool isActive = Model.EnrolledCourseIds.Contains(course.CourseID);
+                                    bool isDropped = Model.DroppedCourseIds.Contains(course.CourseID);
 
-                                    <li class="list-group-item d-flex align-items-center @(already ? "already-enrolled" : "")">
-                                        <input type="checkbox"
-                                               name="SelectedCourses"
-                                               value="@course.CourseID"
-                                               class="form-check-input me-2"
-                                        @(already ? "disabled" : "") />
+                                    <li class="list-group-item">
 
-                                        <label>@course.CourseName</label>
+                                        <div>
+                                            <label>@course.CourseName</label>
 
-                                        @if (already)
-                                        {
-                                            <span class="badge-enrolled">✓ Already Enrolled</span>
-                                        }
+                                            @if (isActive)
+                                            {
+                                                <span class="badge-active">Enrolled ✓</span>
+                                            }
+                                            else if (isDropped)
+                                            {
+                                                <span class="badge-dropped">Dropped</span>
+                                            }
+                                        </div>
+
+                                        <div class="d-flex align-items-center">
+
+                                            @if (!isActive && !isDropped)
+                                            {
+                                                <input type="checkbox"
+                                                       name="SelectedCourses"
+                                                       value="@course.CourseID"
+                                                       class="form-check-input me-2" />
+                                            }
+
+                                            @if (isActive)
+                                            {
+                                                <form method="post" action="/Enrollments/Unenroll" class="d-inline">
+                                                    <input type="hidden" name="studentId" value="@Model.StudentID" />
+                                                    <input type="hidden" name="courseId" value="@course.CourseID" />
+                                                    <button class="btn-small btn-unenroll">Unenroll</button>
+                                                </form>
+                                            }
+
+                                            @if (isDropped)
+                                            {
+                                                <form method="post" action="/Enrollments/ReEnroll" class="d-inline">
+                                                    <input type="hidden" name="studentId" value="@Model.StudentID" />
+                                                    <input type="hidden" name="courseId" value="@course.CourseID" />
+                                                    <button class="btn-small btn-reenroll">Re-Enroll</button>
+                                                </form>
+                                            }
+
+                                        </div>
+
                                     </li>
                                 }
+
                             </ul>
                         </div>
                     </div>

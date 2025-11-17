@@ -46,7 +46,6 @@
     }
 
     .btn {
-        display: inline-block;
         padding: 12px 28px;
         border-radius: 12px;
         font-weight: 600;
@@ -69,7 +68,6 @@
     .filter-row {
         display: flex;
         justify-content: center;
-        align-items: center;
         gap: 10px;
         margin-bottom: 25px;
         flex-wrap: wrap;
@@ -131,9 +129,12 @@
     .action-btn {
         padding: 6px 14px;
         border-radius: 8px;
-        margin: 0 4px;
         font-weight: 600;
-        display: inline-block;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
         transition: all 0.3s ease;
     }
 
@@ -154,9 +155,24 @@
         background: rgba(100, 180, 255, 0.15);
         border: 1px solid rgba(100, 180, 255, 0.25);
     }
+
+   
+    .action-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .highlight-row {
+        background-color: rgba(255, 255, 0, 0.35) !important;
+        transition: background-color 0.4s ease;
+    }
+
 </style>
 
 <div class="users-wrapper">
+
     <div class="page-header">
         <h2>
             @(ViewBag.RoleFilter == "Student" ? "🎓 All Students" :
@@ -172,77 +188,38 @@
            asp-route-roleFilter="@ViewBag.RoleFilter"
            class="btn btn-add">
             ➕ Add New @(ViewBag.RoleFilter == "Student" ? "Student" :
-                        ViewBag.RoleFilter == "Teacher" ? "Teacher" : "User")
+            ViewBag.RoleFilter == "Teacher" ? "Teacher" : "User")
         </a>
     </div>
 
     <form method="get" asp-action="Index" class="filter-row">
+
+        <!-- ROLE FILTER -->
         <select name="role" class="form-select w-auto">
-            @if (ViewBag.RoleFilter == "All")
-            {
-                <option value="All" selected>All Roles</option>
+            @{
+                string r = ViewBag.RoleFilter as string ?? "All";
             }
-            else
-            {
-                <option value="All">All Roles</option>
-            }
-
-            @if (ViewBag.RoleFilter == "Admin")
-            {
-                <option value="Admin" selected>Admins</option>
-            }
-            else
-            {
-                <option value="Admin">Admins</option>
-            }
-
-            @if (ViewBag.RoleFilter == "Teacher")
-            {
-                <option value="Teacher" selected>Teachers</option>
-            }
-            else
-            {
-                <option value="Teacher">Teachers</option>
-            }
-
-            @if (ViewBag.RoleFilter == "Student")
-            {
-                <option value="Student" selected>Students</option>
-            }
-            else
-            {
-                <option value="Student">Students</option>
-            }
+            <option value="All" selected="@(r == "All")">All Roles</option>
+            <option value="Admin" selected="@(r == "Admin")">Admins</option>
+            <option value="Teacher" selected="@(r == "Teacher")">Teachers</option>
+            <option value="Student" selected="@(r == "Student")">Students</option>
         </select>
 
+        <!-- STATUS FILTER -->
         <select name="status" class="form-select w-auto">
-            @if (ViewBag.StatusFilter == "All")
-            {
-                <option value="All" selected>All</option>
+            @{
+                string s = ViewBag.StatusFilter as string ?? "All";
             }
-            else
-            {
-                <option value="All">All</option>
-            }
-
-            @if (ViewBag.StatusFilter == "Active")
-            {
-                <option value="Active" selected>Active</option>
-            }
-            else
-            {
-                <option value="Active">Active</option>
-            }
-
-            @if (ViewBag.StatusFilter == "Inactive")
-            {
-                <option value="Inactive" selected>Inactive</option>
-            }
-            else
-            {
-                <option value="Inactive">Inactive</option>
-            }
+            <option value="All" selected="@(s == "All")">All</option>
+            <option value="Active" selected="@(s == "Active")">Active</option>
+            <option value="Inactive" selected="@(s == "Inactive")">Inactive</option>
         </select>
+        <input type="text"
+               name="search"
+               value="@ViewBag.SearchTerm"
+               placeholder="🔍 Search by name or ID..."
+               class="form-select w-auto"
+               style="background: rgba(0,40,85,0.6); color:white; font-weight:600;" />
 
         <button type="submit" class="btn btn-add">🔍 Apply Filter</button>
     </form>
@@ -285,32 +262,46 @@
                         </td>
 
                         <td>
-                            <a asp-action="Edit"
-                               asp-route-id="@u.UserID"
-                               asp-route-role="@ViewBag.RoleFilter"
-                               asp-route-status="@ViewBag.StatusFilter"
-                               class="action-btn edit">
-                                ✏️ Edit
-                            </a>
-
-                            <a asp-action="Delete"
-                               asp-route-id="@u.UserID"
-                               asp-route-role="@ViewBag.RoleFilter"
-                               asp-route-status="@ViewBag.StatusFilter"
-                               class="action-btn delete">
-                                🗑️ Delete
-                            </a>
-
-                            @if (u.RoleID == 3)
-                            {
-                                <a asp-action="Enroll"
+                            <div class="action-container">
+                                <a asp-action="Edit"
                                    asp-route-id="@u.UserID"
                                    asp-route-role="@ViewBag.RoleFilter"
                                    asp-route-status="@ViewBag.StatusFilter"
-                                   class="action-btn enroll">
-                                    🎓 Enroll
+                                   class="action-btn edit">
+                                    ✏️ Edit
                                 </a>
-                            }
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@u.UserID"
+                                   asp-route-role="@ViewBag.RoleFilter"
+                                   asp-route-status="@ViewBag.StatusFilter"
+                                   class="action-btn delete">
+                                    🗑️ Delete
+                                </a>
+
+                                @if (u.RoleID == 3)
+                                {
+                                    <a asp-action="Enroll"
+                                       asp-route-id="@u.UserID"
+                                       asp-route-role="@ViewBag.RoleFilter"
+                                       asp-route-status="@ViewBag.StatusFilter"
+                                       class="action-btn enroll">
+                                        🎓 Enroll
+                                    </a>
+                                }
+                                @{
+                                    string searchTerm = (ViewBag.SearchTerm ?? "").ToString().ToLower();
+                                    bool highlight = !string.IsNullOrWhiteSpace(searchTerm) &&
+                                    (
+                                    u.UserID.ToString().Contains(searchTerm) ||
+                                    (u.FullName?.ToLower().Contains(searchTerm) ?? false) ||
+                                    (u.Email?.ToLower().Contains(searchTerm) ?? false)
+                                    );
+                                }
+
+                    <tr class="@(highlight ? "highlight-row" : "")">
+
+                            </div>
                         </td>
                     </tr>
                 }

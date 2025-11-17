@@ -18,11 +18,8 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ===========================
-        // USERS LIST
-        // ===========================
         [HttpGet]
-        public async Task<IActionResult> Index(string? role = "All", string status = "All")
+        public async Task<IActionResult> Index(string? role = "All", string status = "All", string search = "")
         {
             var res = await _client.GetAsync($"{_apiBase}Users");
             if (!res.IsSuccessStatusCode)
@@ -45,25 +42,30 @@ namespace StudentTracker.Controllers
                 filtered.Add(u);
             }
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string term = search.ToLower();
+                filtered = filtered.Where(u =>
+                            u.UserID.ToString().Contains(term) ||
+                            (u.FullName?.ToLower().Contains(term) ?? false) ||
+                            (u.Email?.ToLower().Contains(term) ?? false)
+                         ).ToList();
+            }
+
             ViewBag.RoleFilter = role;
             ViewBag.StatusFilter = status;
+            ViewBag.SearchTerm = search;
 
             return View("Index", filtered);
         }
 
-        // ===========================
-        // CREATE USER (GET)
-        // ===========================
         [HttpGet]
         public IActionResult Create(string? roleFilter = null)
         {
-            // Pass the selected filter (Student, Teacher, Admin)
             ViewBag.RoleFilter = roleFilter ?? "All";
             return View();
         }
 
-        // ===========================
-        // CREATE USER (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserView model, string roleFilter)
@@ -73,12 +75,11 @@ namespace StudentTracker.Controllers
 
             try
             {
-                // ⭐ MAP Password → PasswordHash (API requirement)
                 var apiModel = new
                 {
                     FullName = model.FullName,
                     Email = model.Email,
-                    PasswordHash = model.Password,  // <-- FIXED
+                    PasswordHash = model.Password,
                     RoleID = model.RoleID,
                     IsActive = model.IsActive
                 };
@@ -86,7 +87,6 @@ namespace StudentTracker.Controllers
                 var json = JsonConvert.SerializeObject(apiModel);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // ⭐ USE CORRECT ROUTE → /api/Users/create
                 var res = await _client.PostAsync($"{_apiBase}Users/create", content);
 
                 if (res.IsSuccessStatusCode)
@@ -95,7 +95,7 @@ namespace StudentTracker.Controllers
                     return RedirectToAction("Index", new { role = roleFilter });
                 }
 
-                ViewBag.Error = "Failed to create user. Please try again.";
+                ViewBag.Error = "Failed to create user.";
                 return View(model);
             }
             catch (Exception ex)
@@ -104,6 +104,7 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id, string? role = "All", string status = "All")
         {
@@ -128,6 +129,7 @@ namespace StudentTracker.Controllers
 
             return View("Edit", user);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserView model, string roleFilter, string statusFilter)
@@ -137,7 +139,6 @@ namespace StudentTracker.Controllers
 
             try
             {
-                // If password is empty → do NOT update password
                 var payload = new
                 {
                     model.UserID,
@@ -159,7 +160,7 @@ namespace StudentTracker.Controllers
                     return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
                 }
 
-                ViewBag.Error = "Failed to update user. Try again.";
+                ViewBag.Error = "Failed to update user.";
                 return View(model);
             }
             catch (Exception ex)
@@ -169,14 +170,49 @@ namespace StudentTracker.Controllers
             }
         }
 
-        // ===========================
-        // ENROLL
-        // ===========================
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id, string? role = "All", string status = "All")
+        {
+            var res = await _client.GetAsync($"{_apiBase}Users/{id}");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Failed to fetch user.";
+                return RedirectToAction("Index", new { role, status });
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UserView>(json);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Index", new { role, status });
+            }
+
+            ViewBag.Role = role;
+            ViewBag.Status = status;
+
+            return View("Delete", user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int userID, string role, string status = "All")
+        {
+            var res = await _client.DeleteAsync($"{_apiBase}Users/{userID}");
+
+            if (res.IsSuccessStatusCode)
+                TempData["Msg"] = "User deleted successfully!";
+            else
+                TempData["Msg"] = "Failed to delete user.";
+
+            return RedirectToAction("Index", new { role, status });
+        }
+
         [HttpGet]
         public IActionResult Enroll(int id, string? role = "All", string status = "All")
         {
             return RedirectToAction("Enroll", "StudentCourses", new { studentId = id, role, status });
         }
-
     }
 }
