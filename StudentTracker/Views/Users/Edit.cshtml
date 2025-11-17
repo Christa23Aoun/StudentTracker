@@ -1,12 +1,11 @@
 ﻿@model StudentTracker.Models.UserView
 
 @{
-    string roleName =
-        Model.RoleID == 1 ? "Admin" :
-        Model.RoleID == 2 ? "Teacher" :
-        "Student";
+    ViewData["Title"] = "Edit User";
 
-    ViewData["Title"] = $"Edit {roleName}";
+    string currentRole = Model.RoleID == 1 ? "Admin"
+                        : Model.RoleID == 2 ? "Teacher"
+                        : "Student";
 }
 
 <style>
@@ -50,7 +49,6 @@
         padding: 12px;
         margin-bottom: 20px;
         transition: all 0.2s ease;
-        width: 100%;
     }
 
         .form-control:focus {
@@ -59,11 +57,15 @@
             outline: none;
         }
 
-    .disabled-field {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #fff !important;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        cursor: not-allowed;
+    .readonly-field {
+        background: rgba(255, 255, 255, 0.15);
+        color: #000; /* role text in black */
+        font-weight: 600;
+    }
+
+    .form-check {
+        margin-top: 10px;
+        margin-bottom: 25px;
     }
 
     .btn-row {
@@ -103,32 +105,42 @@
 </style>
 
 <div class="form-container">
-    <h2>✏️ Edit @roleName</h2>
+    <h2>✏️ Edit User</h2>
 
     <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
 
+        <!-- IDs + filters -->
         <input type="hidden" asp-for="UserID" />
         <input type="hidden" asp-for="RoleID" />
+        <input type="hidden" name="roleFilter" value="@ViewBag.RoleFilter" />
+        <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
 
         <label class="form-label">Full Name</label>
-        <input asp-for="FullName" class="form-control" required />
+        <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
 
         <label class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" type="email" required />
+        <input asp-for="Email" class="form-control" placeholder="Enter email" />
 
         <label class="form-label">Role</label>
-        <input class="form-control disabled-field" value="@roleName" disabled />
+        <input class="form-control readonly-field" value="@currentRole" disabled />
 
-        <div class="form-check mt-3">
+        <label class="form-label">Password (leave blank to keep current)</label>
+        <input asp-for="Password" type="password" class="form-control" />
+
+        <div class="form-check">
             <input class="form-check-input" asp-for="IsActive" />
             <label class="form-check-label" asp-for="IsActive">Active</label>
         </div>
 
         <div class="btn-row">
-            <a asp-action="Index" class="btn btn-secondary">⬅️ Back</a>
+            <a asp-action="Index"
+               asp-route-role="@ViewBag.RoleFilter"
+               asp-route-status="@ViewBag.StatusFilter"
+               class="btn btn-secondary">⬅️ Back</a>
+
             <button type="submit" class="btn btn-success">💾 Save Changes</button>
         </div>
-
     </form>
 </div>
 

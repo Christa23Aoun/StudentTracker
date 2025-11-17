@@ -2,6 +2,8 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
 using StudentTrackerCOMMON.Models;
+using BCrypt.Net;
+
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 
@@ -133,22 +135,59 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-    
+
         public async Task<bool> UpdateAsync(User user)
         {
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
 
-            var rows = await con.ExecuteAsync(
-                "UPDATE Users SET FullName=@FullName, Email=@Email, RoleID=@RoleID, IsActive=@IsActive WHERE UserID=@UserID",
-                new
+            string sql;
+            object param;
+
+            if (string.IsNullOrWhiteSpace(user.PasswordHash))
+            {
+                // No new password → keep old hash
+                sql = @"
+            UPDATE Users
+            SET FullName = @FullName,
+                Email    = @Email,
+                RoleID   = @RoleID,
+                IsActive = @IsActive
+            WHERE UserID = @UserID";
+                param = new
                 {
                     user.FullName,
                     user.Email,
                     user.RoleID,
                     user.IsActive,
                     user.UserID
-                });
+                };
+            }
+            else
+            {
+                // New plain password sent → hash it before saving
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
+                sql = @"
+            UPDATE Users
+            SET FullName     = @FullName,
+                Email        = @Email,
+                RoleID       = @RoleID,
+                IsActive     = @IsActive,
+                PasswordHash = @PasswordHash
+            WHERE UserID = @UserID";
+                param = new
+                {
+                    user.FullName,
+                    user.Email,
+                    user.RoleID,
+                    user.IsActive,
+                    user.UserID,
+                    user.PasswordHash
+                };
+            }
+
+            var rows = await con.ExecuteAsync(sql, param);
 
             if (rows > 0)
             {
@@ -169,7 +208,8 @@ namespace StudentTrackerDAL.Repositories
             return rows > 0;
         }
 
-       
+
+
         public async Task<bool> DeleteAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -198,6 +238,34 @@ namespace StudentTrackerDAL.Repositories
 
             return rows > 0;
         }
+        public async Task<bool> HardDeleteAsync(int userId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
+
+            var rows = await con.ExecuteAsync(
+                "DELETE FROM Users WHERE UserID = @UserID",
+                new { UserID = userId });
+
+            if (rows > 0)
+            {
+                await con.ExecuteAsync(
+                    "dbo.sp_AuditLog_Add",
+                    new
+                    {
+                        UserID = userId,
+                        Action = "DELETE",
+                        TableName = "Users",
+                        RecordID = userId.ToString(),
+                        OldValue = "User removed",
+                        NewValue = (string?)null
+                    },
+                    commandType: CommandType.StoredProcedure);
+            }
+
+            return rows > 0;
+        }
+
 
         public async Task<int> CountByRoleAsync(string roleName)
         {

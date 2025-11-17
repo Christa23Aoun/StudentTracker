@@ -93,12 +93,19 @@
 
     <form asp-action="DeleteConfirmed" method="post">
         @Html.AntiForgeryToken()
+
         <input type="hidden" name="userID" value="@Model.UserID" />
-        <input type="hidden" name="role" value="@ViewBag.Role" />
+        <input type="hidden" name="roleFilter" value="@ViewBag.RoleFilter" />
+        <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
 
         <div class="btn-row">
-            <a asp-action="Index" asp-route-role="@ViewBag.Role" class="btn btn-secondary">❌ Cancel</a>
+            <a asp-action="Index"
+               asp-route-role="@ViewBag.RoleFilter"
+               asp-route-status="@ViewBag.StatusFilter"
+               class="btn btn-secondary">❌ Cancel</a>
+
             <button type="submit" class="btn btn-danger">🗑️ Delete</button>
         </div>
     </form>
+
 </div>

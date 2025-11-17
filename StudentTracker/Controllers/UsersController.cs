@@ -10,12 +10,10 @@ namespace StudentTracker.Controllers
     public class UsersController : BaseController
     {
         private readonly HttpClient _client;
-        private readonly string _apiBase;
 
-        public UsersController(IHttpClientFactory factory, IConfiguration config)
+        public UsersController(IHttpClientFactory factory)
         {
             _client = factory.CreateClient("API");
-            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
         // ===========================
@@ -24,31 +22,40 @@ namespace StudentTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string? role = "All", string status = "All")
         {
-            var res = await _client.GetAsync($"{_apiBase}Users");
+            var res = await _client.GetAsync("Users");
             if (!res.IsSuccessStatusCode)
                 return View("Index", new List<UserView>());
 
             var json = await res.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
-            var filtered = new List<UserView>();
-
-            foreach (var u in users)
-            {
-                if (role?.ToLower() == "teacher" && u.RoleID != 2) continue;
-                if (role?.ToLower() == "student" && u.RoleID != 3) continue;
-                if (role?.ToLower() == "admin" && u.RoleID != 1) continue;
-
-                if (status == "Active" && !u.IsActive) continue;
-                if (status == "Inactive" && u.IsActive) continue;
-
-                filtered.Add(u);
-            }
+            var filtered = users.Where(u =>
+                (role == "All" ||
+                 (role == "Teacher" && u.RoleID == 2) ||
+                 (role == "Student" && u.RoleID == 3) ||
+                 (role == "Admin" && u.RoleID == 1))
+                &&
+                (status == "All" ||
+                 (status == "Active" && u.IsActive) ||
+                 (status == "Inactive" && !u.IsActive))
+            ).ToList();
 
             ViewBag.RoleFilter = role;
             ViewBag.StatusFilter = status;
 
             return View("Index", filtered);
+        }
+        // ===========================
+        // ENROLL  (REDIRECT TO StudentCoursesController)
+        // ===========================
+        [HttpGet("Enroll/{id}")]
+        public IActionResult Enroll(int id, string? role = "All", string status = "All")
+        {
+            return RedirectToAction(
+                "Enroll",
+                "StudentCourses",
+                new { studentId = id, role, status }
+            );
         }
 
         // ===========================
@@ -57,57 +64,53 @@ namespace StudentTracker.Controllers
         [HttpGet]
         public IActionResult Create(string? roleFilter = null)
         {
-            // Pass the selected filter (Student, Teacher, Admin)
             ViewBag.RoleFilter = roleFilter ?? "All";
             return View();
         }
 
         // ===========================
         // CREATE USER (POST)
+        // ===========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserView model, string roleFilter)
         {
+            ViewBag.RoleFilter = roleFilter;
+
             if (!ModelState.IsValid)
                 return View(model);
 
-            try
+            var apiModel = new
             {
-                // ⭐ MAP Password → PasswordHash (API requirement)
-                var apiModel = new
-                {
-                    FullName = model.FullName,
-                    Email = model.Email,
-                    PasswordHash = model.Password,  // <-- FIXED
-                    RoleID = model.RoleID,
-                    IsActive = model.IsActive
-                };
+                FullName = model.FullName,
+                Email = model.Email,
+                PasswordHash = model.Password,
+                RoleID = model.RoleID,
+                IsActive = model.IsActive
+            };
 
-                var json = JsonConvert.SerializeObject(apiModel);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(apiModel);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // ⭐ USE CORRECT ROUTE → /api/Users/create
-                var res = await _client.PostAsync($"{_apiBase}Users/create", content);
+            var res = await _client.PostAsync("Users/create", content);
 
-                if (res.IsSuccessStatusCode)
-                {
-                    TempData["Msg"] = $"{roleFilter} created successfully!";
-                    return RedirectToAction("Index", new { role = roleFilter });
-                }
-
-                ViewBag.Error = "Failed to create user. Please try again.";
-                return View(model);
-            }
-            catch (Exception ex)
+            if (res.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Server error: " + ex.Message;
-                return View(model);
+                TempData["Msg"] = $"{roleFilter} created successfully!";
+                return RedirectToAction("Index", new { role = roleFilter, status = "All" });
             }
+
+            ViewBag.Error = "Failed to create user.";
+            return View(model);
         }
+
+        // ===========================
+        // EDIT USER (GET)
+        // ===========================
         [HttpGet]
         public async Task<IActionResult> Edit(int id, string? role = "All", string status = "All")
         {
-            var res = await _client.GetAsync($"{_apiBase}Users/{id}");
+            var res = await _client.GetAsync($"Users/{id}");
             if (!res.IsSuccessStatusCode)
             {
                 TempData["Error"] = "Failed to fetch user.";
@@ -117,65 +120,70 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var user = JsonConvert.DeserializeObject<UserView>(json);
 
-            if (user == null)
-            {
-                TempData["Error"] = "User not found.";
-                return RedirectToAction("Index", new { role, status });
-            }
-
             ViewBag.RoleFilter = role;
             ViewBag.StatusFilter = status;
 
             return View("Edit", user);
         }
+
+        // ===========================
+        // EDIT USER (POST)
+        // ===========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserView model, string roleFilter, string statusFilter)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            ViewBag.RoleFilter = roleFilter;
 
-            try
+            var apiModel = new
             {
-                // If password is empty → do NOT update password
-                var payload = new
-                {
-                    model.UserID,
-                    model.FullName,
-                    model.Email,
-                    PasswordHash = string.IsNullOrWhiteSpace(model.Password) ? null : model.Password,
-                    model.RoleID,
-                    model.IsActive
-                };
+                model.UserID,
+                model.FullName,
+                model.Email,
+                model.RoleID,
+                model.IsActive,
+                PasswordHash = string.IsNullOrWhiteSpace(model.Password) ? null : model.Password
+            };
 
-                var json = JsonConvert.SerializeObject(payload);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(apiModel);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var res = await _client.PutAsync($"{_apiBase}Users/update", content);
+            var res = await _client.PutAsync("Users/update", content);
 
-                if (res.IsSuccessStatusCode)
-                {
-                    TempData["Msg"] = "User updated successfully!";
-                    return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
-                }
-
-                ViewBag.Error = "Failed to update user. Try again.";
-                return View(model);
-            }
-            catch (Exception ex)
+            if (res.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Server error: " + ex.Message;
-                return View(model);
+                TempData["Msg"] = "User updated successfully!";
+                return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
             }
+
+            ViewBag.Error = "Failed to update user.";
+            return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id, string role = "All", string status = "All")
+        {
+            var res = await _client.GetAsync($"Users/{id}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction("Index", new { role, status });
+
+            var json = await res.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UserView>(json);
+
+            ViewBag.Role = role;
+            return View("Delete", user);
         }
 
-        // ===========================
-        // ENROLL
-        // ===========================
-        [HttpGet]
-        public IActionResult Enroll(int id, string? role = "All", string status = "All")
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int userID, string role)
         {
-            return RedirectToAction("Enroll", "StudentCourses", new { studentId = id, role, status });
+            var res = await _client.DeleteAsync($"Users/{userID}");
+
+            TempData["Msg"] = res.IsSuccessStatusCode
+                ? "User deleted successfully!"
+                : "Failed to delete user.";
+
+            return RedirectToAction("Index", new { role });
         }
 
     }

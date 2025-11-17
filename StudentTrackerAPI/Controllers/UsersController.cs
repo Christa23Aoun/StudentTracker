@@ -10,13 +10,11 @@ namespace StudentTrackerAPI.Controllers
     {
         private readonly IUserRepository _userRepo;
 
-        
         public UsersController(IUserRepository userRepo)
         {
             _userRepo = userRepo;
         }
 
-        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -27,7 +25,7 @@ namespace StudentTrackerAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var users = await _userRepo.GetAllAsync(); 
+            var users = await _userRepo.GetAllAsync();
             var user = users.FirstOrDefault(u => u.UserID == id);
             if (user == null)
                 return NotFound();
@@ -47,30 +45,31 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { UserID = newId });
         }
 
-
         [HttpPut("update")]
-        public async Task<IActionResult> Update(User user)
+        public async Task<IActionResult> Update([FromBody] User user)
         {
             var updated = await _userRepo.UpdateAsync(user);
-            if (!updated) return BadRequest("Failed to update user");
+            if (!updated)
+                return BadRequest("Failed to update user");
+
             return Ok();
         }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _userRepo.DeleteAsync(id);
+            var deleted = await _userRepo.HardDeleteAsync(id);
 
             if (deleted)
-                return Ok(new { message = $"✅ User with ID {id} deleted successfully" });
+                return Ok(new { message = $"User {id} was permanently removed" });
 
-            return NotFound(new { message = $"⚠️ User with ID {id} not found or could not be deleted" });
+            return NotFound(new { message = $"User {id} not found" });
         }
+
 
         [HttpGet("email/{email}")]
         public async Task<IActionResult> GetByEmail(string email)
         {
-            var users = await _userRepo.GetAllAsync(); 
+            var users = await _userRepo.GetAllAsync();
             var user = users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
 
             if (user == null)
@@ -78,8 +77,5 @@ namespace StudentTrackerAPI.Controllers
 
             return Ok(user);
         }
-
-
     }
-
 }

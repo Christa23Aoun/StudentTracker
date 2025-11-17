@@ -10,6 +10,7 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
 
         Task<bool> ActivateAsync(int userId);
         Task<bool> SetRoleAsync(int userId, int roleId);
+        Task<bool> HardDeleteAsync(int userId);
 
         Task<IEnumerable<User>> GetAllAsync();
         Task<bool> UpdateAsync(User user);
