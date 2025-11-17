@@ -10,22 +10,29 @@ namespace StudentTracker.Controllers
     public class UsersController : BaseController
     {
         private readonly HttpClient _client;
+        private readonly string _apiBase;
 
-        public UsersController(IHttpClientFactory factory)
+        public UsersController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient("API");
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
+        // ======================================================
+        // USERS LIST
+        // ======================================================
         [HttpGet]
         public async Task<IActionResult> Index(string? role = "All", string status = "All", string search = "")
         {
             var res = await _client.GetAsync("Users");
+
             if (!res.IsSuccessStatusCode)
-                return View("Index", new List<UserView>());
+                return View(new List<UserView>());
 
             var json = await res.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<UserView>>(json) ?? new();
 
+            // Apply filters
             var filtered = users.Where(u =>
                 (role == "All" ||
                  (role == "Teacher" && u.RoleID == 2) ||
@@ -37,26 +44,15 @@ namespace StudentTracker.Controllers
                  (status == "Inactive" && !u.IsActive))
             ).ToList();
 
-            foreach (var u in users)
-            {
-                if (role?.ToLower() == "teacher" && u.RoleID != 2) continue;
-                if (role?.ToLower() == "student" && u.RoleID != 3) continue;
-                if (role?.ToLower() == "admin" && u.RoleID != 1) continue;
-
-                if (status == "Active" && !u.IsActive) continue;
-                if (status == "Inactive" && u.IsActive) continue;
-
-                filtered.Add(u);
-            }
-
+            // Search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string term = search.ToLower();
                 filtered = filtered.Where(u =>
-                            u.UserID.ToString().Contains(term) ||
-                            (u.FullName?.ToLower().Contains(term) ?? false) ||
-                            (u.Email?.ToLower().Contains(term) ?? false)
-                         ).ToList();
+                    u.UserID.ToString().Contains(term) ||
+                    (u.FullName?.ToLower().Contains(term) ?? false) ||
+                    (u.Email?.ToLower().Contains(term) ?? false)
+                ).ToList();
             }
 
             ViewBag.RoleFilter = role;
@@ -65,19 +61,19 @@ namespace StudentTracker.Controllers
 
             return View("Index", filtered);
         }
-        // ===========================
-        // ENROLL  (REDIRECT TO StudentCoursesController)
-        // ===========================
-        [HttpGet("Enroll/{id}")]
+
+        // ======================================================
+        // REDIRECT TO ENROLL PAGE
+        // ======================================================
+        [HttpGet]
         public IActionResult Enroll(int id, string? role = "All", string status = "All")
         {
-            return RedirectToAction(
-                "Enroll",
-                "StudentCourses",
-                new { studentId = id, role, status }
-            );
+            return RedirectToAction("Enroll", "StudentCourses", new { studentId = id, role, status });
         }
 
+        // ======================================================
+        // CREATE USER (GET)
+        // ======================================================
         [HttpGet]
         public IActionResult Create(string? roleFilter = null)
         {
@@ -85,6 +81,9 @@ namespace StudentTracker.Controllers
             return View();
         }
 
+        // ======================================================
+        // CREATE USER (POST)
+        // ======================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserView model, string roleFilter)
@@ -105,16 +104,16 @@ namespace StudentTracker.Controllers
                     IsActive = model.IsActive
                 };
 
-            var json = JsonConvert.SerializeObject(apiModel);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(apiModel);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var res = await _client.PostAsync($"{_apiBase}Users/create", content);
+                var res = await _client.PostAsync("Users/create", content);
 
-            if (res.IsSuccessStatusCode)
-            {
-                TempData["Msg"] = $"{roleFilter} created successfully!";
-                return RedirectToAction("Index", new { role = roleFilter, status = "All" });
-            }
+                if (res.IsSuccessStatusCode)
+                {
+                    TempData["Msg"] = $"{roleFilter} created successfully!";
+                    return RedirectToAction("Index", new { role = roleFilter, status = "All" });
+                }
 
                 ViewBag.Error = "Failed to create user.";
                 return View(model);
@@ -126,10 +125,14 @@ namespace StudentTracker.Controllers
             }
         }
 
+        // ======================================================
+        // EDIT USER (GET)
+        // ======================================================
         [HttpGet]
         public async Task<IActionResult> Edit(int id, string? role = "All", string status = "All")
         {
             var res = await _client.GetAsync($"Users/{id}");
+
             if (!res.IsSuccessStatusCode)
             {
                 TempData["Error"] = "Failed to fetch user.";
@@ -139,12 +142,21 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var user = JsonConvert.DeserializeObject<UserView>(json);
 
+            if (user == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Index", new { role, status });
+            }
+
             ViewBag.RoleFilter = role;
             ViewBag.StatusFilter = status;
 
             return View("Edit", user);
         }
 
+        // ======================================================
+        // EDIT USER (POST)
+        // ======================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserView model, string roleFilter, string statusFilter)
@@ -153,7 +165,7 @@ namespace StudentTracker.Controllers
 
             try
             {
-                var payload = new
+                var apiModel = new
                 {
                     model.UserID,
                     model.FullName,
@@ -163,16 +175,16 @@ namespace StudentTracker.Controllers
                     model.IsActive
                 };
 
-            var json = JsonConvert.SerializeObject(apiModel);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(apiModel);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var res = await _client.PutAsync("Users/update", content);
+                var res = await _client.PutAsync("Users/update", content);
 
-            if (res.IsSuccessStatusCode)
-            {
-                TempData["Msg"] = "User updated successfully!";
-                return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
-            }
+                if (res.IsSuccessStatusCode)
+                {
+                    TempData["Msg"] = "User updated successfully!";
+                    return RedirectToAction("Index", new { role = roleFilter, status = statusFilter });
+                }
 
                 ViewBag.Error = "Failed to update user.";
                 return View(model);
@@ -184,6 +196,50 @@ namespace StudentTracker.Controllers
             }
         }
 
+        //// ======================================================
+        //// DELETE (GET)
+        //// ======================================================
+        //[HttpGet]
+        //public async Task<IActionResult> Delete(int id, string? role = "All", string status = "All")
+        //{
+        //    var res = await _client.GetAsync($"Users/{id}");
+
+        //    if (!res.IsSuccessStatusCode)
+        //    {
+        //        TempData["Error"] = "Failed to fetch user.";
+        //        return RedirectToAction("Index", new { role, status });
+        //    }
+
+        //    var json = await res.Content.ReadAsStringAsync();
+        //    var user = JsonConvert.DeserializeObject<UserView>(json);
+
+        //    if (user == null)
+        //    {
+        //        TempData["Error"] = "User not found.";
+        //        return RedirectToAction("Index", new { role, status });
+        //    }
+
+        //    ViewBag.Role = role;
+        //    ViewBag.Status = status;
+
+        //    return View("Delete", user);
+        //}
+
+        //// ======================================================
+        //// DELETE (POST)
+        //// ======================================================
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int userID, string role, string status = "All")
+        //{
+        //    var res = await _client.DeleteAsync($"Users/{userID}");
+
+        //    TempData["Msg"] = res.IsSuccessStatusCode
+        //        ? "User deleted successfully!"
+        //        : "Failed to delete user.";
+
+        //    return RedirectToAction("Index", new { role, status });
+        //}
         [HttpGet]
         public async Task<IActionResult> Delete(int id, string? role = "All", string status = "All")
         {
@@ -221,18 +277,6 @@ namespace StudentTracker.Controllers
                 TempData["Msg"] = "Failed to delete user.";
 
             return RedirectToAction("Index", new { role, status });
-        }
-
-        [HttpGet]
-        public IActionResult Enroll(int id, string? role = "All", string status = "All")
-        {
-            var res = await _client.DeleteAsync($"Users/{userID}");
-
-            TempData["Msg"] = res.IsSuccessStatusCode
-                ? "User deleted successfully!"
-                : "Failed to delete user.";
-
-            return RedirectToAction("Index", new { role });
         }
     }
 }
