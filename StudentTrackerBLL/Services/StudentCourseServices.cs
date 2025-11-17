@@ -59,6 +59,7 @@ namespace StudentTrackerBLL.Services
                     INSERT INTO StudentCourses (StudentID, CourseID, EnrollmentDate)
                     VALUES (@StudentID, @CourseID, GETDATE());
                 END";
+
             var rows = await con.ExecuteAsync(sql, new { StudentID = studentId, CourseID = courseId });
             return rows > 0;
         }

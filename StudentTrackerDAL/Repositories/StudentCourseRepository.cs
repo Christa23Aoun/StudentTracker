@@ -18,124 +18,91 @@ namespace StudentTrackerDAL.Repositories
         {
             using var con = new SqlConnection(_connectionString);
 
-            
-            try
-            {
-                var parameters = new
-                {
-                    course.StudentID,
-                    course.CourseID,
-                    course.EnrollmentDate,
-                    course.IsActive
-                };
+            var sql = @"
+                IF EXISTS (SELECT 1 FROM Users WHERE UserID = @StudentID AND RoleID = 3)
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM StudentCourses 
+                        WHERE StudentID = @StudentID AND CourseID = @CourseID
+                    )
+                    BEGIN
+                        INSERT INTO StudentCourses (StudentID, CourseID, EnrollmentDate, CreatedAt, IsActive)
+                        VALUES (@StudentID, @CourseID, GETDATE(), GETDATE(), 1);
+                    END
+                END";
 
-                return await con.ExecuteAsync(
-                    "sp_CreateStudentCourse",
-                    parameters,
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (SqlException)
-            {
-                var sql = @"
-                    INSERT INTO StudentCourses (StudentID, CourseID, EnrollmentDate, IsActive)
-                    VALUES (@StudentID, @CourseID, @EnrollmentDate, @IsActive)";
-                return await con.ExecuteAsync(sql, course);
-            }
+            return await con.ExecuteAsync(sql, new { course.StudentID, course.CourseID });
         }
 
         public async Task<IEnumerable<StudentCourse>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
-
-            try
-            {
-                return await con.QueryAsync<StudentCourse>(
-                    "sp_GetAllStudentCourses",
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (SqlException)
-            {
-                return await con.QueryAsync<StudentCourse>("SELECT * FROM StudentCourses");
-            }
+            return await con.QueryAsync<StudentCourse>(
+                "SELECT * FROM StudentCourses ORDER BY StudentCourseID DESC");
         }
 
         public async Task<StudentCourse?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
 
-            try
-            {
-                return await con.QueryFirstOrDefaultAsync<StudentCourse>(
-                    "sp_GetStudentCourseByID",
-                    new { StudentCourseID = id },
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (SqlException)
-            {
-                return await con.QueryFirstOrDefaultAsync<StudentCourse>(
-                    "SELECT * FROM StudentCourses WHERE StudentCourseID = @ID",
-                    new { ID = id }
-                );
-            }
+            return await con.QueryFirstOrDefaultAsync<StudentCourse>(
+                "SELECT * FROM StudentCourses WHERE StudentCourseID = @ID",
+                new { ID = id });
         }
+
         public async Task<IEnumerable<dynamic>> GetByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
             var sql = @"
-        SELECT 
-            sc.StudentCourseID,
-            sc.StudentID,
-            sc.CourseID,
-            u.FullName AS StudentName
-        FROM StudentCourses sc
-        INNER JOIN Users u ON u.UserID = sc.StudentID
-        WHERE sc.CourseID = @CourseID AND u.RoleID = 3
-        ORDER BY u.FullName";
+                SELECT 
+                    sc.StudentCourseID,
+                    sc.StudentID,
+                    sc.CourseID,
+                    u.FullName AS StudentName
+                FROM StudentCourses sc
+                INNER JOIN Users u ON u.UserID = sc.StudentID
+                WHERE sc.CourseID = @CourseID AND u.RoleID = 3
+                ORDER BY u.FullName;";
 
             return await con.QueryAsync(sql, new { CourseID = courseId });
+        }
+
+        public async Task<int> UpdateAsync(StudentCourse course)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+                UPDATE StudentCourses 
+                SET CourseID = @CourseID
+                WHERE StudentCourseID = @StudentCourseID";
+
+            return await con.ExecuteAsync(sql, new
+            {
+                course.StudentCourseID,
+                course.CourseID
+            });
         }
 
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
 
-            var sql = "DELETE FROM StudentCourses WHERE StudentCourseID = @ID";
-            return await con.ExecuteAsync(sql, new { ID = id });
+            var sql = "DELETE FROM StudentCourses WHERE StudentCourseID = @Id";
+            return await con.ExecuteAsync(sql, new { Id = id });
         }
 
-
-        public async Task<int> UpdateAsync(StudentCourse course)
+        public async Task<int> CountByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
-            try
-            {
-                var parameters = new
-                {
-                    course.StudentCourseID,
-                    course.CourseID,
-                    course.IsActive
-                };
+            var sql = @"
+                SELECT COUNT(*) 
+                FROM StudentCourses sc
+                INNER JOIN Users u ON u.UserID = sc.StudentID
+                WHERE sc.CourseID = @CourseID AND u.RoleID = 3";
 
-                return await con.ExecuteAsync(
-                    "sp_UpdateStudentCourse",
-                    parameters,
-                    commandType: CommandType.StoredProcedure
-                );
-            }
-            catch (SqlException)
-            {
-                var sql = @"
-                    UPDATE StudentCourses
-                    SET CourseID = @CourseID,
-                        IsActive = @IsActive
-                    WHERE StudentCourseID = @StudentCourseID";
-                return await con.ExecuteAsync(sql, course);
-            }
+            return await con.ExecuteScalarAsync<int>(sql, new { CourseID = courseId });
         }
 
         public async Task<int> CountByTeacherAsync(int teacherId)
@@ -143,15 +110,13 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
 
             var sql = @"
-        SELECT COUNT(*) 
-        FROM StudentCourses sc
-        INNER JOIN Courses c ON c.CourseID = sc.CourseID
-        INNER JOIN Users u ON u.UserID = sc.StudentID
-        WHERE c.TeacherID = @TeacherID AND u.RoleID = 3";
+                SELECT COUNT(*) 
+                FROM StudentCourses sc
+                INNER JOIN Courses c ON c.CourseID = sc.CourseID
+                INNER JOIN Users u ON u.UserID = sc.StudentID
+                WHERE c.TeacherID = @TeacherID AND u.RoleID = 3";
 
             return await con.ExecuteScalarAsync<int>(sql, new { TeacherID = teacherId });
         }
-
     }
-
 }

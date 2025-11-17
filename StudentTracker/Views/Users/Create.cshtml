@@ -1,11 +1,6 @@
 ﻿@model StudentTracker.Models.UserView
 @{
-    string role = ViewBag.RoleFilter ?? "User";
-    string pageTitle = role == "Student" ? "➕ Add New Student"
-                     : role == "Teacher" ? "➕ Add New Teacher"
-                     : "➕ Add New User";
-
-    ViewData["Title"] = pageTitle;
+    ViewData["Title"] = "Add User";
 }
 
 <style>
@@ -63,7 +58,7 @@
         .form-control:focus,
         .form-select:focus {
             border-color: #2196f3;
-            box-shadow: 0 0 12px rgba(33,150,243,0.6);
+            box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
             outline: none;
         }
 
@@ -89,7 +84,7 @@
         border-radius: 12px;
         font-weight: 600;
         padding: 12px 35px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
         cursor: pointer;
     }
 
@@ -98,14 +93,35 @@
         color: #fff;
     }
 
+        .btn-success:hover {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            box-shadow: 0 0 15px rgba(0, 255, 120, 0.6);
+        }
+
     .btn-secondary {
-        background: rgba(255,255,255,0.15);
+        background: rgba(255, 255, 255, 0.15);
         color: #ddd;
     }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+    /* Dropdown appearance fix */
+    .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+    }
+
+        .form-select::-ms-expand {
+            display: none;
+        }
 </style>
 
 <div class="form-container">
-    <h2>@pageTitle</h2>
+    <h2>➕ Add New User</h2>
 
     @if (ViewBag.Error != null)
     {
@@ -115,38 +131,29 @@
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
 
-        <!-- PASS ROLE FILTER -->
-        <input type="hidden" name="roleFilter" value="@role" />
-
-        <!-- SHOW ROLE (NOT EDITABLE) -->
-        <label class="form-label">Role</label>
-        <input class="form-control"
-               value="@role"
-               disabled
-               style="background:white; color:black;" />
-
         <label class="form-label">Full Name</label>
         <input asp-for="FullName" class="form-control" required />
+        <span asp-validation-for="FullName" class="text-danger"></span>
 
         <label class="form-label">Email</label>
         <input asp-for="Email" type="email" class="form-control" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
 
         <label class="form-label">Password</label>
         <input asp-for="Password" type="password" class="form-control" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
 
-        <!-- HIDDEN REAL ROLE -->
-        @if (role == "Student")
-        {
-            <input type="hidden" asp-for="RoleID" value="3" />
-        }
-        else if (role == "Teacher")
-        {
-            <input type="hidden" asp-for="RoleID" value="2" />
-        }
+        <label class="form-label">Role</label>
+        <select asp-for="RoleID" class="form-select" required>
+            <option value="">-- Select Role --</option>
+            <option value="3">Student</option>
+            <option value="2">Teacher</option>
+            <option value="1">Admin</option>
+        </select>
 
         <div class="form-check mb-3">
             <input class="form-check-input" asp-for="IsActive" />
-            <label class="form-check-label">Active</label>
+            <label class="form-check-label" asp-for="IsActive">Active</label>
         </div>
 
         <div class="btn-row">
