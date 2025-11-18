@@ -1,47 +1,51 @@
 ﻿@model IEnumerable<StudentTracker.Models.UserView>
 @{
     ViewData["Title"] = "Users";
+
+    string role = ViewBag.RoleFilter ?? "All";
+    string status = ViewBag.StatusFilter ?? "All";
+    string search = ViewBag.SearchTerm ?? "";
+
+    string pageTitle =
+        role == "Student" ? "🎓 All Students" :
+        role == "Teacher" ? "👨‍🏫 All Teachers" :
+        role == "Admin" ? "🧑‍💼 All Admins" :
+        "👥 All Users";
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
+        background: linear-gradient(135deg, #001a33, #003c8f);
         font-family: 'Segoe UI', sans-serif;
-        color: #fff;
         margin: 0;
         padding: 0;
+        color: #fff;
     }
 
     .users-wrapper {
         width: 85%;
-        max-width: 1200px;
+        max-width: 1300px;
         margin: 80px auto;
         background: rgba(0, 45, 90, 0.75);
         border-radius: 22px;
-        backdrop-filter: blur(30px);
         padding: 50px;
+        backdrop-filter: blur(30px);
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .page-header {
+    h2 {
         text-align: center;
-        margin-bottom: 40px;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #ffffff;
     }
-
-        .page-header h2 {
-            font-weight: 700;
-            font-size: 2.2rem;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
 
     .buttons-row {
         display: flex;
         justify-content: center;
-        align-items: center;
         gap: 18px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         flex-wrap: wrap;
     }
 
@@ -49,10 +53,9 @@
         padding: 12px 28px;
         border-radius: 12px;
         font-weight: 600;
-        border: none;
         text-decoration: none;
-        transition: all 0.3s ease;
-        font-size: 1rem;
+        transition: 0.3s;
+        display: inline-block;
     }
 
     .btn-back {
@@ -68,21 +71,20 @@
     .filter-row {
         display: flex;
         justify-content: center;
-        gap: 10px;
-        margin-bottom: 25px;
         flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 25px;
     }
 
-    select.form-select {
-        padding: 10px 36px 10px 14px;
+    select,
+    .search-input {
+        padding: 10px 14px;
         border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.25);
         background: rgba(0, 40, 85, 0.6);
         color: #ffffff;
         font-weight: 600;
-        min-width: 160px;
-        appearance: none;
-        cursor: pointer;
+        min-width: 180px;
     }
 
     .table-container {
@@ -90,8 +92,7 @@
         background: rgba(0, 40, 85, 0.85);
         border-radius: 18px;
         padding: 25px;
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     table {
@@ -107,7 +108,7 @@
     }
 
     thead {
-        background: rgba(0, 90, 170, 0.5);
+        background: rgba(0, 90, 170, 0.4);
     }
 
     .badge {
@@ -116,12 +117,12 @@
         font-weight: 600;
     }
 
-    .bg-success-subtle {
+    .badge-active {
         background: rgba(0, 255, 170, 0.12);
         color: #00e676;
     }
 
-    .bg-danger-subtle {
+    .badge-inactive {
         background: rgba(255, 100, 100, 0.12);
         color: #ff7b7b;
     }
@@ -129,13 +130,10 @@
     .action-btn {
         padding: 6px 14px;
         border-radius: 8px;
+        margin: 0 4px;
         font-weight: 600;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-        transition: all 0.3s ease;
+        transition: 0.3s;
+        display: inline-block;
     }
 
     .edit {
@@ -156,71 +154,35 @@
         border: 1px solid rgba(100, 180, 255, 0.25);
     }
 
-   
-    .action-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-    }
-
     .highlight-row {
-        background-color: rgba(255, 255, 0, 0.35) !important;
+        background: rgba(255, 255, 0, 0.25) !important;
         transition: background-color 0.4s ease;
     }
-
 </style>
 
 <div class="users-wrapper">
-
-    <div class="page-header">
-        <h2>
-            @(ViewBag.RoleFilter == "Student" ? "🎓 All Students" :
-                ViewBag.RoleFilter == "Teacher" ? "👨‍🏫 All Teachers" :
-                ViewBag.RoleFilter == "Admin" ? "🧑‍💼 All Admins" :
-                "👥 All Users")
-        </h2>
-    </div>
+    <h2>@pageTitle</h2>
 
     <div class="buttons-row">
         <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
-        <a asp-action="Create"
-           asp-route-roleFilter="@ViewBag.RoleFilter"
-           class="btn btn-add">
-            ➕ Add New @(ViewBag.RoleFilter == "Student" ? "Student" :
-            ViewBag.RoleFilter == "Teacher" ? "Teacher" : "User")
-        </a>
+        <a asp-action="Create" asp-route-roleFilter="@role" class="btn btn-add">➕ Add New User</a>
     </div>
 
     <form method="get" asp-action="Index" class="filter-row">
-
-        <!-- ROLE FILTER -->
-        <select name="role" class="form-select w-auto">
-            @{
-                string r = ViewBag.RoleFilter as string ?? "All";
-            }
-            <option value="All" selected="@(r == "All")">All Roles</option>
-            <option value="Admin" selected="@(r == "Admin")">Admins</option>
-            <option value="Teacher" selected="@(r == "Teacher")">Teachers</option>
-            <option value="Student" selected="@(r == "Student")">Students</option>
+        <select name="role">
+            <option value="All" selected="@(role == "All")">All Roles</option>
+            <option value="Admin" selected="@(role == "Admin")">Admins</option>
+            <option value="Teacher" selected="@(role == "Teacher")">Teachers</option>
+            <option value="Student" selected="@(role == "Student")">Students</option>
         </select>
 
-        <!-- STATUS FILTER -->
-        <select name="status" class="form-select w-auto">
-            @{
-                string s = ViewBag.StatusFilter as string ?? "All";
-            }
-            <option value="All" selected="@(s == "All")">All</option>
-            <option value="Active" selected="@(s == "Active")">Active</option>
-            <option value="Inactive" selected="@(s == "Inactive")">Inactive</option>
+        <select name="status">
+            <option value="All" selected="@(status == "All")">All</option>
+            <option value="Active" selected="@(status == "Active")">Active</option>
+            <option value="Inactive" selected="@(status == "Inactive")">Inactive</option>
         </select>
-        <input type="text"
-               name="search"
-               value="@ViewBag.SearchTerm"
-               placeholder="🔍 Search by name or ID..."
-               class="form-select w-auto"
-               style="background: rgba(0,40,85,0.6); color:white; font-weight:600;" />
 
+        <input type="text" name="search" value="@search" class="search-input" placeholder="Search by ID, name, or email..." />
         <button type="submit" class="btn btn-add">🔍 Apply Filter</button>
     </form>
 
@@ -245,63 +207,51 @@
             <tbody>
                 @foreach (var u in Model)
                 {
-                    <tr>
+                    string term = search.ToLower();
+                    bool highlight =
+                    !string.IsNullOrWhiteSpace(term) &&
+                    (
+                    u.UserID.ToString().Contains(term) ||
+                    (u.FullName?.ToLower().Contains(term) ?? false) ||
+                    (u.Email?.ToLower().Contains(term) ?? false)
+                    );
+
+                    <tr class="@(highlight ? "highlight-row" : "")">
                         <td>@u.UserID</td>
                         <td>@u.FullName</td>
                         <td>@u.Email</td>
                         <td>
                             @(u.RoleID == 1 ? "Admin 🧑‍💼" :
-                                u.RoleID == 2 ? "Teacher 👨‍🏫" :
-                                "Student 👩‍🎓")
-                        </td>
+                                                    u.RoleID == 2 ? "Teacher 👨‍🏫" :
+                                                    "Student 🎓")
+                    </td>
+                    <td>
+                        <span class="badge @(u.IsActive ? "badge-active" : "badge-inactive")">
+                            @(u.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
 
                         <td>
-                            @Html.Raw(u.IsActive
-                                     ? "<span class='badge bg-success-subtle'>Active</span>"
-                                     : "<span class='badge bg-danger-subtle'>Inactive</span>")
-                        </td>
+                            <a asp-action="Edit"
+                               asp-route-id="@u.UserID"
+                               asp-route-role="@role"
+                               asp-route-status="@status"
+                               class="action-btn edit">✏️ Edit</a>
 
-                        <td>
-                            <div class="action-container">
-                                <a asp-action="Edit"
+                            <a asp-action="Delete"
+                               asp-route-id="@u.UserID"
+                               asp-route-role="@role"
+                               asp-route-status="@status"
+                               class="action-btn delete">🗑 Delete</a>
+
+                        @if (u.RoleID == 3)
+                            {
+                                <a asp-action="Enroll"
                                    asp-route-id="@u.UserID"
-                                   asp-route-role="@ViewBag.RoleFilter"
-                                   asp-route-status="@ViewBag.StatusFilter"
-                                   class="action-btn edit">
-                                    ✏️ Edit
-                                </a>
-
-                                <a asp-action="Delete"
-                                   asp-route-id="@u.UserID"
-                                   asp-route-role="@ViewBag.RoleFilter"
-                                   asp-route-status="@ViewBag.StatusFilter"
-                                   class="action-btn delete">
-                                    🗑️ Delete
-                                </a>
-
-                                @if (u.RoleID == 3)
-                                {
-                                    <a asp-action="Enroll"
-                                       asp-route-id="@u.UserID"
-                                       asp-route-role="@ViewBag.RoleFilter"
-                                       asp-route-status="@ViewBag.StatusFilter"
-                                       class="action-btn enroll">
-                                        🎓 Enroll
-                                    </a>
-                                }
-                                @{
-                                    string searchTerm = (ViewBag.SearchTerm ?? "").ToString().ToLower();
-                                    bool highlight = !string.IsNullOrWhiteSpace(searchTerm) &&
-                                    (
-                                    u.UserID.ToString().Contains(searchTerm) ||
-                                    (u.FullName?.ToLower().Contains(searchTerm) ?? false) ||
-                                    (u.Email?.ToLower().Contains(searchTerm) ?? false)
-                                    );
-                                }
-
-                    <tr class="@(highlight ? "highlight-row" : "")">
-
-                            </div>
+                                   asp-route-role="@role"
+                                   asp-route-status="@status"
+                                   class="action-btn enroll">🎓 Enroll</a>
+                            }
                         </td>
                     </tr>
                 }
@@ -312,10 +262,10 @@
 
 <script>
     setTimeout(() => {
-        const alertBox = document.querySelector('.alert');
-        if (alertBox) {
-            alertBox.style.opacity = '0';
-            setTimeout(() => alertBox.remove(), 600);
-        }
+        const alerts = document.querySelectorAll('.alert-success');
+        alerts.forEach(a => {
+            a.style.opacity = '0';
+            setTimeout(() => a.remove(), 600);
+        });
     }, 3000);
 </script>

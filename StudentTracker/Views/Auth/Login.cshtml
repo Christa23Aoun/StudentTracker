@@ -29,14 +29,22 @@
 
     h3 {
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         color: #fff;
     }
 
     .login-role-label {
-        font-size: 0.9rem;
-        color: #cfe6ff;
+        background: rgba(0,150,255,0.18);
+        border: 1px solid rgba(0,150,255,0.35);
+        color: #cfeaff;
+        padding: 12px 18px;
+        border-radius: 12px;
+        text-align: center;
         margin-bottom: 20px;
+        font-weight: 600;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        animation: fadeIn 0.4s ease-out;
     }
 
     label {
@@ -69,7 +77,7 @@
         padding: 12px;
         color: #fff;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: 0.3s ease;
     }
 
         .btn-primary:hover {
@@ -85,12 +93,28 @@
         background: rgba(255,80,80,0.2);
         color: #ffb3b3;
     }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
 </style>
 
 <div class="login-box">
+
     <h3>🔐 Login</h3>
 
-    @if (ViewBag.Role != null)
+    @if (ViewBag.Role != null && ViewBag.Role.ToString() != "")
     {
         <div class="login-role-label">
             You are logging in as: <strong>@ViewBag.Role</strong>
@@ -100,7 +124,6 @@
     <form asp-controller="Auth" asp-action="Login" method="post">
         @Html.AntiForgeryToken()
 
-        <!-- Keep selected role (Student / Teacher / Admin) when using role-specific login -->
         <input type="hidden" name="Role" value="@ViewBag.Role" />
 
         <div class="mb-3 text-start">
@@ -115,11 +138,11 @@
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn-primary">Login</button>
 
         @if (ViewBag.Error != null)
         {
-            <div class="alert mt-3">@ViewBag.Error</div>
+            <div class="alert">@ViewBag.Error</div>
         }
     </form>
 </div>

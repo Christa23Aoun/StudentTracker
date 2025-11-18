@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Edit User";
+    var roleName = Model.RoleID == 1 ? "Admin"
+                : Model.RoleID == 2 ? "Teacher"
+                : "Student";
 }
 
 <style>
@@ -17,7 +20,7 @@
         max-width: 700px;
         margin: 100px auto;
         padding: 50px;
-        background: rgba(0, 45, 90, 0.8);
+        background: rgba(0, 45, 90, 0.9);
         border-radius: 25px;
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
@@ -37,8 +40,7 @@
         margin-bottom: 6px;
     }
 
-    .form-control,
-    .form-select {
+    .form-control {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.25);
         color: #fff;
@@ -46,17 +48,18 @@
         padding: 12px;
         margin-bottom: 20px;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
-        .form-select option {
-            background-color: #00284d;
-            color: #fff;
-            font-weight: 500;
-            padding: 10px;
+        /* 🔥 FIX: style the readonly state so it stays dark and visible */
+        .form-control[readonly] {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+            opacity: 1 !important;
+            cursor: not-allowed;
         }
 
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus {
             border-color: #2196f3;
             box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
             outline: none;
@@ -70,11 +73,6 @@
     .form-check-label {
         margin-left: 5px;
         font-weight: 500;
-    }
-
-    .form-check {
-        margin-top: 10px;
-        margin-bottom: 25px;
     }
 
     .btn-row {
@@ -117,22 +115,24 @@
     <h2>✏️ Edit User</h2>
 
     <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="UserID" />
+        <input type="hidden" asp-for="RoleID" />
         <input type="hidden" name="roleFilter" value="@ViewBag.RoleFilter" />
         <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
 
+        <label class="form-label">Role</label>
+        <input class="form-control" value="@roleName" readonly />
+
         <label class="form-label">Full Name</label>
-        <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
+        <input asp-for="FullName" class="form-control" />
 
         <label class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" placeholder="Enter email" />
+        <input asp-for="Email" class="form-control" />
 
-        <label class="form-label">Role</label>
-        <select asp-for="RoleID" class="form-select">
-            <option value="1">Admin</option>
-            <option value="2">Teacher</option>
-            <option value="3">Student</option>
-        </select>
+        <label class="form-label">New Password (optional)</label>
+        <input asp-for="Password" type="password" class="form-control" placeholder="Leave empty to keep current password" />
 
         <div class="form-check">
             <input class="form-check-input" asp-for="IsActive" />
