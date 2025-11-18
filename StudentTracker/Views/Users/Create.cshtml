@@ -107,7 +107,6 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-    /* Dropdown appearance fix */
     .form-select {
         appearance: none;
         -webkit-appearance: none;
@@ -121,6 +120,13 @@
 </style>
 
 <div class="form-container">
+    <h2>➕ Add New User</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert">@ViewBag.Error</div>
+    }
+
     <h2>➕ Add New User</h2>
 
     @if (ViewBag.Error != null)
