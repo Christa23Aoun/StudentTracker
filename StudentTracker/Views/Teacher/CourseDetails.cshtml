@@ -82,6 +82,7 @@
 </style>
 
 <div class="course-details-wrapper">
+
     <div class="course-header">
         <h2>@Model.CourseName (@Model.CourseCode)</h2>
         <p>@Model.DepartmentName — Semester: @Model.SemesterName</p>
@@ -92,11 +93,16 @@
             <h4>📊 Average Grade</h4>
             <p>@Model.AverageGrade %</p>
         </div>
+
         <div class="info-card">
             <h4>🕒 Attendance Rate</h4>
             <p>@Model.AttendanceRate %</p>
         </div>
-        <a asp-controller="Teacher" asp-action="StudentsInCourse" asp-route-courseId="@Model.CourseID" style="text-decoration:none; color:inherit;">
+
+        <a asp-controller="Teacher"
+           asp-action="StudentsInCourse"
+           asp-route-courseId="@Model.CourseID"
+           style="text-decoration:none; color:inherit;">
             <div class="info-card" style="cursor:pointer;">
                 <h4>👩‍🎓 Students</h4>
                 <p>@Model.StudentCount (View List)</p>
@@ -104,26 +110,40 @@
         </a>
     </div>
 
-    <!-- ATTENDANCE ROW -->
+    <!-- ATTENDANCE -->
     <div class="actions-row">
-        <a asp-controller="Attendance" asp-action="Create" asp-route-courseId="@Model.CourseID" class="btn">📋 Mark Attendance</a>
-        <a asp-controller="Attendance" asp-action="Index" asp-route-courseId="@Model.CourseID" class="btn">👁 View Attendance</a>
+        <a asp-controller="Attendance"
+           asp-action="Index"
+           asp-route-courseId="@Model.CourseID"
+           class="btn">
+            👁 View Attendance
+        </a>
     </div>
 
-    <!-- TESTS ROW -->
+    <!-- TESTS -->
     <div class="actions-row">
-        <a asp-controller="Tests" asp-action="Create" asp-route-courseId="@Model.CourseID" class="btn">➕ Add Test</a>
-        <a asp-controller="Tests" asp-action="Index" asp-route-courseId="@Model.CourseID" class="btn">📘 View Tests</a>
+        <a asp-controller="Tests"
+           asp-action="Index"
+           asp-route-courseId="@Model.CourseID"
+           class="btn">
+            📘 View Tests
+        </a>
     </div>
 
-    <!-- GRADES ROW -->
+    <!-- GRADES -->
     <div class="actions-row">
-        <a asp-controller="TestGrades" asp-action="BulkCreate" asp-route-courseId="@Model.CourseID" class="btn">➕ Add Grades</a>
-        <a asp-controller="TestGrades" asp-action="Index" asp-route-courseId="@Model.CourseID" class="btn">🏅 View Grades</a>
+        <a asp-controller="TestGrades"
+           asp-action="Index"
+           asp-route-courseId="@Model.CourseID"
+           class="btn">
+            🏅 View Grades
+        </a>
     </div>
 
     <!-- BACK -->
     <div class="actions-row">
-        <a asp-controller="Teacher" asp-action="Dashboard" class="btn back-btn">⬅ Back to Dashboard</a>
+        <a asp-controller="Teacher" asp-action="Dashboard" class="btn back-btn">
+            ⬅ Back to Dashboard
+        </a>
     </div>
 </div>

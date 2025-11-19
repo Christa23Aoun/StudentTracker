@@ -38,21 +38,21 @@ namespace StudentTrackerAPI.Controllers
         public async Task<IActionResult> Create([FromBody] Attendance a)
         {
             await _service.CreateAsync(a);
-            return Ok(new { message = "Attendance record created successfully" });
+            return Ok(new { message = "Attendance created successfully" });
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] Attendance a)
         {
             await _service.UpdateAsync(a);
-            return Ok(new { message = "Attendance record updated successfully" });
+            return Ok(new { message = "Attendance updated successfully" });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-            return Ok(new { message = "Attendance record deleted successfully" });
+            return Ok(new { message = "Attendance deleted successfully" });
         }
     }
 }

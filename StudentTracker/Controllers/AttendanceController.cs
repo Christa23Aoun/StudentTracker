@@ -23,12 +23,20 @@ namespace StudentTracker.Controllers
             if (!courseId.HasValue)
                 return View(new List<AttendanceView>());
 
-            var res = await _client.GetAsync($"{_apiBase}Attendance/byCourse/{courseId}");
+            var url = $"{_apiBase}Attendance/byCourse/{courseId}";
+            Console.WriteLine("🔎 DEBUG URL: " + url);
+
+            var res = await _client.GetAsync(url);
+
+            Console.WriteLine("🔎 STATUS: " + res.StatusCode);
+
             var list = new List<AttendanceView>();
 
             if (res.IsSuccessStatusCode)
             {
                 var json = await res.Content.ReadAsStringAsync();
+                Console.WriteLine("🔎 RESPONSE JSON: " + json);
+
                 list = JsonConvert.DeserializeObject<List<AttendanceView>>(json) ?? new();
             }
 
@@ -70,6 +78,7 @@ namespace StudentTracker.Controllers
 
             return View(list);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DateTime AttendanceDate, TimeSpan SessionTime, List<AttendanceView> attendanceList)
@@ -79,11 +88,11 @@ namespace StudentTracker.Controllers
 
             foreach (var record in attendanceList)
             {
-                record.AttendanceDate = AttendanceDate + SessionTime;
+                // Combine date + time and send full DateTime to API/DB
+                record.AttendanceDate = AttendanceDate.Date + SessionTime;
 
-                // Convert Status → IsPresent + IsValidated
+                // Convert Status → IsPresent
                 record.IsPresent = record.Status != "Absent";
-                record.IsValidated = true;
 
                 var payload = JsonConvert.SerializeObject(record);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");

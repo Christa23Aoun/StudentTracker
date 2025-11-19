@@ -1,0 +1,63 @@
+﻿@model StudentTracker.Models.AttendanceView
+
+@{
+    ViewData["Title"] = "Delete Attendance";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+    }
+
+    .delete-box {
+        width: 60%;
+        margin: 80px auto;
+        background: rgba(255,255,255,0.08);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        text-align: center;
+    }
+
+    .btn-danger {
+        background: #ff3d3d;
+        border: none;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .btn-secondary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border-radius: 8px;
+        padding: 12px 25px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+</style>
+
+<div class="delete-box">
+    <h2>🗑️ Delete Attendance Record</h2>
+
+    <p>Are you sure you want to delete this attendance entry?</p>
+
+    <p><strong>Student:</strong> @Model.StudentName</p>
+    <p><strong>Course:</strong> @Model.CourseName</p>
+    <p><strong>Date:</strong> @Model.AttendanceDate.ToShortDateString()</p>
+    <p><strong>Status:</strong> @(Model.IsPresent ? "Present" : "Absent")</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.AttendanceID" />
+        <input type="hidden" name="courseId" value="@Model.CourseID" />
+
+        <button type="submit" class="btn-danger">Delete</button>
+    </form>
+
+    <br />
+    <a class="btn-secondary" href="/Attendance?courseId=@Model.CourseID">Cancel</a>
+</div>

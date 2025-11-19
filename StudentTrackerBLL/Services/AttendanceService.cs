@@ -1,14 +1,18 @@
 ﻿using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Repositories;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace StudentTrackerBLL.Services
 {
     public class AttendanceService
     {
         private readonly AttendanceRepository _repository;
+        private readonly string _connectionString;
 
         public AttendanceService(string connectionString)
         {
+            _connectionString = connectionString;
             _repository = new AttendanceRepository(connectionString);
         }
 
@@ -18,8 +22,29 @@ namespace StudentTrackerBLL.Services
         public Task<int> UpdateAsync(Attendance att) => _repository.UpdateAsync(att);
         public Task<int> DeleteAsync(int id) => _repository.DeleteAsync(id);
 
-    
-        public Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId) =>
-            _repository.GetByCourseIdAsync(courseId);
+        // ✔ FIXED: Removed IsValidated
+        // ✔ FIXED: Mapped StudentName + CourseName correctly
+        // ✔ FIXED: Matches your DB structure perfectly
+        public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+                SELECT 
+                    a.AttendanceID,
+                    a.StudentID,
+                    u.FullName AS StudentName,
+                    a.CourseID,
+                    c.CourseName,
+                    a.AttendanceDate,
+                    a.IsPresent
+                FROM Attendance a
+                JOIN Users u ON a.StudentID = u.UserID
+                JOIN Courses c ON a.CourseID = c.CourseID
+                WHERE a.CourseID = @CourseID
+                ORDER BY a.AttendanceDate DESC";
+
+            return await con.QueryAsync<Attendance>(sql, new { CourseID = courseId });
+        }
     }
 }
