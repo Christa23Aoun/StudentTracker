@@ -18,7 +18,6 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ✅ Show all tests (optionally filtered by course)
         public async Task<IActionResult> Index(int? courseId)
         {
             ViewBag.CourseID = courseId;
@@ -39,25 +38,52 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // ✅ Display test creation form (with optional course prefilled)
-        public IActionResult Create(int? courseId)
+        [HttpGet]
+        public async Task<IActionResult> Create(int courseId)
         {
             ViewBag.CourseID = courseId;
-            var model = new TestView();
 
-            if (courseId.HasValue)
-                model.CourseID = courseId.Value;
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+            string courseName = "";
+
+            if (courseRes.IsSuccessStatusCode)
+            {
+                var json = await courseRes.Content.ReadAsStringAsync();
+                var course = JsonConvert.DeserializeObject<CourseView>(json);
+                courseName = course?.CourseName ?? "";
+            }
+
+            ViewBag.CourseName = courseName;
+
+            var model = new TestView
+            {
+                CourseID = courseId
+            };
 
             return View(model);
         }
+        private async Task LoadCourseName(int courseId)
+        {
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+            if (courseRes.IsSuccessStatusCode)
+            {
+                var json = await courseRes.Content.ReadAsStringAsync();
+                var course = JsonConvert.DeserializeObject<CourseView>(json);
+                ViewBag.CourseName = course?.CourseName ?? "";
+            }
 
-        // ✅ Handle test creation
+            ViewBag.CourseID = courseId;
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
         {
             if (!ModelState.IsValid)
+            {
+                await LoadCourseName(model.CourseID); // FIX: reload course info for the view
                 return View(model);
+            }
 
             var json = JsonConvert.SerializeObject(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -66,14 +92,16 @@ namespace StudentTracker.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["Msg"] = "✅ Test created successfully!";
-                return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
+                return RedirectToAction("Index", new { courseId = model.CourseID });
             }
 
+            await LoadCourseName(model.CourseID);
             ViewBag.Error = "Failed to create test.";
             return View(model);
         }
 
-        // ✅ Confirm deletion
+
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var res = await _client.GetAsync($"{_apiBase}Tests/{id}");
@@ -82,22 +110,15 @@ namespace StudentTracker.Controllers
 
             var json = await res.Content.ReadAsStringAsync();
             var test = JsonConvert.DeserializeObject<TestView>(json);
-            if (test == null)
-                return RedirectToAction(nameof(Index));
 
             return View(test);
         }
 
-        // ✅ Delete test permanently
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var res = await _client.DeleteAsync($"{_apiBase}Tests/{id}");
-            TempData["Msg"] = res.IsSuccessStatusCode
-                ? "Test deleted successfully."
-                : "Failed to delete test.";
-
             return RedirectToAction(nameof(Index));
         }
     }

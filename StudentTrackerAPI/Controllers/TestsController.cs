@@ -16,10 +16,43 @@ namespace StudentTrackerAPI.Controllers
             _service = new TestService(conn);
         }
 
-        [HttpGet] public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
-        [HttpGet("{id}")] public async Task<IActionResult> GetById(int id) => Ok(await _service.GetByIdAsync(id));
-        [HttpPost] public async Task<IActionResult> Create(Test t) { await _service.CreateAsync(t); return Ok("Test created successfully"); }
-        [HttpPut] public async Task<IActionResult> Update(Test t) { await _service.UpdateAsync(t); return Ok("Test updated successfully"); }
-        [HttpDelete("{id}")] public async Task<IActionResult> Delete(int id) { await _service.DeleteAsync(id); return Ok("Test deleted successfully"); }
+        // GET /api/Tests
+        [HttpGet]
+        public async Task<IActionResult> GetAll() =>
+            Ok(await _service.GetAllAsync());
+
+        // GET /api/Tests/byCourse/5
+        [HttpGet("byCourse/{courseId}")]
+        public async Task<IActionResult> GetByCourse(int courseId) =>
+            Ok(await _service.GetByCourseIdAsync(courseId));
+
+        // GET /api/Tests/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id) =>
+            Ok(await _service.GetByIdAsync(id));
+
+        // POST /api/Tests
+        [HttpPost]
+        public async Task<IActionResult> Create(Test t)
+        {
+            await _service.CreateAsync(t);
+            return Ok(new { message = "Test created successfully" });
+        }
+
+        // PUT
+        [HttpPut]
+        public async Task<IActionResult> Update(Test t)
+        {
+            await _service.UpdateAsync(t);
+            return Ok(new { message = "Test updated successfully" });
+        }
+
+        // DELETE
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _service.DeleteAsync(id);
+            return Ok(new { message = "Test deleted successfully" });
+        }
     }
 }

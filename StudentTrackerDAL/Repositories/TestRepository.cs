@@ -39,6 +39,27 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
             return await con.QueryFirstOrDefaultAsync<Test>("sp_GetTestByID", new { TestID = id }, commandType: CommandType.StoredProcedure);
         }
+        public async Task<IEnumerable<Test>> GetByCourseIdAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            string sql = @"
+        SELECT 
+            t.TestID,
+            t.CourseID,
+            c.CourseName,
+            t.TestName,
+            t.TestDate,
+            t.Weight,
+            t.MaxScore
+        FROM Tests t
+        INNER JOIN Courses c ON t.CourseID = c.CourseID
+        WHERE t.CourseID = @CourseID
+        ORDER BY t.TestDate DESC";
+
+            return await con.QueryAsync<Test>(sql, new { CourseID = courseId });
+        }
+
 
         public async Task<int> UpdateAsync(Test test)
         {
