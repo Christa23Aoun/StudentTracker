@@ -1,0 +1,146 @@
+﻿@model IEnumerable<StudentTracker.Models.CourseScheduleView>
+
+@{
+    ViewData["Title"] = "Course Schedule";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        width: 85%;
+        max-width: 1100px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 20px;
+        padding: 40px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    .btn-add {
+        display: inline-block;
+        background: #28a745;
+        padding: 10px 20px;
+        border-radius: 12px;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+        margin-bottom: 20px;
+    }
+
+        .btn-add:hover {
+            background: #1e7e34;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+    }
+
+    th, td {
+        padding: 16px;
+        text-align: center;
+    }
+
+    th {
+        background: rgba(0, 60, 130, 0.9);
+        font-weight: 600;
+        color: #dceeff;
+    }
+
+    tr:nth-child(even) {
+        background: rgba(255,255,255,0.07);
+    }
+
+    tr:hover {
+        background: rgba(0,90,180,0.25);
+    }
+
+    .actions a,
+    .actions button {
+        margin: 0 6px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-edit {
+        background: rgba(0,150,255,0.25);
+        color: #fff;
+    }
+
+        .btn-edit:hover {
+            background: rgba(0,150,255,0.5);
+        }
+
+    .btn-delete {
+        background: rgba(255,80,80,0.25);
+        color: #fff;
+    }
+
+        .btn-delete:hover {
+            background: rgba(255,80,80,0.5);
+        }
+</style>
+
+<div class="page-wrapper">
+
+    <h2>📅 Course Schedule</h2>
+
+    <a asp-action="AddSchedule" asp-route-courseId="@ViewBag.CourseID" class="btn-add">➕ Add Schedule</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Schedule ID</th>
+                <th>Day Of Week</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.ScheduleID</td>
+                    <td>@s.DayOfWeek</td>
+                    <td>@s.StartTime.ToString(@"hh\:mm")</td>
+                    <td>@s.EndTime.ToString(@"hh\:mm")</td>
+
+                    <td class="actions">
+                        <a asp-action="EditSchedule" asp-route-id="@s.ScheduleID" class="btn-edit">Edit</a>
+
+                        <form asp-action="DeleteSchedule" asp-route-id="@s.ScheduleID" asp-route-courseId="@s.CourseID"
+                              method="post" style="display:inline;">
+                            <button class="btn-delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

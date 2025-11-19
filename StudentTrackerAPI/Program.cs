@@ -26,7 +26,6 @@ builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Repositories
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -36,21 +35,22 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+builder.Services.AddScoped<ICourseScheduleRepository>(provider =>
+    new CourseScheduleRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// FIX — repositories that require connectionString
 builder.Services.AddScoped<ITestGradeRepository>(sp =>
     new TestGradeRepository(connectionString));
 
 builder.Services.AddScoped<IAttendanceRepository>(sp =>
     new AttendanceRepository(connectionString));
 
-// Services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
 
 var app = builder.Build();
 

@@ -3,154 +3,126 @@ using Newtonsoft.Json;
 using StudentTracker.Models;
 using System.Text;
 
-namespace StudentTracker.Controllers;
-
-public class CoursesController : Controller
+namespace StudentTracker.Controllers
 {
-    private readonly HttpClient _client;
-    private readonly string _apiBase;
-
-    public CoursesController(IHttpClientFactory factory, IConfiguration config)
+    public class CoursesController : Controller
     {
-        _client = factory.CreateClient();
-        _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
-    }
+        private readonly HttpClient _client;
+        private readonly string _apiBase;
 
-    private async Task<List<LookupItem>> LoadDepartmentsAsync()
-    {
-        var res = await _client.GetAsync($"{_apiBase}Departments");
-        if (!res.IsSuccessStatusCode) return new();
-        var json = await res.Content.ReadAsStringAsync();
-        // Departments API returns DepartmentID, DepartmentName
-        var anon = JsonConvert.DeserializeObject<List<dynamic>>(json) ?? new();
-        return anon.Select(a => new LookupItem { Id = (int)a.departmentID, Name = (string)a.departmentName }).ToList();
-    }
-
-    private async Task<List<LookupItem>> LoadSemestersAsync()
-    {
-        var res = await _client.GetAsync($"{_apiBase}Semesters");
-        if (!res.IsSuccessStatusCode) return new();
-        var json = await res.Content.ReadAsStringAsync();
-        // Semesters API returns SemesterID, Name
-        var anon = JsonConvert.DeserializeObject<List<dynamic>>(json) ?? new();
-        return anon.Select(a => new LookupItem { Id = (int)a.semesterID, Name = (string)a.name }).ToList();
-    }
-
-    public async Task<IActionResult> Index()
-    {
-        var res = await _client.GetAsync($"{_apiBase}Courses");
-        if (!res.IsSuccessStatusCode) return View(new List<CourseView>());
-        var json = await res.Content.ReadAsStringAsync();
-        var list = JsonConvert.DeserializeObject<List<CourseView>>(json) ?? new();
-        return View(list);
-    }
-
-    public async Task<IActionResult> Create()
-    {
-        return View(new CourseView
+        public CoursesController(IHttpClientFactory factory, IConfiguration config)
         {
-            Departments = await LoadDepartmentsAsync(),
-            Semesters = await LoadSemestersAsync()
-        });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CourseView model)
-    {
-        if (!ModelState.IsValid)
-        {
-            model.Departments = await LoadDepartmentsAsync();
-            model.Semesters = await LoadSemestersAsync();
-            return View(model);
+            _client = factory.CreateClient();
+            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        var payload = JsonConvert.SerializeObject(new
+    
+        public async Task<IActionResult> Index()
         {
-            courseCode = model.CourseCode,
-            courseName = model.CourseName,
-            creditHours = model.CreditHours,
-            departmentID = model.DepartmentID,
-            teacherID = model.TeacherID,  
-            semesterID = model.SemesterID,
-            isActive = model.IsActive
-        });
+            var res = await _client.GetAsync($"{_apiBase}Courses");
 
-        var res = await _client.PostAsync($"{_apiBase}Courses", new StringContent(payload, Encoding.UTF8, "application/json"));
-        if (!res.IsSuccessStatusCode)
-        {
-            ModelState.AddModelError("", "Create failed.");
-            model.Departments = await LoadDepartmentsAsync();
-            model.Semesters = await LoadSemestersAsync();
-            return View(model);
+            if (!res.IsSuccessStatusCode)
+                return View(new List<CourseView>());
+
+            var json = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<CourseView>>(json) ?? new();
+
+            return View(list);
         }
 
-        TempData["Msg"] = "Course created.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Edit(int id)
-    {
-        var res = await _client.GetAsync($"{_apiBase}Courses/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<CourseView>(json)!;
-
-        item.Departments = await LoadDepartmentsAsync();
-        item.Semesters = await LoadSemestersAsync();
-
-        return View(item);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, CourseView model)
-    {
-        if (id != model.CourseID) return BadRequest();
-        if (!ModelState.IsValid)
+        
+        public async Task<IActionResult> Schedule(int courseId)
         {
-            model.Departments = await LoadDepartmentsAsync();
-            model.Semesters = await LoadSemestersAsync();
-            return View(model);
+            if (courseId == 0)
+                return BadRequest("Missing course ID");
+
+            ViewBag.CourseID = courseId;
+
+           
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+            if (courseRes.IsSuccessStatusCode)
+            {
+                var courseJson = await courseRes.Content.ReadAsStringAsync();
+                var course = JsonConvert.DeserializeObject<CourseView>(courseJson);
+                ViewBag.CourseName = course?.CourseName;
+                ViewBag.TeacherName = course?.TeacherName;
+            }
+
+            var res = await _client.GetAsync($"{_apiBase}CourseSchedule/course/{courseId}");
+            var json = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<CourseScheduleView>>(json) ?? new();
+
+            return View("~/Views/Courses/Schedule.cshtml", list);
         }
 
-        var payload = JsonConvert.SerializeObject(new
+        
+       
+        public IActionResult AddSchedule(int courseId)
         {
-            courseID = model.CourseID,
-            courseCode = model.CourseCode,
-            courseName = model.CourseName,
-            creditHours = model.CreditHours,
-            departmentID = model.DepartmentID,
-            teacherID = model.TeacherID,
-            semesterID = model.SemesterID,
-            isActive = model.IsActive
-        });
-
-        var res = await _client.PutAsync($"{_apiBase}Courses/{id}", new StringContent(payload, Encoding.UTF8, "application/json"));
-        if (!res.IsSuccessStatusCode)
-        {
-            ModelState.AddModelError("", "Update failed.");
-            model.Departments = await LoadDepartmentsAsync();
-            model.Semesters = await LoadSemestersAsync();
-            return View(model);
+            return View(new CourseScheduleView { CourseID = courseId });
         }
 
-        TempData["Msg"] = "Course updated.";
-        return RedirectToAction(nameof(Index));
-    }
+        [HttpPost]
+        public async Task<IActionResult> AddSchedule(CourseScheduleView model)
+        {
+            model.EndTime = model.StartTime.Add(new TimeSpan(1, 15, 0));
 
-    public async Task<IActionResult> Delete(int id)
-    {
-        var res = await _client.GetAsync($"{_apiBase}Courses/{id}");
-        if (!res.IsSuccessStatusCode) return NotFound();
-        var json = await res.Content.ReadAsStringAsync();
-        var item = JsonConvert.DeserializeObject<CourseView>(json);
-        return View(item);
-    }
+            var payload = JsonConvert.SerializeObject(model);
 
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var res = await _client.DeleteAsync($"{_apiBase}Courses/{id}");
-        TempData["Msg"] = res.IsSuccessStatusCode ? "Course deleted." : "Delete failed.";
-        return RedirectToAction(nameof(Index));
+            var res = await _client.PostAsync(
+                $"{_apiBase}CourseSchedule",
+                new StringContent(payload, Encoding.UTF8, "application/json")
+            );
+
+            if (!res.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Failed to create schedule.");
+                return View(model);
+            }
+
+            return RedirectToAction("Schedule", new { courseId = model.CourseID });
+        }
+
+      
+        public async Task<IActionResult> EditSchedule(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}CourseSchedule/{id}");
+            if (!res.IsSuccessStatusCode) return NotFound();
+
+            var json = await res.Content.ReadAsStringAsync();
+            var item = JsonConvert.DeserializeObject<CourseScheduleView>(json);
+
+            return View(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSchedule(int id, CourseScheduleView model)
+        {
+            // Auto calculate end time = +1h15
+            model.EndTime = model.StartTime.Add(new TimeSpan(1, 15, 0));
+
+            var payload = JsonConvert.SerializeObject(model);
+
+            var res = await _client.PutAsync(
+                $"{_apiBase}CourseSchedule/{id}",
+                new StringContent(payload, Encoding.UTF8, "application/json")
+            );
+
+            if (!res.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Update failed.");
+                return View(model);
+            }
+
+            return RedirectToAction("Schedule", new { courseId = model.CourseID });
+        }
+
+     
+        [HttpPost]
+        public async Task<IActionResult> DeleteSchedule(int id, int courseId)
+        {
+            await _client.DeleteAsync($"{_apiBase}CourseSchedule/{id}");
+            return RedirectToAction("Schedule", new { courseId });
+        }
     }
 }

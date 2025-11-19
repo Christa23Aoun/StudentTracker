@@ -8,6 +8,7 @@ namespace StudentTracker.Models
 
         [StringLength(30)]
         public string? CourseCode { get; set; }
+        public string? TeacherName { get; set; }
 
         [Required, StringLength(200)]
         public string CourseName { get; set; } = string.Empty;

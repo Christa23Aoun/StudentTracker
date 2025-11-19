@@ -121,6 +121,7 @@
             border-radius: 10px;
             border: none;
             transition: all 0.3s ease;
+            font-size: 18px;
         }
 
     .btn-edit {
@@ -128,18 +129,27 @@
         color: #fff;
     }
 
+        .btn-edit:hover {
+            background: rgba(0, 150, 255, 0.5);
+        }
+
     .btn-delete {
         background: rgba(255, 80, 80, 0.25);
         color: #fff;
     }
 
-    .btn-edit:hover {
-        background: rgba(0, 150, 255, 0.5);
+        .btn-delete:hover {
+            background: rgba(255, 80, 80, 0.5);
+        }
+
+    .btn-schedule {
+        background: rgba(0, 200, 255, 0.25);
+        color: #fff;
     }
 
-    .btn-delete:hover {
-        background: rgba(255, 80, 80, 0.5);
-    }
+        .btn-schedule:hover {
+            background: rgba(0, 200, 255, 0.5);
+        }
 </style>
 
 <div class="page-wrapper">
@@ -185,10 +195,16 @@
                             <span class="status-inactive">Inactive</span>
                         }
                     </td>
+
                     <td class="actions">
+                        <a asp-action="Schedule" asp-route-courseId="@course.CourseID" class="btn-schedule">
+                            🕒
+                        </a>
+
                         <a asp-action="Edit" asp-route-id="@course.CourseID" class="btn-edit">
                             ✏️
                         </a>
+
                         <form asp-action="Delete" asp-route-id="@course.CourseID" method="post" style="display:inline;">
                             <button type="submit" class="btn-delete">🗑️</button>
                         </form>

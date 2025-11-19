@@ -22,7 +22,6 @@ namespace StudentTrackerAPI.Controllers
             _grades = grades;
         }
 
-        // ========== BASIC CRUD (already used by Admin) ==========
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -60,9 +59,7 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { message = "Course deleted successfully" });
         }
 
-        // ========== ENDPOINTS FOR TEACHER DASHBOARD ==========
-
-        // Used by TeacherController.Dashboard -> Courses/byTeacher/{teacherId}
+        
         [HttpGet("byTeacher/{teacherId}")]
         public async Task<IActionResult> GetByTeacher(int teacherId)
         {
