@@ -33,6 +33,8 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
+
+
         public async Task<IEnumerable<Attendance>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
@@ -59,7 +61,8 @@ namespace StudentTrackerDAL.Repositories
                 {
                     att.AttendanceID,
                     att.IsPresent,
-                    att.IsValidated
+                    att.IsValidated,
+                    att.Status        // <-- added
                 },
                 commandType: CommandType.StoredProcedure);
         }
@@ -73,16 +76,29 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-       
         public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.QueryAsync<Attendance>(
-                "SELECT * FROM Attendance WHERE CourseID = @CourseID",
-                new { CourseID = courseId });
+
+            var sql = @"
+    SELECT 
+        a.AttendanceID,
+        a.StudentID,
+        u.FullName AS StudentName,
+        a.CourseID,
+        c.CourseName,
+        a.AttendanceDate,
+        a.IsPresent,
+        a.IsValidated
+    FROM Attendance a
+    JOIN Users u ON a.StudentID = u.UserID
+    JOIN Courses c ON a.CourseID = c.CourseID
+    WHERE a.CourseID = @CourseID
+    ORDER BY a.AttendanceDate DESC";
+
+            return await con.QueryAsync<Attendance>(sql, new { CourseID = courseId });
         }
 
-   
         public async Task<decimal> GetAverageAttendanceByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -92,15 +108,5 @@ namespace StudentTrackerDAL.Repositories
 
             return result ?? 0;
         }
-        // ✅ Fetch enrolled students for a given course
-        public async Task<IEnumerable<dynamic>> GetStudentsByCourseAsync(int courseId)
-        {
-            using var con = new SqlConnection(_connectionString);
-            return await con.QueryAsync(
-                "sp_GetStudentsByCourseID",
-                new { CourseID = courseId },
-                commandType: CommandType.StoredProcedure);
-        }
-
     }
 }

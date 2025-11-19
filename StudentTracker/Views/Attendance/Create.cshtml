@@ -1,4 +1,5 @@
 ﻿@model List<StudentTracker.Models.AttendanceView>
+
 @{
     ViewData["Title"] = "Mark Attendance";
     var courseId = ViewBag.CourseID;
@@ -98,6 +99,7 @@
     <p class="course-title">@courseName</p>
 
     <form asp-action="Create" method="post">
+
         <input type="hidden" name="courseId" value="@courseId" />
 
         <div class="session-inputs">
@@ -121,10 +123,14 @@
                     <tr>
                         <td>
                             @Model[i].StudentName
+
+                            <!-- Hidden required fields -->
                             <input type="hidden" name="attendanceList[@i].StudentID" value="@Model[i].StudentID" />
                             <input type="hidden" name="attendanceList[@i].CourseID" value="@Model[i].CourseID" />
                             <input type="hidden" name="attendanceList[@i].StudentName" value="@Model[i].StudentName" />
+                            <input type="hidden" name="attendanceList[@i].CourseName" value="@Model[i].CourseName" />
                         </td>
+
                         <td>
                             <select name="attendanceList[@i].Status">
                                 <option value="Present">Present</option>
@@ -138,6 +144,10 @@
         </table>
 
         <button type="submit" class="btn-save">💾 Save Attendance</button>
-        <a asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@courseId" class="btn-cancel">✖ Cancel</a>
+
+        <a asp-controller="Teacher" asp-action="CourseDetails"
+           asp-route-id="@courseId"
+           class="btn-cancel">✖ Cancel</a>
+
     </form>
 </div>
