@@ -19,31 +19,23 @@ builder.Services.AddAuthentication("CookieAuth")
     {
         options.LoginPath = "/Auth/Login";
         options.AccessDeniedPath = "/Auth/Login";
-
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = context =>
             {
                 var path = context.Request.Path.Value?.ToLower();
 
-                // USER NOT AUTHENTICATED AND TRYING TO ACCESS ADMIN
-                if (!context.HttpContext.User.Identity.IsAuthenticated &&
-                    path != null &&
-                    path.StartsWith("/admin"))
+                // If trying to access ANY admin page -> special admin login
+                if (path != null && path.StartsWith("/admin"))
                 {
                     context.Response.Redirect("/Auth/LoginAdmin");
-                    return Task.CompletedTask;
                 }
-
-                // Default for others → login
-                if (!context.HttpContext.User.Identity.IsAuthenticated)
+                else
                 {
+                    // Default login for students & teachers
                     context.Response.Redirect("/Auth/Login");
-                    return Task.CompletedTask;
                 }
 
-                // If authenticated but not authorized → access denied
-                context.Response.Redirect("/Auth/Login");
                 return Task.CompletedTask;
             }
         };
@@ -51,13 +43,13 @@ builder.Services.AddAuthentication("CookieAuth")
 
 builder.Services.AddAuthorization();
 
-// API Client
+// API HttpClient
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7199/api/");
 });
 
-// Bind API settings
+// Bind ApiSettings if needed
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
