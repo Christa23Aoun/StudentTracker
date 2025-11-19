@@ -10,11 +10,16 @@ namespace StudentTrackerAPI.Controllers
     {
         private readonly IUserRepository _users;
         private readonly ICourseRepository _courses;
+        private readonly ITestGradeRepository _testGrades;
 
-        public DashboardController(IUserRepository users, ICourseRepository courses)
+        public DashboardController(
+            IUserRepository users,
+            ICourseRepository courses,
+            ITestGradeRepository testGrades)
         {
             _users = users;
             _courses = courses;
+            _testGrades = testGrades;
         }
 
         [HttpGet("AdminSummary")]
@@ -30,21 +35,15 @@ namespace StudentTrackerAPI.Controllers
             foreach (var user in users)
             {
                 if (user.RoleID == 3)
-                {
                     totalStudents++;
-                }
                 else if (user.RoleID == 2 && user.IsActive)
-                {
                     totalActiveTeachers++;
-                }
             }
 
             foreach (var course in courses)
             {
                 if (course.IsActive)
-                {
                     activeCourses++;
-                }
             }
 
             return Ok(new
@@ -53,6 +52,33 @@ namespace StudentTrackerAPI.Controllers
                 totalActiveTeachers = totalActiveTeachers,
                 activeCoursesThisSemester = activeCourses
             });
+        }
+
+        [HttpGet("PendingGrades")]
+        public async Task<IActionResult> GetPendingGrades()
+        {
+            var pending = await _testGrades.GetPendingGradesAsync();
+            return Ok(pending);
+        }
+
+        [HttpPost("ValidateGrade/{id}")]
+        public async Task<IActionResult> ValidateGrade(int id)
+        {
+            var affected = await _testGrades.MarkGradeAsValidatedAsync(id);
+            if (affected == 0)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        [HttpPost("RejectGrade/{id}")]
+        public async Task<IActionResult> RejectGrade(int id)
+        {
+            var affected = await _testGrades.DeleteGradeAsync(id);
+            if (affected == 0)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

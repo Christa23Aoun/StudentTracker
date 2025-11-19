@@ -6,11 +6,9 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33 0%, #002b66 40%, #003c8f 100%);
+        background: linear-gradient(135deg, #001a33, #003c8f);
         font-family: 'Segoe UI', sans-serif;
         color: #fff;
-        margin: 0;
-        padding: 0;
     }
 
     .enroll-wrapper {
@@ -19,26 +17,12 @@
         margin: 80px auto;
         background: rgba(0, 45, 90, 0.75);
         border-radius: 22px;
-        backdrop-filter: blur(30px);
         padding: 50px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-        border: 1px solid rgba(255,255,255,0.05);
+        backdrop-filter: blur(30px);
     }
-
-    .accordion-button {
-        background-color: rgba(255,255,255,0.1);
-        color: #fff;
-        font-weight: 600;
-    }
-
-        .accordion-button:not(.collapsed) {
-            background-color: #0d6efd;
-            color: #fff;
-        }
 
     .list-group-item {
-        background-color: transparent;
-        color: #fff;
+        background: transparent;
         border: 1px solid rgba(255,255,255,0.15);
         display: flex;
         align-items: center;
@@ -54,75 +38,40 @@
         margin-left: 10px;
     }
 
-    .badge-dropped {
-        background: rgba(255,215,0,0.25);
-        color: #ffd700;
-        padding: 5px 12px;
-        border-radius: 8px;
-        font-weight: 600;
-        margin-left: 10px;
-    }
-
-    .btn-small {
+    .btn-unenroll {
         padding: 6px 10px;
         border-radius: 8px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: 0.2s;
-        margin-left: 10px;
-        font-size: 0.9rem;
-    }
-
-    .btn-unenroll {
-        background-color: rgba(255, 80, 80, 0.3);
+        background: rgba(255,80,80,0.3);
         color: #ff6b6b;
+        border: none;
+        font-weight: 600;
     }
 
         .btn-unenroll:hover {
-            background-color: rgba(255, 80, 80, 0.6);
-        }
-
-    .btn-reenroll {
-        background-color: rgba(255, 215, 0, 0.3);
-        color: #ffd700;
-    }
-
-        .btn-reenroll:hover {
-            background-color: rgba(255, 215, 0, 0.55);
-        }
-
-    .btn-primary {
-        background-color: #00b36b;
-        border: none;
-        font-weight: 600;
-    }
-
-        .btn-primary:hover {
-            background-color: #009657;
-        }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        border: none;
-        font-weight: 600;
-    }
-
-        .btn-secondary:hover {
-            background-color: #565e64;
+            background: rgba(255,80,80,0.6);
         }
 </style>
 
 <div class="enroll-wrapper">
-    <h2 class="text-center mb-3">Enroll Student</h2>
+
+    <h2 class="text-center">Enroll Student</h2>
     <h4 class="text-center mb-4">@Model.StudentName (@Model.StudentID)</h4>
 
+    <!-- ONE single form for Enroll + Unenroll -->
     <form asp-action="Enroll" asp-controller="Enrollments" method="post">
+        @Html.AntiForgeryToken()
+
+        <!-- For model binding in Enroll (POST) -->
         <input type="hidden" asp-for="StudentID" />
         <input type="hidden" asp-for="ReturnRole" />
         <input type="hidden" asp-for="ReturnStatus" />
 
-        <div class="accordion" id="departmentsAccordion">
+        <!-- For parameters in Unenroll (POST) -->
+        <input type="hidden" name="studentId" value="@Model.StudentID" />
+        <input type="hidden" name="role" value="@Model.ReturnRole" />
+        <input type="hidden" name="status" value="@Model.ReturnStatus" />
+
+        <div class="accordion" id="depsAccordion">
             @for (int i = 0; i < Model.Departments.Count; i++)
             {
                 var dep = Model.Departments[i];
@@ -130,40 +79,34 @@
 
                 <div class="accordion-item bg-transparent mb-3">
                     <h2 class="accordion-header" id="heading@i">
-                        <button class="accordion-button collapsed" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#@collapseId"
-                                aria-expanded="false" aria-controls="@collapseId">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#@collapseId">
                             @dep.DepartmentName
                         </button>
                     </h2>
 
-                    <div id="@collapseId" class="accordion-collapse collapse" data-bs-parent="#departmentsAccordion">
+                    <div id="@collapseId" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <ul class="list-group">
-
                                 @foreach (var course in dep.Courses)
                                 {
                                     bool isActive = Model.EnrolledCourseIds.Contains(course.CourseID);
-                                    bool isDropped = Model.DroppedCourseIds.Contains(course.CourseID);
 
                                     <li class="list-group-item">
-
                                         <div>
                                             <label>@course.CourseName</label>
-
                                             @if (isActive)
                                             {
                                                 <span class="badge-active">Enrolled ✓</span>
-                                            }
-                                            else if (isDropped)
-                                            {
-                                                <span class="badge-dropped">Dropped</span>
                                             }
                                         </div>
 
                                         <div class="d-flex align-items-center">
 
-                                            @if (!isActive && !isDropped)
+                                            @* Checkbox only if NOT yet enrolled *@
+                                            @if (!isActive)
                                             {
                                                 <input type="checkbox"
                                                        name="SelectedCourses"
@@ -171,29 +114,23 @@
                                                        class="form-check-input me-2" />
                                             }
 
+                                            @* Unenroll button uses SAME form, but different action *@
                                             @if (isActive)
                                             {
-                                                <form method="post" action="/Enrollments/Unenroll" class="d-inline">
-                                                    <input type="hidden" name="studentId" value="@Model.StudentID" />
-                                                    <input type="hidden" name="courseId" value="@course.CourseID" />
-                                                    <button class="btn-small btn-unenroll">Unenroll</button>
-                                                </form>
-                                            }
-
-                                            @if (isDropped)
-                                            {
-                                                <form method="post" action="/Enrollments/ReEnroll" class="d-inline">
-                                                    <input type="hidden" name="studentId" value="@Model.StudentID" />
-                                                    <input type="hidden" name="courseId" value="@course.CourseID" />
-                                                    <button class="btn-small btn-reenroll">Re-Enroll</button>
-                                                </form>
+                                                <button type="submit"
+                                                        class="btn-unenroll"
+                                                        formaction="@Url.Action("Unenroll", "Enrollments")"
+                                                        formmethod="post"
+                                                        name="courseId"
+                                                        value="@course.CourseID"
+                                                        onclick="event.stopPropagation()">
+                                                    Unenroll
+                                                </button>
                                             }
 
                                         </div>
-
                                     </li>
                                 }
-
                             </ul>
                         </div>
                     </div>
@@ -202,11 +139,17 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-5 py-2 me-3">Enroll Selected</button>
+            <button type="submit" class="btn btn-primary px-5 py-2 me-3">
+                Enroll Selected
+            </button>
+
             <a asp-controller="Users" asp-action="Index"
                asp-route-role="@Model.ReturnRole"
                asp-route-status="@Model.ReturnStatus"
-               class="btn btn-secondary px-5 py-2">Cancel</a>
+               class="btn btn-secondary px-5 py-2">
+                Cancel
+            </a>
         </div>
+
     </form>
 </div>

@@ -24,10 +24,10 @@ namespace StudentTracker.Controllers
         [HttpGet("/admin/dashboard")]
         public async Task<IActionResult> Dashboard()
         {
+            var model = new AdminDashboardViewModel();
+
             try
             {
-                var model = new AdminDashboardViewModel();
-
                 var summaryRes = await _client.GetAsync($"{_apiBase}Dashboard/AdminSummary");
                 if (summaryRes.IsSuccessStatusCode)
                 {
@@ -52,13 +52,22 @@ namespace StudentTracker.Controllers
                     }
                 }
 
-                return View("~/Views/Dashboard/Admin.cshtml", model);
+                var pendingRes = await _client.GetAsync($"{_apiBase}Dashboard/PendingGrades");
+                if (pendingRes.IsSuccessStatusCode)
+                {
+                    var pendingJson = await pendingRes.Content.ReadAsStringAsync();
+                    var pendingList = JsonConvert.DeserializeObject<List<AdminPendingGradeView>>(pendingJson);
+
+                    if (pendingList != null)
+                        model.PendingGrades = pendingList;
+                }
             }
             catch (Exception ex)
             {
                 ViewBag.Error = $"Server error: {ex.Message}";
-                return View("~/Views/Dashboard/Admin.cshtml", new AdminDashboardViewModel());
             }
+
+            return View("~/Views/Dashboard/Admin.cshtml", model);
         }
     }
 }

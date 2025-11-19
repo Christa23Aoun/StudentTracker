@@ -1,4 +1,6 @@
-﻿namespace StudentTracker.Models
+﻿using System;
+
+namespace StudentTracker.Models
 {
     public class EnrollmentCourseView
     {
@@ -7,6 +9,5 @@
         public int CourseID { get; set; }
         public DateTime EnrollmentDate { get; set; }
         public bool IsActive { get; set; }
-        public DateTime? DroppedAt { get; set; }
     }
 }

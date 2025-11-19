@@ -1,0 +1,209 @@
+﻿@model IEnumerable<StudentTracker.Models.AdminPendingGradeView>
+
+@{
+    ViewData["Title"] = "Pending Grades";
+    var courseFilter = ViewBag.CourseFilter as string ?? "";
+    var studentFilter = ViewBag.StudentFilter as string ?? "";
+    var searchTerm = ViewBag.SearchTerm as string ?? "";
+    var courses = ViewBag.Courses as List<string> ?? new List<string>();
+    var students = ViewBag.Students as List<string> ?? new List<string>();
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        width: 90%;
+        max-width: 1300px;
+        margin: 80px auto;
+        background: rgba(0, 45, 90, 0.75);
+        border-radius: 22px;
+        padding: 40px 35px;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #cfdcff;
+        font-size: 0.95rem;
+    }
+
+    .filters-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+
+        .filters-row select,
+        .filters-row input[type="text"] {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(0, 40, 85, 0.7);
+            color: #ffffff;
+            min-width: 180px;
+        }
+
+        .filters-row button {
+            padding: 8px 20px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #008cff, #005fc4);
+            color: #fff;
+            font-weight: 600;
+        }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 12px 14px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 0.95rem;
+    }
+
+    thead {
+        background: rgba(0, 90, 170, 0.5);
+    }
+
+    .score-cell {
+        font-weight: 700;
+    }
+
+    .btn-sm {
+        padding: 4px 10px;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0 2px;
+    }
+
+    .btn-validate {
+        background: rgba(0, 200, 83, 0.2);
+        color: #00e676;
+        border: 1px solid rgba(0, 230, 118, 0.5);
+    }
+
+    .btn-reject {
+        background: rgba(255, 82, 82, 0.2);
+        color: #ff8a80;
+        border: 1px solid rgba(255, 138, 128, 0.5);
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 20px 0;
+        color: #dde7ff;
+        font-style: italic;
+    }
+</style>
+
+<div class="page-wrapper">
+    <h1>🧾 Pending Grades</h1>
+    <p class="subtitle">Review, validate, or reject grades submitted by teachers.</p>
+
+    <form method="get" asp-action="Index" class="filters-row">
+        <select name="course">
+            <option value="">All courses</option>
+            @foreach (var c in courses)
+            {
+                <option value="@c" selected="@(c == courseFilter)">@c</option>
+            }
+        </select>
+
+        <select name="student">
+            <option value="">All students</option>
+            @foreach (var s in students)
+            {
+                <option value="@s" selected="@(s == studentFilter)">@s</option>
+            }
+        </select>
+
+        <input type="text" name="search" value="@searchTerm" placeholder="Search test, course or student..." />
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <div class="table-container">
+        @if (!Model.Any())
+        {
+            <div class="no-data">
+                No pending grades found for the selected filters.
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Course</th>
+                        <th>Student</th>
+                        <th>Score</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in Model)
+                    {
+                        <tr>
+                            <td>@g.TestName</td>
+                            <td>@g.CourseName</td>
+                            <td>@g.StudentName</td>
+                            <td class="score-cell">@g.Score</td>
+                            <td>@g.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <form asp-action="Validate" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@g.TestGradeID" />
+                                    <input type="hidden" name="course" value="@courseFilter" />
+                                    <input type="hidden" name="student" value="@studentFilter" />
+                                    <input type="hidden" name="search" value="@searchTerm" />
+                                    <button type="submit" class="btn-sm btn-validate">Validate</button>
+                                </form>
+
+                                <form asp-action="Reject" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@g.TestGradeID" />
+                                    <input type="hidden" name="course" value="@courseFilter" />
+                                    <input type="hidden" name="student" value="@studentFilter" />
+                                    <input type="hidden" name="search" value="@searchTerm" />
+                                    <button type="submit" class="btn-sm btn-reject">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
