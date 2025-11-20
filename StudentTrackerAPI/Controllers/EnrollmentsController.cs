@@ -15,55 +15,44 @@ namespace StudentTrackerAPI.Controllers
             _repo = repo;
         }
 
+        // GET: api/Enrollments/student/1025
         [HttpGet("student/{studentId}")]
         public async Task<IActionResult> GetCoursesByStudent(int studentId)
         {
-            var courses = await _repo.GetCoursesByStudentAsync(studentId);
-            if (courses == null || !courses.Any())
-                return Ok(new List<object>());
-            return Ok(courses);
+            var result = await _repo.GetCoursesByStudentAsync(studentId);
+
+            if (result == null || !result.Any())
+                return Ok(new List<StudentCourse>());
+
+            return Ok(result);
         }
 
+        // POST: api/Enrollments/enroll
         [HttpPost("enroll")]
-        public async Task<IActionResult> Enroll([FromBody] EnrollmentRequest model)
+        public async Task<IActionResult> Enroll([FromBody] EnrollmentRequest dto)
         {
-            if (model == null || model.StudentID <= 0 || model.CourseID <= 0)
-                return BadRequest("Invalid data.");
+            if (dto == null || dto.StudentID <= 0 || dto.CourseID <= 0)
+                return BadRequest("Invalid enrollment request.");
 
-            var result = await _repo.EnrollAsync(model.StudentID, model.CourseID);
+            var result = await _repo.EnrollAsync(dto.StudentID, dto.CourseID);
 
-            if (result > 0)
-                return Ok(new { Message = "Enrolled successfully." });
-
-            return BadRequest("Student is already enrolled.");
+            return result > 0
+                ? Ok(new { message = "Enrolled successfully." })
+                : BadRequest(new { message = "Enrollment failed." });
         }
 
+        // DELETE: api/Enrollments/unenroll
         [HttpDelete("unenroll")]
-        public async Task<IActionResult> Unenroll([FromBody] EnrollmentRequest model)
+        public async Task<IActionResult> Unenroll([FromBody] EnrollmentRequest dto)
         {
-            if (model == null || model.StudentID <= 0 || model.CourseID <= 0)
-                return BadRequest("Invalid data.");
+            if (dto == null || dto.StudentID <= 0 || dto.CourseID <= 0)
+                return BadRequest("Invalid unenroll request.");
 
-            var result = await _repo.UnenrollAsync(model.StudentID, model.CourseID);
+            var result = await _repo.UnenrollAsync(dto.StudentID, dto.CourseID);
 
-            if (result > 0)
-                return Ok(new { Message = "Unenrolled successfully." });
-
-            return BadRequest("Enrollment not found.");
-        }
-
-        [HttpPost("reenroll")]
-        public async Task<IActionResult> ReEnroll([FromBody] EnrollmentRequest model)
-        {
-            if (model == null || model.StudentID <= 0 || model.CourseID <= 0)
-                return BadRequest("Invalid data.");
-
-            var result = await _repo.ReEnrollAsync(model.StudentID, model.CourseID);
-
-            if (result > 0)
-                return Ok(new { Message = "Re-enrolled successfully." });
-
-            return BadRequest("Course is already active.");
+            return result > 0
+                ? Ok(new { message = "Unenrolled successfully." })
+                : BadRequest(new { message = "Unenroll failed." });
         }
     }
 

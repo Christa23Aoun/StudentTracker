@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace StudentTrackerCOMMON.Interfaces.Services
+namespace StudentTrackerCOMMON.Interfaces.Repositories
 {
-    public interface IAdminDashboardService
+    public interface IAdminDashboardRepository
     {
-        Task<AdminDashboardDto> GetAdminDashboardAsync();
-
         Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync();
         Task<bool> ValidateGradeAsync(int testGradeId);
         Task<bool> RejectGradeAsync(int testGradeId);

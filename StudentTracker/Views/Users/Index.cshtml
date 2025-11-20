@@ -222,14 +222,14 @@
                         <td>@u.Email</td>
                         <td>
                             @(u.RoleID == 1 ? "Admin 🧑‍💼" :
-                                                    u.RoleID == 2 ? "Teacher 👨‍🏫" :
-                                                    "Student 🎓")
-                    </td>
-                    <td>
-                        <span class="badge @(u.IsActive ? "badge-active" : "badge-inactive")">
-                            @(u.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
+                                u.RoleID == 2 ? "Teacher 👨‍🏫" :
+                                "Student 🎓")
+                        </td>
+                        <td>
+                            <span class="badge @(u.IsActive ? "badge-active" : "badge-inactive")">
+                                @(u.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
 
                         <td>
                             <a asp-action="Edit"
@@ -244,10 +244,11 @@
                                asp-route-status="@status"
                                class="action-btn delete">🗑 Delete</a>
 
-                        @if (u.RoleID == 3)
+                            @if (u.RoleID == 3)
                             {
-                                <a asp-action="Enroll"
-                                   asp-route-id="@u.UserID"
+                                <a asp-controller="Enrollments"
+                                   asp-action="Enroll"
+                                   asp-route-studentId="@u.UserID"
                                    asp-route-role="@role"
                                    asp-route-status="@status"
                                    class="action-btn enroll">🎓 Enroll</a>

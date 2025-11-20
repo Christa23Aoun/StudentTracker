@@ -4,13 +4,13 @@
     {
         public AdminDashboardSummary Summary { get; set; } = new();
 
-      
         public List<DepartmentDashboardView>? Departments { get; set; }
         public List<CourseDashboardView>? Courses { get; set; }
         public List<UserDashboardView>? Users { get; set; }
 
-   
+        
         public List<AdminPendingGradeView>? PendingGrades { get; set; } = new();
+
         public int AttendanceCount { get; set; } = 0;
     }
 
@@ -34,7 +34,6 @@
         public string CourseNames { get; set; } = string.Empty;
     }
 
-
     public class CourseDashboardView
     {
         public int CourseID { get; set; }
@@ -55,12 +54,5 @@
     }
 
     
-    public class AdminPendingGradeView
-    {
-        public int TestID { get; set; }
-        public string StudentName { get; set; } = string.Empty;
-        public string CourseName { get; set; } = string.Empty;
-        public double? Grade { get; set; }
-        public bool IsValidated { get; set; }
-    }
+    
 }

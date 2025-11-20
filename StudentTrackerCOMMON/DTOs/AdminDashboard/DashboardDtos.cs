@@ -6,7 +6,7 @@
         public List<DepartmentDashboardDto> Departments { get; set; } = new();
         public List<CourseDashboardDto> Courses { get; set; } = new();
         public List<UserDashboardDto> Users { get; set; } = new();
-        public List<AdminPendingGradeDto> PendingGrades { get; set; } = new();
+        public List<AdminPendingGradeItemDto> PendingGrades { get; set; } = new();
     }
 
     public class AdminDashboardSummaryDto
@@ -45,13 +45,5 @@
         public bool IsActive { get; set; }
     }
 
-    // renamed to avoid ambiguity
-    public class AdminPendingGradeDto
-    {
-        public int TestGradeID { get; set; }
-        public int TestID { get; set; }
-        public int StudentID { get; set; }
-        public decimal Score { get; set; }
-        public bool IsValidated { get; set; }
-    }
+    
 }

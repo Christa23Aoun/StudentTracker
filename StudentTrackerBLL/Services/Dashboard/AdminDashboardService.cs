@@ -4,6 +4,7 @@ using StudentTrackerCOMMON.Interfaces.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using StudentTrackerDAL.Repositories;
 
 namespace StudentTrackerBLL.Services.Dashboard
 {
@@ -13,35 +14,34 @@ namespace StudentTrackerBLL.Services.Dashboard
         private readonly ICourseRepository _courses;
         private readonly IDepartmentRepository _departments;
         private readonly ITestGradeRepository _testGrades;
-        private readonly IAttendanceRepository _attendance;
 
         public AdminDashboardService(
-            IUserRepository users,
-            ICourseRepository courses,
-            IDepartmentRepository departments,
-            ITestGradeRepository testGrades,
-            IAttendanceRepository attendance)
+     IUserRepository users,
+     ICourseRepository courses,
+     IDepartmentRepository departments,
+     ITestGradeRepository testGrades)
         {
             _users = users;
             _courses = courses;
             _departments = departments;
             _testGrades = testGrades;
-            _attendance = attendance;
         }
+
 
         public async Task<AdminDashboardDto> GetAdminDashboardAsync()
         {
             var students = await _users.CountByRoleAsync("Student");
             var teachers = await _users.CountByRoleAsync("Teacher");
+
             var courses = await _courses.GetAllAsync();
-            var depts = await _departments.GetAllAsync();
+            var departments = await _departments.GetAllAsync();
 
             var summary = new AdminDashboardSummaryDto
             {
                 TotalStudents = students,
                 TotalTeachers = teachers,
                 ActiveCourses = courses.Count(),
-                Departments = depts.Count(),
+                Departments = departments.Count(),
                 CurrentAcademicYear = "2024-2025",
                 CurrentSemester = "Fall"
             };
@@ -49,7 +49,7 @@ namespace StudentTrackerBLL.Services.Dashboard
             return new AdminDashboardDto
             {
                 Summary = summary,
-                Departments = depts.Select(d => new DepartmentDashboardDto
+                Departments = departments.Select(d => new DepartmentDashboardDto
                 {
                     DepartmentID = d.DepartmentID,
                     DepartmentName = d.DepartmentName,
@@ -60,7 +60,7 @@ namespace StudentTrackerBLL.Services.Dashboard
                     CourseID = c.CourseID,
                     CourseCode = c.CourseCode,
                     CourseName = c.CourseName,
-                    DepartmentName = depts.FirstOrDefault(d => d.DepartmentID == c.DepartmentID)?.DepartmentName ?? "—",
+                    DepartmentName = departments.FirstOrDefault(d => d.DepartmentID == c.DepartmentID)?.DepartmentName ?? "—",
                     TeacherName = "—",
                     IsActive = c.IsActive
                 }).ToList(),
@@ -74,8 +74,41 @@ namespace StudentTrackerBLL.Services.Dashboard
                                u.RoleID == 3 ? "Student" : "Unknown",
                     IsActive = u.IsActive
                 }).ToList(),
-                PendingGrades = new List<AdminPendingGradeDto>() // empty placeholder
+                PendingGrades = new List<AdminPendingGradeItemDto>() // filled later
             };
+        }
+
+       
+        public async Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync()
+        {
+            var grades = await _testGrades.GetPendingGradesAsync();
+
+            return grades.Select(g => new AdminPendingGradeItemDto
+            {
+                TestGradeID = g.TestGradeID,
+                TestID = g.TestID,
+                TestName = g.TestName,
+                CourseID = g.CourseID,
+                CourseName = g.CourseName,
+                StudentID = g.StudentID,
+                StudentName = g.StudentName,
+                Score = g.Score,
+                CreatedAt = g.CreatedAt
+            });
+        }
+
+     
+        public async Task<bool> ValidateGradeAsync(int testGradeId)
+        {
+            var affected = await _testGrades.MarkGradeAsValidatedAsync(testGradeId);
+            return affected > 0;
+        }
+
+       
+        public async Task<bool> RejectGradeAsync(int testGradeId)
+        {
+            var affected = await _testGrades.DeleteGradeAsync(testGradeId);
+            return affected > 0;
         }
     }
 }
