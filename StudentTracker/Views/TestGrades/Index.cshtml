@@ -1,4 +1,4 @@
-﻿@model IEnumerable<StudentTracker.Models.TestGradeView>
+﻿@* @model IEnumerable<StudentTracker.Models.TestGradeView>
 
 @{
     ViewData["Title"] = "Test Grades";
@@ -202,3 +202,174 @@
         }
     }, 3000);
 </script>
+ *@
+
+@model IEnumerable<StudentTracker.Models.TestGradeView>
+
+@{
+    ViewData["Title"] = "Test Grades";
+    var courseId = ViewBag.CourseID;
+    var courseName = ViewBag.CourseName ?? "Course";
+    var testName = ViewBag.TestName ?? "";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001f3f, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+    }
+
+    .wrapper {
+        width: 90%;
+        max-width: 1200px;
+        margin: 70px auto;
+    }
+
+    .btn-back, .btn-add, .btn-bulk {
+        background: linear-gradient(135deg, #00bcd4, #1976d2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        margin-right: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover, .btn-add:hover, .btn-bulk:hover {
+            background: linear-gradient(135deg, #1976d2, #00bcd4);
+            transform: translateY(-2px);
+        }
+
+    h2 {
+        font-weight: 700;
+        font-size: 2.4rem;
+        text-align: center;
+        margin-bottom: 10px;
+        color: #aee0ff;
+    }
+
+    .subtitle {
+        text-align: center;
+        margin-bottom: 35px;
+        color: #cfd8dc;
+        font-size: 1.2rem;
+    }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px);
+        padding: 25px;
+        border-radius: 20px;
+    }
+
+    table {
+        width: 100%;
+        color: white;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 14px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        text-align: center;
+    }
+
+    .action-btn {
+        background: rgba(255, 90, 90, 0.25);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .action-btn:hover {
+            background: rgba(255, 50, 50, 0.45);
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="wrapper">
+
+    <!-- BACK BUTTON -->
+    <a asp-controller="Teacher"
+       asp-action="CourseDetails"
+       asp-route-id="@courseId"
+       class="btn-back">⬅ Back to Course</a>
+
+    <!-- ADD BUTTONS -->
+    <div style="text-align: right; margin-bottom: 25px;">
+        <a asp-action="Create"
+           asp-route-courseId="@courseId"
+           class="btn-add">➕ Add Grade</a>
+
+        <a asp-controller="TestGrades"
+           asp-action="BulkCreate"
+           asp-route-courseId="@courseId"
+           class="btn-bulk">📘 Add Grades (Bulk)</a>
+    </div>
+
+    <!-- TITLES -->
+    <h2>🧾 Grades for @courseName</h2>
+
+    @if (!string.IsNullOrEmpty(testName))
+    {
+        <div class="subtitle">Test: <strong>@testName</strong></div>
+    }
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Grade ID</th>
+                    <th>Test ID</th>
+                    <th>Student ID</th>
+                    <th>Score</th>
+                    <th>Validated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var g in Model)
+                    {
+                        <tr>
+                            <td>@g.GradeID</td>
+                            <td>@g.TestID</td>
+                            <td>@g.StudentID</td>
+                            <td>@g.Score</td>
+                            <td>@(g.IsValidated ? "Yes" : "No")</td>
+                            <td>
+                                <a asp-action="Delete"
+                                   asp-route-id="@g.GradeID"
+                                   asp-route-courseId="@courseId"
+                                   class="action-btn">🗑 Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="padding: 22px; color: #aaa;">
+                            No grades found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

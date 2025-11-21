@@ -1,5 +1,7 @@
 ﻿using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StudentTrackerBLL.Services
 {
@@ -14,6 +16,7 @@ namespace StudentTrackerBLL.Services
 
         public async Task<IEnumerable<TestGrade>> GetAllAsync() => await _repository.GetAllAsync();
         public async Task<TestGrade?> GetByIdAsync(int id) => await _repository.GetByIdAsync(id);
+        public async Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId) => await _repository.GetByCourseAsync(courseId);
         public async Task<int> CreateAsync(TestGrade grade) => await _repository.CreateAsync(grade);
         public async Task<int> UpdateAsync(TestGrade grade) => await _repository.UpdateAsync(grade);
         public async Task<int> DeleteAsync(int id) => await _repository.DeleteAsync(id);

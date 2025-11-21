@@ -32,13 +32,34 @@ namespace StudentTrackerDAL.Repositories
                 new { TestGradeID = id });
         }
 
+        public async Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            return await con.QueryAsync<TestGrade>(
+                "sp_GetTestGradesByCourse",
+                new { CourseID = courseId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
         public async Task<int> CreateAsync(TestGrade grade)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.ExecuteAsync(@"
-                INSERT INTO TestGrades (TestID, StudentID, Score, IsValidated, IsRejected, CreatedAt, UpdatedAt)
-                VALUES (@TestID, @StudentID, @Score, 0, 0, GETDATE(), GETDATE())",
-                grade);
+
+            var parameters = new
+            {
+                grade.TestID,
+                grade.StudentID,
+                grade.Score,
+                grade.IsValidated
+            };
+
+            return await con.ExecuteScalarAsync<int>(
+                "sp_CreateTestGrade",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<int> UpdateAsync(TestGrade grade)
@@ -60,7 +81,6 @@ namespace StudentTrackerDAL.Repositories
                 new { TestGradeID = id });
         }
 
-        // Admin: Get pending grades
         public async Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync()
         {
             using var con = new SqlConnection(_connectionString);

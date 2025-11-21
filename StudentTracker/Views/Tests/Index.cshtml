@@ -146,12 +146,15 @@
                         <td>@item.Weight</td>
                         <td>@item.MaxScore</td>
                         <td>
+                            <!-- FIXED: pass BOTH courseId + testId -->
                             <a asp-controller="TestGrades"
                                asp-action="BulkCreate"
+                               asp-route-courseId="@item.CourseID"
                                asp-route-testId="@item.TestID"
                                class="btn-grades">
                                 ➕ Add Grades
                             </a>
+
                             <a asp-action="Edit"
                                asp-route-id="@item.TestID"
                                class="btn-grades"
