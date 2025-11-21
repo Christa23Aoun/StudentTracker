@@ -62,6 +62,7 @@ namespace StudentTracker.Controllers
 
             return View(model);
         }
+
         private async Task LoadCourseName(int courseId)
         {
             var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
@@ -75,13 +76,16 @@ namespace StudentTracker.Controllers
             ViewBag.CourseID = courseId;
         }
 
+        // ----------------------------------------------------------
+        // CREATE TEST (POST) — WITH ERROR MESSAGE SUPPORT
+        // ----------------------------------------------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
         {
             if (!ModelState.IsValid)
             {
-                await LoadCourseName(model.CourseID); // FIX: reload course info for the view
+                await LoadCourseName(model.CourseID);
                 return View(model);
             }
 
@@ -95,12 +99,57 @@ namespace StudentTracker.Controllers
                 return RedirectToAction("Index", new { courseId = model.CourseID });
             }
 
+            // ⭐⭐ THIS IS THE PART YOU DIDN’T UNDERSTAND ⭐⭐
+            string error = await response.Content.ReadAsStringAsync();
+            ViewBag.Error = error;
+
             await LoadCourseName(model.CourseID);
-            ViewBag.Error = "Failed to create test.";
             return View(model);
         }
 
+        // ----------------------------------------------------------
+        // EDIT TEST (GET)
+        // ----------------------------------------------------------
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Tests/{id}");
+            if (!res.IsSuccessStatusCode) return RedirectToAction("Index");
 
+            var json = await res.Content.ReadAsStringAsync();
+            var model = JsonConvert.DeserializeObject<TestView>(json);
+
+            return View(model);
+        }
+
+        // ----------------------------------------------------------
+        // EDIT TEST (POST) — WITH ERROR MESSAGE SUPPORT
+        // ----------------------------------------------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TestView model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var json = JsonConvert.SerializeObject(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var res = await _client.PutAsync($"{_apiBase}Tests", content);
+
+            if (res.IsSuccessStatusCode)
+                return RedirectToAction("Index", new { courseId = model.CourseID });
+
+            // ⭐⭐ NEW: DISPLAY ERROR FROM API (weight > 100) ⭐⭐
+            string error = await res.Content.ReadAsStringAsync();
+            ViewBag.Error = error;
+
+            return View(model);
+        }
+
+        // ----------------------------------------------------------
+        // DELETE (GET)
+        // ----------------------------------------------------------
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -111,15 +160,22 @@ namespace StudentTracker.Controllers
             var json = await res.Content.ReadAsStringAsync();
             var test = JsonConvert.DeserializeObject<TestView>(json);
 
+            if (test == null)
+                return RedirectToAction(nameof(Index));
+
             return View(test);
         }
 
+        // ----------------------------------------------------------
+        // DELETE (POST)
+        // ----------------------------------------------------------
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [Route("Tests/Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int TestID, int CourseID)
         {
-            var res = await _client.DeleteAsync($"{_apiBase}Tests/{id}");
-            return RedirectToAction(nameof(Index));
+            await _client.DeleteAsync($"{_apiBase}Tests/{TestID}");
+            return RedirectToAction(nameof(Index), new { courseId = CourseID });
         }
     }
 }

@@ -35,17 +35,41 @@ namespace StudentTrackerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Test t)
         {
-            await _service.CreateAsync(t);
-            return Ok(new { message = "Test created successfully" });
+            try
+            {
+                await _service.CreateAsync(t);
+                return Ok(new { message = "Test created successfully" });
+            }
+            catch (ArgumentException ex)
+            {
+                // validation error (weight > 100)
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // unexpected error
+                return StatusCode(500, "Server error");
+            }
         }
 
-        // PUT
         [HttpPut]
         public async Task<IActionResult> Update(Test t)
         {
-            await _service.UpdateAsync(t);
-            return Ok(new { message = "Test updated successfully" });
+            try
+            {
+                await _service.UpdateAsync(t);
+                return Ok(new { message = "Test updated successfully" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return StatusCode(500, "Server error");
+            }
         }
+
 
         // DELETE
         [HttpDelete("{id}")]

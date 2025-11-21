@@ -1,0 +1,102 @@
+﻿@model StudentTracker.Models.TestView
+@{
+    ViewData["Title"] = "Edit Test";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #001a33, #003c8f);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .edit-container {
+        max-width: 750px;
+        margin: 80px auto;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(25px);
+    }
+
+    h2 {
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #aee0ff;
+    }
+
+    label {
+        font-weight: 600;
+        color: #aee0ff;
+        margin-top: 10px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        margin-bottom: 15px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #00bcd4, #1976d2);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #1976d2, #00bcd4);
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="edit-container">
+    <h2>✏ Edit Test</h2>
+    @if (ViewBag.Error != null)
+    {
+        <div class="error-box">@ViewBag.Error</div>
+    }
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="TestID" />
+        <input type="hidden" asp-for="CourseID" />
+
+        <label>Test Name</label>
+        <input asp-for="TestName" />
+
+        <label>Test Date</label>
+        <input asp-for="TestDate" type="date" />
+
+        <label>Weight (%)</label>
+        <input asp-for="Weight" type="number" min="1" max="100" />
+
+
+        <label>Max Score</label>
+        <input asp-for="MaxScore" type="number" readonly />
+
+        <button class="btn-save" type="submit">💾 Save Changes</button>
+    </form>
+</div>

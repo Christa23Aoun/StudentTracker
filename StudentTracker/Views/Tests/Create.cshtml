@@ -86,6 +86,10 @@
     <div class="course-label">
         Course: @ViewBag.CourseName (@ViewBag.CourseID)
     </div>
+    @if (ViewBag.Error != null)
+    {
+        <div class="error-box">@ViewBag.Error</div>
+    }
 
     <form asp-action="Create" method="post">
         <input type="hidden" asp-for="CourseID" />
@@ -109,11 +113,8 @@
         <!-- Weight Dropdown -->
         <div>
             <label>Weight (%)</label>
-            <select asp-for="Weight" class="form-control" required>
-                <option value="10">10%</option>
-                <option value="30">30%</option>
-                <option value="50">50%</option>
-            </select>
+          <input asp-for="Weight" type="number" min="1" max="100" />
+
         </div>
 
         <!-- Max Score Fixed at 100 -->
