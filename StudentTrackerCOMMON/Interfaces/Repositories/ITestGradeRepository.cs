@@ -1,5 +1,5 @@
-﻿using StudentTrackerCOMMON.Models;
-using StudentTrackerCOMMON.DTOs.AdminDashboard;
+﻿using StudentTrackerCOMMON.DTOs.AdminDashboard;
+using StudentTrackerCOMMON.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +9,7 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
     {
         Task<IEnumerable<TestGrade>> GetAllAsync();
         Task<TestGrade?> GetByIdAsync(int id);
+        Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId);
         Task<int> CreateAsync(TestGrade grade);
         Task<int> UpdateAsync(TestGrade grade);
         Task<int> DeleteAsync(int id);
@@ -16,7 +17,6 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync();
         Task<int> MarkGradeAsValidatedAsync(int testGradeId);
         Task<int> DeleteGradeAsync(int testGradeId);
-
         Task<decimal> GetAverageGradeByCourseAsync(int courseId);
     }
 }

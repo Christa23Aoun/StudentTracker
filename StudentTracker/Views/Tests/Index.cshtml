@@ -20,7 +20,6 @@
         padding: 40px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
     }
 
     h2 {
@@ -52,13 +51,12 @@
         width: 100%;
         border-collapse: collapse;
         color: #fff;
-        margin-top: 15px;
     }
 
     th, td {
         padding: 14px;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        border-bottom: 1px solid rgba(255,255,255,0.15);
     }
 
     thead {
@@ -67,68 +65,60 @@
 
     th {
         color: #aee0ff;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-    }
-
-    tbody tr:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transition: 0.3s;
-    }
-
-    .action-btn {
-        text-decoration: none;
-        font-weight: 600;
-        border-radius: 8px;
-        padding: 6px 12px;
-        margin: 0 4px;
-        transition: 0.3s;
-        color: #fff;
     }
 
     .delete {
-        background: rgba(248, 113, 113, 0.2);
-        border: 1px solid rgba(248, 113, 113, 0.4);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(255, 77, 77, 0.2);
+        border: 1px solid rgba(255, 77, 77, 0.4);
+        color: white;
+        transition: 0.3s;
+        margin-left: 6px;
+        display: inline-block;
     }
 
         .delete:hover {
-            background: rgba(248, 113, 113, 0.4);
+            background: rgba(255, 77, 77, 0.4);
             transform: translateY(-2px);
         }
 
-    .alert {
-        border-radius: 12px;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        font-weight: 500;
-        text-align: center;
-        backdrop-filter: blur(8px);
+    .btn-grades {
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(0, 188, 212, 0.2);
+        border: 1px solid rgba(0, 188, 212, 0.5);
+        color: #aee0ff;
+        transition: 0.3s;
+        display: inline-block;
     }
 
-    .alert-success {
-        background: rgba(0, 255, 170, 0.2);
-        color: #baffda;
-    }
-
-    .alert-danger {
-        background: rgba(255, 80, 80, 0.2);
-        color: #ffb3b3;
-    }
+        .btn-grades:hover {
+            background: rgba(0, 188, 212, 0.4);
+            transform: translateY(-2px);
+        }
 </style>
 
 <div class="tests-container">
     <h2>🧪 All Tests</h2>
 
-    <a asp-action="Create" class="btn-add">➕ Add Test</a>
+    <div class="text-center mb-4">
+        <a asp-controller="Teacher"
+           asp-action="CourseDetails"
+           asp-route-id="@ViewBag.CourseID"
+           class="btn-add"
+           style="float:none; background:linear-gradient(135deg, #00bcd4, #1976d2);">
+            ⬅ Back to Course
+        </a>
+    </div>
+
+    <a asp-action="Create" asp-route-courseId="@ViewBag.CourseID" class="btn-add">➕ Add Test</a>
 
     <div class="clearfix"></div>
-
-    @if (TempData["Msg"] != null)
-    {
-        var msg = TempData["Msg"].ToString();
-        var isDelete = msg.Contains("deleted", StringComparison.OrdinalIgnoreCase);
-        <div class="alert @(isDelete ? "alert-danger" : "alert-success")">@msg</div>
-    }
 
     <table>
         <thead>
@@ -142,8 +132,9 @@
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
-            @if (Model != null && Model.Any())
+            @if (Model.Any())
             {
                 foreach (var item in Model)
                 {
@@ -155,25 +146,37 @@
                         <td>@item.Weight</td>
                         <td>@item.MaxScore</td>
                         <td>
-                            <a asp-action="Delete" asp-route-id="@item.TestID" class="action-btn delete">🗑 Delete</a>
+                            <!-- FIXED: pass BOTH courseId + testId -->
+                            <a asp-controller="TestGrades"
+                               asp-action="BulkCreate"
+                               asp-route-courseId="@item.CourseID"
+                               asp-route-testId="@item.TestID"
+                               class="btn-grades">
+                                ➕ Add Grades
+                            </a>
+
+                            <a asp-action="Edit"
+                               asp-route-id="@item.TestID"
+                               class="btn-grades"
+                               style="margin-right: 6px;">
+                                ✏ Edit
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.TestID"
+                               class="delete">
+                                🗑 Delete
+                            </a>
                         </td>
                     </tr>
                 }
             }
             else
             {
-                <tr><td colspan="7" class="text-muted py-3">No tests available.</td></tr>
+                <tr>
+                    <td colspan="7" class="text-muted py-3">No tests available.</td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
-
-<script>
-    setTimeout(() => {
-        const alertBox = document.querySelector('.alert');
-        if (alertBox) {
-            alertBox.style.opacity = '0';
-            setTimeout(() => alertBox.remove(), 600);
-        }
-    }, 3000);
-</script>

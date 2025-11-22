@@ -8,7 +8,7 @@
         public DateTime AttendanceDate { get; set; }
 
         public bool IsPresent { get; set; }
-        public bool IsValidated { get; set; }
+      
 
         public string Status { get; set; }    // Present / Late / Absent
         public string StudentName { get; set; } = "";

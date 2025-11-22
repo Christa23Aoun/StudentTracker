@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Attendance Records";
+    var courseId = ViewBag.CourseID;
 }
 
 <style>
@@ -19,7 +20,6 @@
         background: rgba(0, 45, 90, 0.75);
         border-radius: 20px;
         backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
         padding: 40px 50px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
     }
@@ -31,30 +31,52 @@
         color: #fff;
     }
 
-    .btn-primary {
+    .top-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
+
+    .btn-primary, .btn-secondary {
         background: linear-gradient(135deg, #006aff, #0048b3);
         border: none;
         border-radius: 10px;
-        padding: 12px 25px;
+        padding: 12px 22px;
         color: #fff;
         font-weight: 600;
-        transition: all 0.3s ease;
         text-decoration: none;
+        transition: 0.3s;
     }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #0056d2, #007bff);
-            box-shadow: 0 0 12px rgba(0, 150, 255, 0.6);
-            transform: translateY(-2px);
+    .btn-secondary {
+        background: #666;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0056d2, #007bff);
+        transform: translateY(-2px);
+        box-shadow: 0 0 10px rgba(0,150,255,0.6);
+    }
+
+    .filters {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+        .filters input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
         }
 
     table {
         width: 100%;
-        margin-top: 25px;
         border-collapse: collapse;
         color: #fff;
-        border-radius: 10px;
-        overflow: hidden;
+        margin-top: 20px;
     }
 
     thead {
@@ -64,11 +86,11 @@
     th, td {
         padding: 14px;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     tbody tr:hover {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255,255,255,0.1);
         transition: 0.3s;
     }
 
@@ -79,76 +101,102 @@
         padding: 6px 14px;
         color: #fff;
         font-weight: 600;
-        font-size: 0.9rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #ff6b6b, #e53935);
-            box-shadow: 0 0 12px rgba(255, 90, 90, 0.6);
-            transform: translateY(-2px);
-        }
-
-    .status-yes {
-        color: #00e676;
-        font-weight: 600;
-    }
-
-    .status-no {
-        color: #ff7b7b;
-        font-weight: 600;
+        transition: 0.3s;
     }
 </style>
 
 <div class="container">
+
     <h2>🗓️ Attendance Records</h2>
 
-    <div class="text-center mb-3">
-        <a class="btn-primary" href="/Attendance/Create">📋 Mark Attendance</a>
+    <div class="top-actions">
+        <a class="btn-primary"
+           asp-action="Create"
+           asp-route-courseId="@courseId">
+            📋 Mark Attendance
+        </a>
 
+        <a class="btn-secondary"
+           asp-controller="Teacher"
+           asp-action="CourseDetails"
+           asp-route-id="@courseId">
+            ⬅ Back to Course
+        </a>
     </div>
 
-    <table>
+    <!-- FILTERS -->
+    <div class="filters">
+        <input type="date" id="filterDate" />
+        <input type="text" id="filterName" placeholder="Search by student name..." />
+    </div>
+
+    <table id="attendanceTable">
         <thead>
             <tr>
-                <th>ID</th>
+                
                 <th>Student</th>
                 <th>Course</th>
-                <th>Date</th>
+                <th>Date & Time</th>
                 <th>Status</th>
-                <th>Validated</th>
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
-            @if (Model != null && Model.Any())
+            @if (Model.Any())
             {
                 foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.AttendanceID</td>
-                        <td>@item.StudentName</td>
+                     
+                        <td class="student-name">@item.StudentName</td>
                         <td>@item.CourseName</td>
-                        <td>@item.AttendanceDate.ToShortDateString()</td>
+
+                        <td class="date-cell">@item.AttendanceDate.ToString("yyyy-MM-dd HH:mm")</td>
+
                         <td class="@(item.IsPresent ? "status-yes" : "status-no")">
                             @(item.IsPresent ? "Present ✅" : "Absent ❌")
                         </td>
-                        <td class="@(item.IsValidated ? "status-yes" : "status-no")">
-                            @(item.IsValidated ? "Yes ✅" : "No ❌")
-                        </td>
+
                         <td>
-                            <a class="btn-danger btn-sm" href="/Attendance/Delete/@item.AttendanceID">🗑️ Delete</a>
+                            <a class="btn-danger"
+                               asp-action="Delete"
+                               asp-route-id="@item.AttendanceID"
+                               asp-route-courseId="@courseId">
+                                🗑️ Delete
+                            </a>
                         </td>
                     </tr>
                 }
             }
             else
             {
-                <tr>
-                    <td colspan="7" class="text-center text-muted py-4">No attendance records found.</td>
-                </tr>
+                <tr><td colspan="6" class="text-center py-4">No attendance records found.</td></tr>
             }
         </tbody>
     </table>
 </div>
+
+<script>
+    const filterDate = document.getElementById("filterDate");
+    const filterName = document.getElementById("filterName");
+    const rows = document.querySelectorAll("#attendanceTable tbody tr");
+
+    function applyFilters() {
+        const dateValue = filterDate.value;
+        const nameValue = filterName.value.toLowerCase();
+
+        rows.forEach(row => {
+            const dateText = row.querySelector(".date-cell").textContent.substring(0,10);
+            const studentName = row.querySelector(".student-name").textContent.toLowerCase();
+
+            let matchDate = !dateValue || dateText === dateValue;
+            let matchName = !nameValue || studentName.includes(nameValue);
+
+            row.style.display = (matchDate && matchName) ? "" : "none";
+        });
+    }
+
+    filterDate.addEventListener("change", applyFilters);
+    filterName.addEventListener("keyup", applyFilters);
+</script>

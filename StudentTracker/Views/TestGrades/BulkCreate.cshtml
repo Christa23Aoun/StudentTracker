@@ -83,21 +83,51 @@
 </style>
 
 <div class="bulk-wrapper">
-    <h2>➕ Add Grades for Course @Model.CourseID</h2>
+    <h2>
+        @if (Model.SelectedTestID > 0 && Model.AvailableTests.Any(t => t.TestID == Model.SelectedTestID))
+        {
+            var t = Model.AvailableTests.First(x => x.TestID == Model.SelectedTestID);
+            @:➕ Add Grades for @t.TestName (Course @Model.CourseID)
+        }
+        else
+        {
+            @:➕ Add Grades for Course @Model.CourseID
+        }
+    </h2>
 
     <form asp-action="BulkCreate" method="post">
         <input type="hidden" asp-for="CourseID" />
 
-        <div class="mb-3">
-            <label>Select Test</label>
-            <select asp-for="SelectedTestID" class="form-select">
-                <option value="">-- Choose a test --</option>
-                @foreach (var t in Model.AvailableTests)
-                {
-                    <option value="@t.TestID">@t.TestName (@t.TestDate.ToShortDateString()) - @t.Weight% (Max @t.MaxScore)</option>
+        @if (Model.SelectedTestID <= 0)
+        {
+            <div class="mb-3">
+                <label>Select Test</label>
+                <select asp-for="SelectedTestID" class="form-select">
+                    <option value="">-- Choose a test --</option>
+                    @foreach (var t in Model.AvailableTests)
+                    {
+                        <option value="@t.TestID">
+                            @t.TestName (@t.TestDate.ToShortDateString()) - @t.Weight% (Max @t.MaxScore)
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="SelectedTestID" class="text-danger"></span>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="SelectedTestID" />
+            <div class="mb-3">
+                <label>Test</label>
+                @{
+                    var t = Model.AvailableTests.FirstOrDefault(x => x.TestID == Model.SelectedTestID);
+                    var label = t != null
+                    ? $"{t.TestName} ({t.TestDate.ToShortDateString()}) - {t.Weight}% (Max {t.MaxScore})"
+                    : $"Test #{Model.SelectedTestID}";
                 }
-            </select>
-        </div>
+                <input type="text" class="form-control" value="@label" readonly />
+            </div>
+        }
 
         @if (Model.Students.Any())
         {
@@ -137,7 +167,10 @@
 
         <div class="actions-row">
             <button type="submit" class="btn-save">Save Grades</button>
-            <a asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@Model.CourseID" class="btn-cancel">Cancel</a>
+            <a asp-controller="Teacher"
+               asp-action="CourseDetails"
+               asp-route-id="@Model.CourseID"
+               class="btn-cancel">Cancel</a>
         </div>
     </form>
 </div>
