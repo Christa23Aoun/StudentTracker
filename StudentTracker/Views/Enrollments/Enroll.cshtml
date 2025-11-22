@@ -12,26 +12,79 @@
     }
 
     .enroll-wrapper {
-        width: 85%;
-        max-width: 1200px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 22px;
-        padding: 50px;
-        backdrop-filter: blur(30px);
+        width: 90%;
+        max-width: 1250px;
+        margin: 70px auto;
+        padding: 40px 50px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.20);
+        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
+    }
+
+    .accordion-button {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: white !important;
+        border-radius: 14px !important;
+        font-weight: 600;
+        padding: 18px;
+        border: 1px solid rgba(255,255,255,0.25);
+    }
+
+        .accordion-button:not(.collapsed) {
+            background: rgba(255, 255, 255, 0.25) !important;
+            box-shadow: none !important;
+        }
+
+    .accordion-item {
+        background: transparent !important;
+        border: none;
+    }
+
+    .accordion-body {
+        background: rgba(0, 20, 45, 0.3);
+        padding: 20px 25px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.15);
+        margin-top: 10px;
     }
 
     .list-group-item {
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        color: #e0e8ff;
+        font-weight: 500;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
     }
 
+        .list-group-item label {
+            font-size: 1.1rem;
+        }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 2px solid #7abaff;
+        background: transparent;
+    }
+
+        .form-check-input:checked {
+            background-color: #008cff;
+            border-color: #66b2ff;
+            box-shadow: 0 0 10px #0099ff;
+        }
+
     .badge-active {
-        background: rgba(0,255,100,0.25);
-        color: #00ff8c;
+        background: rgba(0, 255, 120, 0.25);
+        color: #00ff9c;
         padding: 5px 12px;
         border-radius: 8px;
         font-weight: 600;
@@ -39,34 +92,62 @@
     }
 
     .btn-unenroll {
-        padding: 6px 10px;
-        border-radius: 8px;
-        background: rgba(255,80,80,0.3);
-        color: #ff6b6b;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: rgba(255,80,80,0.25);
+        color: #ff8484;
         border: none;
         font-weight: 600;
     }
 
         .btn-unenroll:hover {
-            background: rgba(255,80,80,0.6);
+            background: rgba(255,80,80,0.5);
+        }
+
+    .enroll-button {
+        background: linear-gradient(135deg, #1c7fff, #3ea4ff);
+        border: none;
+        border-radius: 12px;
+        padding: 10px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 120, 255, 0.5);
+    }
+
+        .enroll-button:hover {
+            background: linear-gradient(135deg, #0f6ae6, #2d94ff);
+        }
+
+    .cancel-button {
+        background: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        border-radius: 12px;
+        padding: 10px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.45);
         }
 </style>
 
 <div class="enroll-wrapper">
 
-    <h2 class="text-center">Enroll Student</h2>
-    <h4 class="text-center mb-4">@Model.StudentName (@Model.StudentID)</h4>
+    <h2 class="text-center mb-2">Enroll Student</h2>
+    <h4 class="text-center mb-4" style="opacity: 0.85;">
+        @Model.StudentName (@Model.StudentID)
+    </h4>
 
-    <!-- ONE single form for Enroll + Unenroll -->
+    <!-- One Form -->
     <form asp-action="Enroll" asp-controller="Enrollments" method="post">
         @Html.AntiForgeryToken()
 
-        <!-- For model binding in Enroll (POST) -->
         <input type="hidden" asp-for="StudentID" />
         <input type="hidden" asp-for="ReturnRole" />
         <input type="hidden" asp-for="ReturnStatus" />
-
-        <!-- For parameters in Unenroll (POST) -->
         <input type="hidden" name="studentId" value="@Model.StudentID" />
         <input type="hidden" name="role" value="@Model.ReturnRole" />
         <input type="hidden" name="status" value="@Model.ReturnStatus" />
@@ -77,7 +158,7 @@
                 var dep = Model.Departments[i];
                 var collapseId = $"collapse{i}";
 
-                <div class="accordion-item bg-transparent mb-3">
+                <div class="accordion-item mb-3">
                     <h2 class="accordion-header" id="heading@i">
                         <button class="accordion-button collapsed"
                                 type="button"
@@ -104,8 +185,6 @@
                                         </div>
 
                                         <div class="d-flex align-items-center">
-
-                                            @* Checkbox only if NOT yet enrolled *@
                                             @if (!isActive)
                                             {
                                                 <input type="checkbox"
@@ -114,7 +193,6 @@
                                                        class="form-check-input me-2" />
                                             }
 
-                                            @* Unenroll button uses SAME form, but different action *@
                                             @if (isActive)
                                             {
                                                 <button type="submit"
@@ -122,8 +200,7 @@
                                                         formaction="@Url.Action("Unenroll", "Enrollments")"
                                                         formmethod="post"
                                                         name="courseId"
-                                                        value="@course.CourseID"
-                                                        onclick="event.stopPropagation()">
+                                                        value="@course.CourseID">
                                                     Unenroll
                                                 </button>
                                             }
@@ -139,14 +216,12 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary px-5 py-2 me-3">
-                Enroll Selected
-            </button>
-
-            <a asp-controller="Users" asp-action="Index"
+            <button type="submit" class="enroll-button me-3">Enroll Selected</button>
+            <a asp-controller="Users"
+               asp-action="Index"
                asp-route-role="@Model.ReturnRole"
                asp-route-status="@Model.ReturnStatus"
-               class="btn btn-secondary px-5 py-2">
+               class="cancel-button">
                 Cancel
             </a>
         </div>

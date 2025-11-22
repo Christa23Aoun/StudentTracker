@@ -192,7 +192,7 @@ namespace StudentTracker.Controllers
         {
             HttpContext.Session.Clear();
             await HttpContext.SignOutAsync("CookieAuth");
-            return RedirectToAction("Login", "Auth");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -17,8 +17,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
-        options.LoginPath = "/Auth/Login";
-        options.AccessDeniedPath = "/Auth/Login";
+        options.LoginPath = "/Auth/LoginAdmin";
+        options.AccessDeniedPath = "/Auth/LoginAdmin";
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = context =>
