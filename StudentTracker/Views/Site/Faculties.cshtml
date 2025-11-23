@@ -3,116 +3,168 @@
 
 @{
     Layout = "_LayoutHome";
-    ViewData["Title"] = "Faculties - WTF University";
+    ViewData["Title"] = "Faculties – WTF University";
 }
 
-<section class="faculties-hero text-white text-center py-5">
-    <div class="container">
-        <h1 class="fw-bold mb-3">🏛️ Faculties & Departments</h1>
-        <p class="lead opacity-90">
-            Explore the academic divisions that shape the innovators of tomorrow.
-        </p>
+<section class="faculty-hero">
+    <div class="faculty-hero-overlay"></div>
+    <img src="~/images/uniHome.jpg" class="faculty-hero-bg" />
+
+    <div class="faculty-hero-content container">
+        <h1>Faculties & Departments</h1>
+        <p>Explore the academic divisions that shape the leaders of tomorrow.</p>
     </div>
 </section>
 
-<div class="container my-5">
+<section class="faculty-section container">
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+        <div class="alert alert-danger text-center mt-4">@ViewBag.Error</div>
     }
 
     @if (Model == null || !Model.Any())
     {
-        <p class="text-center text-muted">No departments found.</p>
+        <p class="text-center text-muted mt-5">No departments found.</p>
     }
     else
     {
-        <div class="row g-4 justify-content-center">
+        <div class="faculty-grid">
             @foreach (var dept in Model)
             {
-                <div class="col-md-3 col-sm-6">
-                    <div class="department-block text-center p-4">
-                        <div class="dept-icon mb-3">
-                            <i class="fa-solid fa-building-columns fa-2x"></i>
-                        </div>
-                        <h5 class="fw-bold">@dept.DepartmentName</h5>
-
-                        <p class="text-muted small mb-3">
-                            Total Courses: <strong>@dept.CourseCount</strong>
-                        </p>
-
-                        <span class="badge @(dept.IsActive ? "bg-success" : "bg-secondary") px-3 py-2">
+                <div class="faculty-card">
+                    <div class="faculty-card-header">
+                        <h3>@dept.DepartmentName</h3>
+                        <span class="status @(dept.IsActive ? "status-active" : "status-inactive")">
                             @(dept.IsActive ? "Active" : "Inactive")
                         </span>
+                    </div>
+
+                    <p class="faculty-description">
+                        Preparing students with quality education, research, and real-world experience.
+                    </p>
+
+                    <div class="faculty-meta">
+                        <span>Courses:</span>
+                        <strong>@dept.CourseCount</strong>
                     </div>
                 </div>
             }
         </div>
     }
-</div>
+</section>
 
 <style>
-    .faculties-hero {
-        background: linear-gradient(135deg, rgba(13, 75, 132, 0.95), rgba(10, 56, 98, 0.95)), url('/images/uniHome.jpg') center/cover no-repeat;
-        color: #fff;
-    }
-
-    .department-block {
-        background: #fff;
-        border: 3px solid #0d4b84;
-        border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(13, 75, 132, 0.15);
-        height: 280px;
+    .faculty-hero {
+        position: relative;
+        height: 58vh;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        transition: all 0.3s ease;
+        justify-content: center;
+        color: white;
+        overflow: hidden;
     }
 
-        .department-block:hover {
-            background: #0d4b84;
-            color: #fff;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(13, 75, 132, 0.4);
+    .faculty-hero-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(60%);
+    }
+
+    .faculty-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,40,90,0.55), rgba(0,60,130,0.75));
+    }
+
+    .faculty-hero-content {
+        position: relative;
+        text-align: center;
+        z-index: 2;
+        max-width: 900px;
+    }
+
+        .faculty-hero-content h1 {
+            font-size: 44px;
+            font-weight: 800;
+            margin-bottom: 10px;
         }
 
-            .department-block:hover .text-muted {
-                color: #e0e6f3 !important;
-            }
-
-    .dept-icon i {
-        color: #0d4b84;
-        background: rgba(13, 75, 132, 0.08);
-        padding: 14px;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .department-block:hover .dept-icon i {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    .department-block h5 {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-    }
-
-    .department-block p {
-        font-size: 0.9rem;
-        line-height: 1.4;
-    }
-
-    .badge {
-        border-radius: 25px;
-        font-size: 0.8rem;
-    }
-
-    @@media (max-width: 768px) {
-        .department-block {
-            height: auto;
-            padding: 24px 16px;
+        .faculty-hero-content p {
+            font-size: 18px;
+            opacity: 0.95;
         }
+
+    .faculty-section {
+        padding-top: 40px;
+        padding-bottom: 140px; 
+    }
+
+    .faculty-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 35px;
+        margin-top: 30px;
+    }
+
+    .faculty-card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        border: 1px solid #dce7f9;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        transition: 0.3s ease;
+    }
+
+        .faculty-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+        }
+
+    .faculty-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .faculty-card-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #003c8f;
+            margin: 0;
+        }
+
+    .status {
+        padding: 7px 12px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d4f6df;
+        color: #1b7d3a;
+    }
+
+    .status-inactive {
+        background: #eee;
+        color: #666;
+    }
+
+    .faculty-description {
+        margin: 18px 0;
+        color: #444;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .faculty-meta {
+        display: flex;
+        gap: 6px;
+        font-size: 15px;
+        color: #003c8f;
+        margin-top: 10px;
     }
 </style>

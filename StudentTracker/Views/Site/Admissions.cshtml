@@ -3,55 +3,145 @@
     ViewData["Title"] = "Admissions – WTF University";
 }
 
-<section class="page-hero admissions-hero text-white text-center py-5">
-    <div class="container position-relative">
-        <h1 class="fw-bold display-5 mb-3">Admissions at WTF University</h1>
-        <p class="lead opacity-90">Join a community of innovators, dreamers, and doers.</p>
+<section class="admission-hero">
+    <div class="admission-hero-overlay"></div>
+    <img src="~/images/uniHome.jpg" class="admission-hero-bg" />
+
+    <div class="admission-hero-content container">
+        <h1>Admissions at WTF University</h1>
+        <p>Join a community of innovators, dreamers, and future leaders.</p>
     </div>
 </section>
 
-<section class="container my-5">
+<section class="admission-section container">
     <div class="row align-items-center g-5">
-        <div class="col-md-6">
-            <img src="~/images/icon2.png" alt="Students on campus"
-                 class="img-fluid rounded-4 shadow-lg border-0" />
-        </div>
-        <div class="col-md-6">
-            <h2 class="text-primary fw-bold mb-3">How to Apply</h2>
-            <p>
-                Our admissions process is designed to be simple and transparent.
-                Complete your online application, upload required documents,
-                and our admissions team will guide you every step of the way.
+
+      
+        <div class="col-lg-6">
+            <h2 class="admission-title">How to Apply</h2>
+
+            <p class="admission-text">
+                Our admissions process is designed to be simple, supportive, and transparent.
+                Submit your online application, provide the required documents, and our admissions
+                advisors will assist you throughout the entire process.
             </p>
 
-            <ul class="list-unstyled">
-                <li>✅ Online Application Form</li>
-                <li>✅ Transcripts & Certificates</li>
-                <li>✅ Motivation Letter</li>
-                <li>✅ Interview (if shortlisted)</li>
-            </ul>
+            <div class="admission-steps">
+                <div class="step-box">Online Application Form</div>
+                <div class="step-box">Transcripts & Certificates</div>
+                <div class="step-box">Motivation Letter</div>
+                <div class="step-box">Interview (if shortlisted)</div>
+            </div>
 
-            <a href="#" class="btn btn-primary mt-3">Start Your Application</a>
+            <a href="#" class="admission-btn">Start Your Application</a>
         </div>
     </div>
 </section>
 
 <style>
-    .admissions-hero {
-        background: url('/images/unnamed.jpg') center/cover no-repeat;
-        color: #fff;
+    .admission-hero {
         position: relative;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: white;
     }
 
-        .admissions-hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
+    .admission-hero-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(60%);
+    }
+
+    .admission-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,40,90,0.55), rgba(0,60,130,0.75));
+    }
+
+    .admission-hero-content {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+    }
+
+        .admission-hero-content h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
         }
 
-        .admissions-hero .container {
-            position: relative;
-            z-index: 2;
+        .admission-hero-content p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+    .admission-section {
+        padding-top: 60px;
+        padding-bottom: 140px; 
+    }
+
+    .admission-image {
+        width: 90%;
+        max-width: 420px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .admission-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #003c8f;
+        margin-bottom: 18px;
+    }
+
+    .admission-text {
+        font-size: 17px;
+        line-height: 1.7;
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    .admission-steps {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 30px;
+    }
+
+    .step-box {
+        background: #eef4ff;
+        border-left: 5px solid #003c8f;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        color: #003c8f;
+        font-size: 15px;
+        transition: 0.3s;
+    }
+
+        .step-box:hover {
+            background: #dce8ff;
+            transform: translateX(4px);
+        }
+
+    .admission-btn {
+        background: linear-gradient(135deg, #0066cc, #004c99);
+        padding: 12px 28px;
+        color: white;
+        font-weight: 600;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+        .admission-btn:hover {
+            background: linear-gradient(135deg, #0080ff, #005bb5);
+            transform: translateY(-3px);
         }
 </style>

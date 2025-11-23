@@ -2,23 +2,24 @@
     ViewData["Title"] = "Student Life";
 }
 
-<section style="
-    background: linear-gradient(135deg, #001a33, #003c8f);
-    padding: 80px 20px;
-    color: white;
-    text-align: center;
-">
-    <h1 class="fw-bold" style="font-size: 48px;">Student Life at WTF University</h1>
-    <p style="max-width: 900px; margin: 20px auto; font-size: 18px;">
-        Student life at WTF University is vibrant, diverse, and full of opportunities. From academic excellence
-        to leadership, clubs, competitions, and campus activities — students grow personally, socially,
-        and professionally.
-    </p>
+<!-- ================== HERO WITH IMAGE ================== -->
+<section class="studentlife-hero">
+    <div class="studentlife-hero-overlay"></div>
+    <img src="~/images/uniHome.jpg" class="studentlife-hero-bg" />
+
+    <div class="hero-content">
+        <h1 class="fw-bold" style="font-size: 48px;">Student Life at WTF University</h1>
+        <p style="max-width: 900px; margin: 20px auto; font-size: 18px;">
+            Student life at WTF University is vibrant, diverse, and full of opportunities. From academic excellence
+            to leadership, clubs, competitions, and campus activities — students grow personally, socially,
+            and professionally.
+        </p>
+    </div>
 </section>
 
+<!-- ================== MAIN CONTENT ================== -->
 <div class="container my-5">
 
-    <!-- Section Title -->
     <div class="text-center mb-5">
         <h2 class="fw-bold" style="color:#003c8f;">Life Beyond the Classroom</h2>
         <p style="max-width:700px; margin:auto; color:#5b7083;">
@@ -29,9 +30,8 @@
 
     <div class="row g-4">
 
-        <!-- Clubs -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-users fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Student Clubs & Societies</h5>
@@ -43,9 +43,8 @@
             </div>
         </div>
 
-        <!-- Leadership -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-lightbulb fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Leadership Development</h5>
@@ -57,9 +56,8 @@
             </div>
         </div>
 
-        <!-- Events -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-calendar-alt fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Campus Events & Activities</h5>
@@ -71,9 +69,8 @@
             </div>
         </div>
 
-        <!-- Sports -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-volleyball-ball fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Sports & Fitness</h5>
@@ -84,9 +81,8 @@
             </div>
         </div>
 
-        <!-- Support -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-hand-holding-heart fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Student Support Services</h5>
@@ -98,9 +94,8 @@
             </div>
         </div>
 
-        <!-- Community -->
-        <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
+        <div class="col-md-4 d-flex">
+            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
                 <div class="card-body text-center p-4">
                     <i class="fas fa-globe fa-3x mb-3" style="color:#003c8f;"></i>
                     <h5 class="fw-bold">Campus Community</h5>
@@ -114,7 +109,6 @@
 
     </div>
 
-    <!-- CTA -->
     <div class="text-center mt-5">
         <h3 class="fw-bold" style="color:#003c8f;">Become Part of Our Community</h3>
         <p class="text-muted">Your journey starts here. Explore a campus full of creativity, innovation, and opportunity.</p>
@@ -124,3 +118,49 @@
     </div>
 
 </div>
+
+<!-- ================== FIX HERO AGAINST LAYOUT ================== -->
+<style>
+    .studentlife-hero {
+        position: relative !important;
+        height: 60vh !important;
+        min-height: 350px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    .studentlife-hero-bg {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        filter: brightness(55%) !important;
+    }
+
+    .studentlife-hero-overlay {
+        position: absolute !important;
+        inset: 0 !important;
+        background: linear-gradient(135deg, rgba(0,30,70,0.6), rgba(0,55,120,0.85)) !important;
+    }
+
+    .hero-content {
+        position: relative !important;
+        z-index: 2 !important;
+        max-width: 900px !important;
+        padding: 0 20px !important;
+        color:white !important;
+    }
+
+    /* CARDS SAME HEIGHT */
+    .card-fixed {
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+</style>

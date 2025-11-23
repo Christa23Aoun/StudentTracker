@@ -3,177 +3,336 @@
     ViewData["Title"] = "About – WTF University";
 }
 
-<!-- ===== Hero Section ===== -->
-<section class="about-hero d-flex align-items-center justify-content-center text-center text-white">
-    <div class="overlay"></div>
-    <div class="container position-relative">
-        <h1 class="fw-bold display-5 mb-3">About WTF University</h1>
-        <p class="lead opacity-90">We’re The Future (Inshallah) — Shaping minds that shape tomorrow.</p>
-    </div>
-</section>
+<section class="about-hero">
+    <div class="about-hero-overlay"></div>
 
-<!-- ===== Mission / Vision ===== -->
-<section class="container my-5 py-5">
-    <div class="row align-items-center g-5">
-        <div class="col-lg-6">
-            <div class="about-card shadow-sm p-4 rounded-4 bg-white">
-                <h2 class="text-primary fw-bold mb-3">Our Mission</h2>
-                <p class="text-muted mb-4">
-                    To empower students with the knowledge, skills, and values to create positive change
-                    in their communities and beyond. We believe in education that inspires curiosity,
-                    critical thinking, and compassion.
-                </p>
+    <img src="~/images/unnamed.jpg" class="about-hero-bg" />
 
-                <h2 class="text-primary fw-bold mb-3">Our Vision</h2>
-                <p class="text-muted">
-                    To be a pioneer in innovative, inclusive, and future-driven learning across Lebanon and the region.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-lg-6 text-center">
-            <img src="~/images/uniHome.jpg"
-                 alt="Campus image"
-                 class="img-fluid rounded-4 shadow-lg about-img" />
-        </div>
-    </div>
-</section>
-
-<!-- ===== Values Section ===== -->
-<section class="values-band text-white py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-5">Our Core Values</h2>
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="value-card p-4 rounded-4">
-                    <h4>Integrity</h4>
-                    <p>Honesty in learning and leadership.</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="value-card p-4 rounded-4">
-                    <h4>Innovation</h4>
-                    <p>Creative solutions for real problems.</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="value-card p-4 rounded-4">
-                    <h4>Inclusion</h4>
-                    <p>Diversity as a strength and a mission.</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="value-card p-4 rounded-4">
-                    <h4>Impact</h4>
-                    <p>Education that transforms society.</p>
-                </div>
-            </div>
-        </div>
+    <div class="about-hero-content container">
+        <h1>About WTF University</h1>
+        <p>Building leaders. Inspiring innovation. Shaping the future of education.</p>
     </div>
 </section>
 
 <style>
-    /* ===== Hero Section ===== */
-    /* ===== Hero Section Typography & Overlay ===== */
     .about-hero {
         position: relative;
-        height: 70vh;
-        min-height: 480px;
-        background: url('/images/unnamed.jpg') center/cover no-repeat;
+        height: 60vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        color: #fff;
+        overflow: hidden;
+        color: white;
     }
 
-        .about-hero .overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45); /* lighter overlay for more image visibility */
-            z-index: 1;
-        }
-
-        .about-hero .container {
-            position: relative;
-            z-index: 2;
-            color: #fff;
-        }
-
-        .about-hero h1 {
-            color: #ffffff;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .about-hero p {
-            color: #f2f6ff;
-            font-size: 1.2rem;
-            font-weight: 400;
-            max-width: 800px;
-            margin: 0 auto;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-        }
-
-    /* ===== Mission / Vision ===== */
-    .about-card {
-        border-left: 5px solid var(--brand-blue);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .about-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
-
-    .about-img {
-        max-height: 400px;
+    .about-hero-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        border: 6px solid #fff;
+        filter: brightness(55%);
     }
 
-    /* ===== Values Section ===== */
-    /* ===== Values Section ===== */
-    .values-band {
-        background: linear-gradient(90deg, #0d4b84 0%, #0a3862 100%);
-        color: #fff;
+    .about-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,30,70,0.6), rgba(0,55,120,0.85));
     }
 
-        .values-band h2 {
+    .about-hero-content {
+        position: relative;
+        text-align: center;
+        max-width: 800px;
+        z-index: 2;
+    }
+
+    .about-hero h1 {
+        font-size: 52px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    .about-hero p {
+        font-size: 20px;
+        opacity: 0.9;
+    }
+</style>
+
+
+
+<section class="who-we-are">
+    <div class="container who-container">
+
+        <div class="who-text">
+            <h2>Who We Are</h2>
+            <p>
+                WTF University is a leading academic institution dedicated to excellence,
+                innovation, and the empowerment of future leaders. Our programs combine cutting-edge
+                research with real-world experience, preparing students to succeed in an evolving world.
+            </p>
+            <p>
+                With a mission rooted in integrity and impact, WTF University provides a dynamic learning
+                environment that fosters intellectual growth, creativity, and global citizenship.
+            </p>
+        </div>
+
+        <div class="who-img">
+            <img src="~/images/uniHome.jpg" alt="Campus Image" />
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .who-we-are {
+        padding: 80px 0;
+        background: #f9fbff;
+    }
+
+    .who-container {
+        display: flex;
+        gap: 50px;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    .who-text {
+        flex: 1;
+    }
+
+        .who-text h2 {
+            font-size: 34px;
+            color: #003c8f;
+            margin-bottom: 20px;
             font-weight: 700;
-            color: #ffffff;
         }
 
-    .value-card {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-        color: #ffffff;
+        .who-text p {
+            font-size: 18px;
+            line-height: 1.75;
+            color: #333;
+            margin-bottom: 18px;
+        }
+
+    .who-img {
+        flex: 1;
     }
 
-        .value-card:hover {
+        .who-img img {
+            width: 100%;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+    @@media(max - width: 900px)
+
+    {
+        .who-container
+
+    {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    }
+</style>
+
+
+
+<section class="mission-blue">
+    <div class="container mission-content">
+        <h2>Our Mission</h2>
+        <p>
+            To educate, inspire, and empower the next generation through research, innovation,
+            and a steadfast commitment to academic excellence.
+        </p>
+    </div>
+</section>
+
+<style>
+    .mission-blue {
+        padding: 70px 0;
+        background: linear-gradient(135deg, #003c8f, #001a44);
+        color: white;
+        text-align: center;
+    }
+
+    .mission-content {
+        max-width: 900px;
+    }
+
+    .mission-blue h2 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .mission-blue p {
+        font-size: 19px;
+        opacity: 0.9;
+        line-height: 1.8;
+    }
+</style>
+
+
+
+<section class="values-grid">
+    <div class="container">
+
+        <h2 class="values-header">Our Core Values</h2>
+
+        <div class="values-boxes">
+
+            <div class="value-box">
+                <h3>Integrity</h3>
+                <p>We uphold truth, transparency, and ethical leadership in all we do.</p>
+            </div>
+
+            <div class="value-box">
+                <h3>Innovation</h3>
+                <p>We pursue bold ideas and creative solutions that shape the future.</p>
+            </div>
+
+            <div class="value-box">
+                <h3>Inclusion</h3>
+                <p>We value diversity and create opportunities for every student to succeed.</p>
+            </div>
+
+            <div class="value-box">
+                <h3>Impact</h3>
+                <p>We drive positive change through education, research, and community engagement.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .values-grid {
+        padding: 80px 0;
+        background: #f2f6ff;
+    }
+
+    .values-header {
+        text-align: center;
+        font-size: 34px;
+        font-weight: 800;
+        color: #003c8f;
+        margin-bottom: 50px;
+    }
+
+    .values-boxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 30px;
+    }
+
+    .value-box {
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+
+        .value-box:hover {
             transform: translateY(-6px);
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
-        .value-card h4 {
-            font-weight: 800;
-            font-size: 20px;
-            margin-bottom: 6px;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .value-box h3 {
+            font-size: 22px;
+            color: #003c8f;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
-        .value-card p {
-            font-size: 15px;
-            color: #f8f9fa;
-            opacity: 0.95;
+        .value-box p {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.6;
+        }
+</style>
+
+
+
+<section class="why-wtf-section">
+    <div class="container why-container">
+
+        <h2>Why Choose WTF University?</h2>
+
+        <div class="why-cards">
+
+            <div class="why-card">
+                <h3>Top Faculty</h3>
+                <p>Renowned professors and researchers leading each academic field.</p>
+            </div>
+
+            <div class="why-card">
+                <h3>Modern Campus</h3>
+                <p>State-of-the-art labs, classrooms, and modern learning environments.</p>
+            </div>
+
+            <div class="why-card">
+                <h3>Global Opportunities</h3>
+                <p>Exchange programs and international collaborations worldwide.</p>
+            </div>
+
+            <div class="why-card">
+                <h3>Career Success</h3>
+                <p>Strong partnerships with industry leaders and job placement support.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .why-wtf-section {
+        background: linear-gradient(135deg, #002b66, #003c8f);
+        padding: 80px 0;
+        color: white;
+    }
+
+    .why-container h2 {
+        text-align: center;
+        font-size: 34px;
+        font-weight: 800;
+        margin-bottom: 50px;
+    }
+
+    .why-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .why-card {
+        background: rgba(255,255,255,0.1);
+        padding: 25px 20px;
+        border-radius: 14px;
+        transition: 0.3s;
+        text-align: center;
+    }
+
+        .why-card:hover {
+            background: rgba(255,255,255,0.18);
+            transform: translateY(-5px);
         }
 
+        .why-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
 
-
+        .why-card p {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
 </style>
