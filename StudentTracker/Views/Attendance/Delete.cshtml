@@ -51,9 +51,23 @@
     <p><strong>Date:</strong> @Model.AttendanceDate.ToShortDateString()</p>
     <p><strong>Status:</strong> @(Model.IsPresent ? "Present" : "Absent")</p>
 
-    <form asp-action="Delete" method="post">
+    <!-- FIXED HERE -->
+@*     <form asp-action="DeleteConfirmed"
+          asp-route-id="@Model.AttendanceID"
+          asp-route-courseId="@Model.CourseID"
+          method="post">
+
         <input type="hidden" name="id" value="@Model.AttendanceID" />
         <input type="hidden" name="courseId" value="@Model.CourseID" />
+
+        <button type="submit" class="btn-danger">Delete</button>
+    </form> *@
+
+    <form asp-action="DeleteConfirmed"
+          asp-route-id="@Model.AttendanceID"
+          asp-route-courseId="@Model.CourseID"
+          method="post">
+        @Html.AntiForgeryToken()
 
         <button type="submit" class="btn-danger">Delete</button>
     </form>
@@ -61,3 +75,10 @@
     <br />
     <a class="btn-secondary" href="/Attendance?courseId=@Model.CourseID">Cancel</a>
 </div>
+<style>
+    header.site-header {
+        border: 3px solid red !important;
+        z-index: 0 !important;
+        position: relative !important;
+    }
+</style>

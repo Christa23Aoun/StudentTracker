@@ -133,7 +133,6 @@
     <table id="attendanceTable">
         <thead>
             <tr>
-                
                 <th>Student</th>
                 <th>Course</th>
                 <th>Date & Time</th>
@@ -148,7 +147,6 @@
                 foreach (var item in Model)
                 {
                     <tr>
-                     
                         <td class="student-name">@item.StudentName</td>
                         <td>@item.CourseName</td>
 
@@ -160,9 +158,7 @@
 
                         <td>
                             <a class="btn-danger"
-                               asp-action="Delete"
-                               asp-route-id="@item.AttendanceID"
-                               asp-route-courseId="@courseId">
+                               href="/Attendance/Delete?id=@item.AttendanceID&courseId=@courseId">
                                 🗑️ Delete
                             </a>
                         </td>
@@ -199,4 +195,13 @@
 
     filterDate.addEventListener("change", applyFilters);
     filterName.addEventListener("keyup", applyFilters);
+</script>
+
+<!-- 🔍 DEBUG CLICK LOG -->
+<script>
+    document.querySelectorAll("a.btn-danger").forEach(btn => {
+        btn.addEventListener("click", function (e) {
+            console.log("DELETE CLICK DETECTED:", this.href);
+        });
+    });
 </script>

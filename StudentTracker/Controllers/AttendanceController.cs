@@ -117,12 +117,13 @@ namespace StudentTracker.Controllers
             return View(item);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int? courseId)
         {
-            await _client.DeleteAsync($"{_apiBase}Attendance/{id}");
+            var response = await _client.DeleteAsync($"{_apiBase}Attendance/{id}");
             return RedirectToAction(nameof(Index), new { courseId });
         }
+
     }
 }

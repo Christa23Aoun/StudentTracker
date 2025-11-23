@@ -1,6 +1,9 @@
 ﻿@model StudentTracker.Models.BulkTestGradesView
 @{
     ViewData["Title"] = "Add Grades";
+
+    var testName = ViewBag.TestName ?? "Selected Test";
+    var courseName = ViewBag.CourseName ?? $"Course {Model.CourseID}";
 }
 
 <style>
@@ -9,7 +12,6 @@
         font-family: 'Segoe UI', sans-serif;
         color: #fff;
         margin: 0;
-        padding: 0;
     }
 
     .bulk-wrapper {
@@ -27,20 +29,7 @@
         margin-bottom: 25px;
         font-weight: 700;
         color: #aee0ff;
-    }
-
-    label {
-        font-weight: 600;
-        color: #cfe6ff;
-    }
-
-    .form-select,
-    .form-control {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: #fff;
-        border-radius: 10px;
-        padding: 8px 10px;
+        font-size: 2rem;
     }
 
     table {
@@ -56,26 +45,38 @@
 
     th {
         color: #b3e5fc;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        border-radius: 10px;
+        padding: 8px;
     }
 
     .btn-save {
         background: linear-gradient(135deg, #00c853, #009624);
         color: white;
         border-radius: 10px;
-        padding: 10px 25px;
+        padding: 10px 30px;
         min-width: 150px;
+        font-weight: 600;
     }
 
     .btn-cancel {
         background: rgba(255, 255, 255, 0.15);
-        color: #fff;
+        color: white;
         border-radius: 10px;
-        padding: 10px 25px;
+        padding: 10px 30px;
         min-width: 150px;
+        font-weight: 600;
     }
 
     .actions-row {
-        margin-top: 25px;
+        margin-top: 30px;
         display: flex;
         justify-content: center;
         gap: 20px;
@@ -83,52 +84,18 @@
 </style>
 
 <div class="bulk-wrapper">
+
+    <!-- ⭐ FIXED TITLE ⭐ -->
     <h2>
-        @if (Model.SelectedTestID > 0 && Model.AvailableTests.Any(t => t.TestID == Model.SelectedTestID))
-        {
-            var t = Model.AvailableTests.First(x => x.TestID == Model.SelectedTestID);
-            @:➕ Add Grades for @t.TestName (Course @Model.CourseID)
-        }
-        else
-        {
-            @:➕ Add Grades for Course @Model.CourseID
-        }
+        ➕ Add Grades for <span style="color:#fff;">@testName</span> —
+        <span style="color:#bfe9ff;">@courseName</span>
     </h2>
 
     <form asp-action="BulkCreate" method="post">
         <input type="hidden" asp-for="CourseID" />
+        <input type="hidden" asp-for="SelectedTestID" />
 
-        @if (Model.SelectedTestID <= 0)
-        {
-            <div class="mb-3">
-                <label>Select Test</label>
-                <select asp-for="SelectedTestID" class="form-select">
-                    <option value="">-- Choose a test --</option>
-                    @foreach (var t in Model.AvailableTests)
-                    {
-                        <option value="@t.TestID">
-                            @t.TestName (@t.TestDate.ToShortDateString()) - @t.Weight% (Max @t.MaxScore)
-                        </option>
-                    }
-                </select>
-                <span asp-validation-for="SelectedTestID" class="text-danger"></span>
-            </div>
-        }
-        else
-        {
-            <input type="hidden" asp-for="SelectedTestID" />
-            <div class="mb-3">
-                <label>Test</label>
-                @{
-                    var t = Model.AvailableTests.FirstOrDefault(x => x.TestID == Model.SelectedTestID);
-                    var label = t != null
-                    ? $"{t.TestName} ({t.TestDate.ToShortDateString()}) - {t.Weight}% (Max {t.MaxScore})"
-                    : $"Test #{Model.SelectedTestID}";
-                }
-                <input type="text" class="form-control" value="@label" readonly />
-            </div>
-        }
-
+        <!-- ⭐ Removed ugly Test white input box ⭐ -->
         @if (Model.Students.Any())
         {
             <table>
@@ -140,6 +107,7 @@
                         <th>Validated</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @for (int i = 0; i < Model.Students.Count; i++)
                     {
@@ -148,13 +116,16 @@
                                 @Model.Students[i].StudentName
                                 <input type="hidden" asp-for="Students[i].StudentName" />
                             </td>
+
                             <td>
                                 @Model.Students[i].StudentID
                                 <input type="hidden" asp-for="Students[i].StudentID" />
                             </td>
+
                             <td>
                                 <input asp-for="Students[i].Score" class="form-control" />
                             </td>
+
                             <td>
                                 <input type="hidden" asp-for="Students[i].IsValidated" value="false" />
                                 <span style="color:#ccc;">Pending</span>
