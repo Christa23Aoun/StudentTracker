@@ -30,7 +30,11 @@ namespace StudentTrackerDAL.Repositories
                 schedule.EndTime
             };
 
-            return await con.ExecuteAsync("sp_CreateCourseSchedule", parameters, commandType: CommandType.StoredProcedure);
+            return await con.ExecuteAsync(
+                "sp_CreateCourseSchedule",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<int> UpdateAsync(CourseSchedule schedule)
@@ -46,7 +50,11 @@ namespace StudentTrackerDAL.Repositories
                 schedule.EndTime
             };
 
-            return await con.ExecuteAsync("sp_UpdateCourseSchedule", parameters, commandType: CommandType.StoredProcedure);
+            return await con.ExecuteAsync(
+                "sp_UpdateCourseSchedule",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<int> DeleteAsync(int scheduleId)
@@ -55,7 +63,11 @@ namespace StudentTrackerDAL.Repositories
 
             var parameters = new { ScheduleID = scheduleId };
 
-            return await con.ExecuteAsync("sp_DeleteCourseSchedule", parameters, commandType: CommandType.StoredProcedure);
+            return await con.ExecuteAsync(
+                "sp_DeleteCourseSchedule",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<CourseSchedule?> GetByIdAsync(int scheduleId)
@@ -83,7 +95,7 @@ namespace StudentTrackerDAL.Repositories
             );
         }
 
-        public async Task<bool> CheckTeacherConflictAsync(int courseId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+        public async Task<bool> CheckTeacherConflictAsync(int courseId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime, int? scheduleId = null)
         {
             using var con = new SqlConnection(_connectionString);
 
@@ -92,25 +104,28 @@ namespace StudentTrackerDAL.Repositories
                 CourseID = courseId,
                 DayOfWeek = dayOfWeek,
                 StartTime = startTime,
-                EndTime = endTime
+                EndTime = endTime,
+                ScheduleID = scheduleId ?? 0
             };
 
-            var result = await con.QueryFirstOrDefaultAsync<int>(
-                @"SELECT CASE 
-                       WHEN EXISTS (
-                           SELECT 1
-                           FROM CourseSchedule cs
-                           INNER JOIN Courses c ON c.CourseID = cs.CourseID
-                           WHERE c.TeacherID = (SELECT TeacherID FROM Courses WHERE CourseID = @CourseID)
-                             AND cs.DayOfWeek = @DayOfWeek
-                             AND cs.StartTime < @EndTime
-                             AND @StartTime < cs.EndTime
-                       ) THEN 1 ELSE 0 END",
-                parameters
-            );
+            var sql = @"
+        SELECT CASE 
+               WHEN EXISTS (
+                   SELECT 1
+                   FROM CourseSchedule cs
+                   INNER JOIN Courses c ON c.CourseID = cs.CourseID
+                   WHERE c.TeacherID = (SELECT TeacherID FROM Courses WHERE CourseID = @CourseID)
+                     AND cs.DayOfWeek = @DayOfWeek
+                     AND cs.StartTime < @EndTime
+                     AND @StartTime < cs.EndTime
+                     AND cs.ScheduleID <> @ScheduleID  -- IGNORE same schedule
+               ) 
+               THEN 1 ELSE 0 END";
 
+            var result = await con.ExecuteScalarAsync<int>(sql, parameters);
             return result == 1;
         }
+
 
         public async Task<bool> CheckStudentConflictAsync(int studentId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime)
         {

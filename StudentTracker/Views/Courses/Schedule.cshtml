@@ -6,141 +6,218 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f2f4fb;
         font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        color: #0b2540;
         margin: 0;
         padding: 0;
     }
 
-    .page-wrapper {
-        width: 85%;
-        max-width: 1100px;
+    .schedule-shell {
+        max-width: 1000px;
         margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 20px;
-        padding: 40px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        padding: 0 20px 40px 20px;
     }
 
-    h2 {
-        text-align: center;
-        font-size: 32px;
-        margin-bottom: 30px;
-        font-weight: 700;
-    }
-
-    .btn-add {
-        display: inline-block;
-        background: #28a745;
-        padding: 10px 20px;
-        border-radius: 12px;
-        color: #fff;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.2s ease;
+    .schedule-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
         margin-bottom: 20px;
     }
 
-        .btn-add:hover {
-            background: #1e7e34;
+        .schedule-header h2 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin: 0;
+            color: #0b2540;
+            text-align: left;
         }
+
+    .schedule-subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+    }
+
+    .schedule-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border-radius: 999px;
+        font-weight: 600;
+        padding: 9px 22px;
+        cursor: pointer;
+        transition: 0.2s ease;
+        border: 1px solid transparent;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #0f6ae6, #1d4ed8);
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+    }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #0f172a;
+        border-color: #cbd5e1;
+    }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+    .schedule-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 22px 20px 16px 20px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(148, 163, 184, 0.32);
+    }
 
     table {
         width: 100%;
         border-collapse: collapse;
+        border-radius: 14px;
         overflow: hidden;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.08);
+        background: #ffffff;
     }
 
     th, td {
-        padding: 16px;
+        padding: 12px 14px;
         text-align: center;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #e2e8f0;
     }
 
     th {
-        background: rgba(0, 60, 130, 0.9);
+        background: #0d4b84;
+        color: #e5f0ff;
         font-weight: 600;
-        color: #dceeff;
     }
 
-    tr:nth-child(even) {
-        background: rgba(255,255,255,0.07);
+    tbody tr:nth-child(even) {
+        background: #f8fafc;
     }
 
-    tr:hover {
-        background: rgba(0,90,180,0.25);
+    tbody tr:hover {
+        background: #eef4ff;
     }
 
     .actions a,
     .actions button {
-        margin: 0 6px;
-        padding: 8px 14px;
-        border-radius: 10px;
+        margin: 0 4px;
+        padding: 7px 14px;
+        border-radius: 999px;
         text-decoration: none;
         font-weight: 600;
         border: none;
         cursor: pointer;
+        font-size: 0.85rem;
+        transition: 0.2s;
     }
 
     .btn-edit {
-        background: rgba(0,150,255,0.25);
-        color: #fff;
+        background: #e0ecff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
     }
 
         .btn-edit:hover {
-            background: rgba(0,150,255,0.5);
+            background: #bfdbfe;
         }
 
     .btn-delete {
-        background: rgba(255,80,80,0.25);
-        color: #fff;
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
     }
 
         .btn-delete:hover {
-            background: rgba(255,80,80,0.5);
+            background: #fee2e2;
         }
 </style>
 
-<div class="page-wrapper">
+<div class="schedule-shell">
 
-    <h2>📅 Course Schedule</h2>
-
-    <a asp-action="AddSchedule" asp-route-courseId="@ViewBag.CourseID" class="btn-add">➕ Add Schedule</a>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Schedule ID</th>
-                <th>Day Of Week</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var s in Model)
+    <div class="schedule-header">
+        <h2>Course Schedule</h2>
+        <div class="schedule-subtitle">
+            @if (ViewBag.CourseName != null)
             {
-                <tr>
-                    <td>@s.ScheduleID</td>
-                    <td>@s.DayOfWeek</td>
-                    <td>@s.StartTime.ToString(@"hh\:mm")</td>
-                    <td>@s.EndTime.ToString(@"hh\:mm")</td>
-
-                    <td class="actions">
-                        <a asp-action="EditSchedule" asp-route-id="@s.ScheduleID" class="btn-edit">Edit</a>
-
-                        <form asp-action="DeleteSchedule" asp-route-id="@s.ScheduleID" asp-route-courseId="@s.CourseID"
-                              method="post" style="display:inline;">
-                            <button class="btn-delete">Delete</button>
-                        </form>
-                    </td>
-                </tr>
+                <span><strong>Course:</strong> @ViewBag.CourseName</span>
             }
-        </tbody>
-    </table>
+            @if (ViewBag.TeacherName != null)
+            {
+                <span> | <strong>Teacher:</strong> @ViewBag.TeacherName</span>
+            }
+        </div>
+    </div>
+
+    <div class="schedule-actions">
+        <a asp-action="AddSchedule" asp-route-courseId="@ViewBag.CourseID" class="btn btn-add">
+            Add Schedule
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            Back to Courses
+        </a>
+    </div>
+
+    <div class="schedule-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Schedule ID</th>
+                    <th>Day Of Week</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td>@s.ScheduleID</td>
+                        <td>@s.DayOfWeek</td>
+                        <td>@s.StartTime.ToString(@"hh\:mm")</td>
+                        <td>@s.EndTime.ToString(@"hh\:mm")</td>
+                        <td class="actions">
+                            <a asp-action="EditSchedule"
+                               asp-route-id="@s.ScheduleID"
+                               class="btn-edit">
+                                Edit
+                            </a>
+
+                            <form asp-action="DeleteSchedule"
+                                  asp-route-id="@s.ScheduleID"
+                                  asp-route-courseId="@s.CourseID"
+                                  method="post"
+                                  style="display:inline;">
+                                <button class="btn-delete" type="submit">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
 </div>

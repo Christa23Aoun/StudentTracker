@@ -1,106 +1,245 @@
 ﻿@model StudentTracker.Models.UserView
 @{
-    ViewData["Title"] = "Delete User";
-    var role = ViewBag.Role ?? "User";
+    ViewData["Title"] = "Deactivate User";
+    string role = ViewBag.Role as string ?? "All";
+    string status = ViewBag.Status as string ?? "All";
+    string errorMsg = TempData["Error"] as string;
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f2f4fb;
         font-family: 'Segoe UI', sans-serif;
-        color: white;
         margin: 0;
         padding: 0;
+        color: #0b2540;
     }
 
-    .delete-box {
-        max-width: 600px;
-        margin: 120px auto;
-        padding: 50px;
-        background: rgba(0, 45, 90, 0.8);
-        border-radius: 25px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
-        text-align: center;
+    .deactivate-wrapper {
+        width: 90%;
+        max-width: 700px;
+        margin: 80px auto;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 32px 34px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(15, 23, 42, 0.06);
     }
 
     h2 {
-        color: #ff6b6b;
+        font-size: 1.8rem;
         font-weight: 700;
-        margin-bottom: 25px;
+        margin-bottom: 10px;
+        color: #b91c1c;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 24px;
     }
 
     .alert-warning {
-        background: rgba(60, 0, 0, 0.7);
-        border: 1px solid rgba(255, 193, 7, 0.4);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 25px;
-        color: #ffe7ba;
+        background: linear-gradient(135deg, #fff7d6, #ffe8a3);
+        border-radius: 14px;
+        padding: 16px 20px;
+        border-left: 6px solid #fbbf24;
+        border-right: 6px solid #fbbf24;
+        color: #7c5e00;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(251, 191, 36, 0.25);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+        .alert-warning::before {
+            content: "⚠️";
+            font-size: 1.5rem;
+        }
+
+    .alert-error {
+        background: #ffe0e0;
+        border-left: 6px solid #d32f2f;
+        border-right: 6px solid #d32f2f;
+        color: #a30000;
+        padding: 16px 20px;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(211, 47, 47, 0.25);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+        .alert-error::before {
+            content: "⛔";
+            font-size: 1.5rem;
+        }
+
+    .user-summary {
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 18px 18px 6px 18px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 26px;
+    }
+
+    .user-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .user-summary-label {
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .user-summary-value {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .badge-role {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #e0ecff;
+        color: #1d4ed8;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .badge-status-active {
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+
+    .badge-status-inactive {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
     }
 
     .btn-row {
         display: flex;
-        justify-content: center;
-        gap: 25px;
-        margin-top: 25px;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 10px;
+        flex-wrap: wrap;
     }
 
     .btn {
-        border: none;
-        border-radius: 12px;
+        padding: 9px 20px;
+        border-radius: 999px;
         font-weight: 600;
-        padding: 12px 35px;
-        transition: 0.3s;
+        border: none;
         cursor: pointer;
+        font-size: 0.9rem;
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s ease;
     }
 
-    .btn-danger {
-        background: linear-gradient(135deg, #ff1744, #c62828);
-        color: white;
+    .btn-cancel {
+        background: #e2ecff;
+        color: #1d3b72;
+        border: 1px solid #c4d4ff;
     }
 
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #ff5252, #e53935);
-            box-shadow: 0 0 15px rgba(255, 82, 82, 0.6);
-        }
-
-    .btn-secondary {
-        background: rgba(255, 255, 255, 0.15);
-        color: #ddd;
+    .btn-deactivate {
+        background: #b91c1c;
+        color: #ffffff;
+        border: 1px solid #7f1d1d;
+        box-shadow: 0 10px 20px rgba(185, 28, 28, 0.35);
     }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
 </style>
 
-<div class="delete-box">
-    <h2>⚠️ Confirm Deletion</h2>
+<div class="deactivate-wrapper">
 
-    <div class="alert-warning">
-        <p class="fs-5">You are about to delete the following <strong>@role</strong>:</p>
-        <p class="fw-bold fs-5 text-light mb-0">@Model.FullName</p>
-        <p class="text-muted">@Model.Email</p>
-        <p class="mt-3">This action cannot be undone.</p>
+    @if (!string.IsNullOrEmpty(errorMsg))
+    {
+        <div class="alert-error">@errorMsg</div>
+    }
+
+    <h2>Deactivate User</h2>
+    <p class="subtitle">
+        You are about to deactivate this account. The user will no longer be able to sign in or use the system.
+    </p>
+
+    <div class="user-summary">
+        <div class="user-summary-row">
+            <span class="user-summary-label">User ID</span>
+            <span class="user-summary-value">@Model.UserID</span>
+        </div>
+        <div class="user-summary-row">
+            <span class="user-summary-label">Name</span>
+            <span class="user-summary-value">@Model.FullName</span>
+        </div>
+        <div class="user-summary-row">
+            <span class="user-summary-label">Email</span>
+            <span class="user-summary-value">@Model.Email</span>
+        </div>
+        <div class="user-summary-row">
+            <span class="user-summary-label">Role</span>
+            <span class="user-summary-value">
+                <span class="badge-role">
+                    @(Model.RoleID == 1 ? "Admin" :
+                        Model.RoleID == 2 ? "Teacher" :
+                        "Student")
+                </span>
+            </span>
+        </div>
+
+        <div class="user-summary-row">
+            <span class="user-summary-label">Current Status</span>
+            <span class="user-summary-value">
+                <span class="badge-status @(Model.IsActive ? "badge-status-active" : "badge-status-inactive")">
+                    @(Model.IsActive ? "Active" : "Inactive")
+                </span>
+            </span>
+        </div>
     </div>
+
+    @if (Model.IsActive)
+    {
+        <div class="alert-warning">
+            Deactivation is recommended instead of permanent deletion, as it keeps academic records consistent.
+        </div>
+    }
 
     <form asp-action="DeleteConfirmed" method="post">
         @Html.AntiForgeryToken()
-
         <input type="hidden" name="userID" value="@Model.UserID" />
-        <input type="hidden" name="role" value="@ViewBag.Role" />
-        <input type="hidden" name="status" value="@ViewBag.Status" />
+        <input type="hidden" name="role" value="@role" />
+        <input type="hidden" name="status" value="@status" />
 
         <div class="btn-row">
             <a asp-action="Index"
-               asp-route-role="@ViewBag.Role"
-               asp-route-status="@ViewBag.Status"
-               class="btn btn-secondary">❌ Cancel</a>
+               asp-route-role="@role"
+               asp-route-status="@status"
+               class="btn btn-cancel">Cancel</a>
 
-            <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+            <button type="submit" class="btn btn-deactivate">
+                Confirm Deactivation
+            </button>
         </div>
     </form>
 </div>

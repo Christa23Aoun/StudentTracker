@@ -9,145 +9,212 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f3f6fb;
         font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        color: #0b2540;
         margin: 0;
         padding: 0;
     }
 
-    .form-container {
-        max-width: 700px;
-        margin: 100px auto;
-        padding: 50px;
-        background: rgba(0, 45, 90, 0.9);
-        border-radius: 25px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    .edit-wrapper {
+        max-width: 720px;
+        margin: 80px auto;
+        padding: 0 16px;
     }
 
-    h2 {
+    .edit-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 36px 40px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+        border-top: 4px solid #003c8f;
+        border-inline: 1px solid rgba(148, 163, 184, 0.35);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .edit-title {
+        font-size: 1.6rem;
         font-weight: 700;
-        text-align: center;
-        margin-bottom: 40px;
-        color: #ffffff;
+        color: #003c8f;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .edit-subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 24px;
     }
 
     .form-label {
         font-weight: 600;
-        color: #cfe6ff;
+        color: #0f172a;
         margin-bottom: 6px;
+        font-size: 0.95rem;
     }
 
     .form-control {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: #fff;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        color: #0f172a;
         border-radius: 10px;
-        padding: 12px;
-        margin-bottom: 20px;
-        transition: all 0.2s ease;
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        transition: all 0.15s ease;
         width: 100%;
+        font-size: 0.95rem;
     }
 
-        /* 🔥 FIX: style the readonly state so it stays dark and visible */
         .form-control[readonly] {
-            background: rgba(255, 255, 255, 0.15) !important;
-            color: #fff !important;
-            opacity: 1 !important;
+            background: #f8fafc !important;
+            color: #475569 !important;
             cursor: not-allowed;
         }
 
         .form-control:focus {
-            border-color: #2196f3;
-            box-shadow: 0 0 12px rgba(33, 150, 243, 0.6);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
             outline: none;
         }
 
     .form-check {
-        margin-top: 10px;
-        margin-bottom: 25px;
+        margin-top: 4px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid #94a3b8;
+    }
+
+        .form-check-input:checked {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+        }
+
     .form-check-label {
-        margin-left: 5px;
         font-weight: 500;
+        color: #0f172a;
+        font-size: 0.95rem;
     }
 
     .btn-row {
         display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 30px;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 8px;
+        flex-wrap: wrap;
     }
 
     .btn {
-        border: none;
-        border-radius: 12px;
+        border-radius: 999px;
         font-weight: 600;
-        padding: 12px 35px;
-        transition: all 0.3s ease;
+        padding: 9px 22px;
+        border: none;
+        font-size: 0.95rem;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.18s ease;
     }
-
-    .btn-success {
-        background: linear-gradient(135deg, #00c853, #009624);
-        color: #fff;
-    }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #00e676, #00c853);
-            box-shadow: 0 0 15px rgba(0, 255, 120, 0.6);
-        }
 
     .btn-secondary {
-        background: rgba(255, 255, 255, 0.15);
-        color: #ddd;
+        background: #e2e8f0;
+        color: #0f172a;
+        border: 1px solid #cbd5e1;
     }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: #cbd5e1;
         }
+
+    .btn-success {
+        background: #2563eb;
+        color: #ffffff;
+        border: 1px solid #1d4ed8;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.35);
+    }
+
+        .btn-success:hover {
+            background: #1d4ed8;
+        }
+
+    @@media (max-width: 768px) {
+        .edit-card
+
+    {
+        padding: 24px 20px;
+    }
+
+    .edit-wrapper {
+        margin: 60px auto;
+    }
+
+    .btn-row {
+        justify-content: center;
+    }
+
+    }
 </style>
 
-<div class="form-container">
-    <h2>✏️ Edit User</h2>
+<div class="edit-wrapper">
+    <div class="edit-card">
+        <h2 class="edit-title">Edit User</h2>
+        <p class="edit-subtitle">
+            Update account details, adjust access, or change the status of this @roleName.
+        </p>
 
-    <form asp-action="Edit" method="post">
-        @Html.AntiForgeryToken()
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
 
-        <input type="hidden" asp-for="UserID" />
-        <input type="hidden" asp-for="RoleID" />
-        <input type="hidden" name="roleFilter" value="@ViewBag.RoleFilter" />
-        <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
+            <input type="hidden" asp-for="UserID" />
+            <input type="hidden" asp-for="RoleID" />
+            <input type="hidden" name="roleFilter" value="@ViewBag.RoleFilter" />
+            <input type="hidden" name="statusFilter" value="@ViewBag.StatusFilter" />
 
-        <label class="form-label">Role</label>
-        <input class="form-control" value="@roleName" readonly />
+            <label class="form-label">Role</label>
+            <input class="form-control" value="@roleName" readonly />
 
-        <label class="form-label">Full Name</label>
-        <input asp-for="FullName" class="form-control" />
+            <label class="form-label">Full Name</label>
+            <input asp-for="FullName" class="form-control" />
 
-        <label class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" />
+            <label class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" />
 
-        <label class="form-label">New Password (optional)</label>
-        <input asp-for="Password" type="password" class="form-control" placeholder="Leave empty to keep current password" />
+            <label class="form-label">New Password (optional)</label>
+            <input asp-for="Password"
+                   type="password"
+                   class="form-control"
+                   placeholder="Leave empty to keep current password" />
 
-        <div class="form-check">
-            <input class="form-check-input" asp-for="IsActive" />
-            <label class="form-check-label" asp-for="IsActive">Active</label>
-        </div>
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsActive" />
+                <label class="form-check-label" asp-for="IsActive">Active</label>
+            </div>
 
-        <div class="btn-row">
-            <a asp-action="Index"
-               asp-route-role="@ViewBag.RoleFilter"
-               asp-route-status="@ViewBag.StatusFilter"
-               class="btn btn-secondary">⬅️ Back</a>
+            <div class="btn-row">
+                <a asp-action="Index"
+                   asp-route-role="@ViewBag.RoleFilter"
+                   asp-route-status="@ViewBag.StatusFilter"
+                   class="btn btn-secondary">
+                    Back
+                </a>
 
-            <button type="submit" class="btn btn-success">💾 Save Changes</button>
-        </div>
-    </form>
+                <button type="submit" class="btn btn-success">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

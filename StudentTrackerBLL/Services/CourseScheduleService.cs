@@ -18,12 +18,15 @@ namespace StudentTrackerBLL.Services
 
         public async Task<bool> CreateScheduleAsync(CourseSchedule schedule)
         {
-            var hasTeacherConflict = await HasTeacherConflictAsync(
-                schedule.CourseID,
-                schedule.DayOfWeek,
-                schedule.StartTime,
-                schedule.EndTime
-            );
+            var hasTeacherConflict = await _repo.CheckTeacherConflictAsync(
+     schedule.CourseID,
+     schedule.DayOfWeek,
+     schedule.StartTime,
+     schedule.EndTime,
+     schedule.ScheduleID
+ );
+
+
 
             if (hasTeacherConflict)
                 return false;
@@ -33,12 +36,15 @@ namespace StudentTrackerBLL.Services
 
         public async Task<bool> UpdateScheduleAsync(CourseSchedule schedule)
         {
-            var hasTeacherConflict = await HasTeacherConflictAsync(
-                schedule.CourseID,
-                schedule.DayOfWeek,
-                schedule.StartTime,
-                schedule.EndTime
-            );
+            var hasTeacherConflict = await _repo.CheckTeacherConflictAsync(
+     schedule.CourseID,
+     schedule.DayOfWeek,
+     schedule.StartTime,
+     schedule.EndTime,
+     schedule.ScheduleID
+ );
+
+
 
             if (hasTeacherConflict)
                 return false;
@@ -61,9 +67,9 @@ namespace StudentTrackerBLL.Services
             return _repo.GetByCourseAsync(courseId);
         }
 
-        public Task<bool> HasTeacherConflictAsync(int courseId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+        public Task<bool> HasTeacherConflictAsync(int courseId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime, int? ignoreScheduleId = null)
         {
-            return _repo.CheckTeacherConflictAsync(courseId, dayOfWeek, startTime, endTime);
+            return _repo.CheckTeacherConflictAsync(courseId, dayOfWeek, startTime, endTime, ignoreScheduleId);
         }
 
         public Task<bool> HasStudentConflictAsync(int studentId, byte dayOfWeek, TimeSpan startTime, TimeSpan endTime)

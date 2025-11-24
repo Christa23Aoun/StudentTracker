@@ -7,165 +7,281 @@
     string search = ViewBag.SearchTerm ?? "";
 
     string pageTitle =
-        role == "Student" ? "🎓 All Students" :
-        role == "Teacher" ? "👨‍🏫 All Teachers" :
-        role == "Admin" ? "🧑‍💼 All Admins" :
-        "👥 All Users";
+        role == "Student" ? "All Students" :
+        role == "Teacher" ? "All Teachers" :
+        role == "Admin" ? "All Admins" :
+        "All Users";
 }
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f2f4fb;
         font-family: 'Segoe UI', sans-serif;
         margin: 0;
         padding: 0;
-        color: #fff;
+        color: #1b2b48;
     }
 
     .users-wrapper {
-        width: 85%;
+        width: 90%;
         max-width: 1300px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 22px;
-        padding: 50px;
-        backdrop-filter: blur(30px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        margin: 60px auto 80px auto;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 32px 36px 40px 36px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(15, 23, 42, 0.06);
     }
 
     h2 {
-        text-align: center;
-        font-size: 2.2rem;
+        text-align: left;
+        font-size: 1.8rem;
         font-weight: 700;
-        margin-bottom: 15px;
-        color: #ffffff;
+        margin-bottom: 8px;
+        color: #0b2540;
+    }
+
+    .users-subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 24px;
+    }
+
+    .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
     }
 
     .buttons-row {
         display: flex;
-        justify-content: center;
-        gap: 18px;
-        margin-bottom: 25px;
+        gap: 12px;
         flex-wrap: wrap;
     }
 
     .btn {
-        padding: 12px 28px;
-        border-radius: 12px;
+        padding: 10px 22px;
+        border-radius: 999px;
         font-weight: 600;
         text-decoration: none;
-        transition: 0.3s;
-        display: inline-block;
+        transition: 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        font-size: 0.9rem;
+        cursor: pointer;
     }
 
     .btn-back {
-        background: rgba(120, 180, 255, 0.25);
-        color: #e2eeff;
+        background: #e2ecff;
+        color: #1d3b72;
+        border: 1px solid #c4d4ff;
     }
 
+        .btn-back:hover {
+            background: #d4e2ff;
+        }
+
     .btn-add {
-        background: linear-gradient(135deg, #008cff, #005fc4);
-        color: #fff;
+        background: linear-gradient(135deg, #2155c9, #122f7a);
+        color: #ffffff;
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4);
     }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #285ce0, #0f2565);
+        }
 
     .filter-row {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 25px;
+        gap: 10px;
     }
 
     select,
     .search-input {
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        background: rgba(0, 40, 85, 0.6);
-        color: #ffffff;
-        font-weight: 600;
-        min-width: 180px;
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 1px solid #d0d7e2;
+        background: #f8fafc;
+        color: #0b2540;
+        font-weight: 500;
+        min-width: 160px;
+        font-size: 0.9rem;
+    }
+
+    .search-input {
+        min-width: 230px;
+    }
+
+    .filter-row .btn-add {
+        padding-inline: 18px;
+        box-shadow: none;
+        font-size: 0.9rem;
     }
 
     .table-container {
+        margin-top: 22px;
         overflow-x: auto;
-        background: rgba(0, 40, 85, 0.85);
-        border-radius: 18px;
-        padding: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 18px 20px;
+        border: 1px solid #e2e8f0;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
+        color: #0b2540;
+        font-size: 0.9rem;
     }
 
     th, td {
-        padding: 14px 16px;
+        padding: 11px 10px;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
     }
 
     thead {
-        background: rgba(0, 90, 170, 0.4);
+        background: #e3edff;
+    }
+
+    th {
+        font-weight: 700;
+        color: #1e3a8a;
+        font-size: 0.9rem;
+    }
+
+    tbody tr:hover {
+        background: #edf2ff;
     }
 
     .badge {
-        padding: 6px 14px;
-        border-radius: 10px;
+        padding: 5px 12px;
+        border-radius: 999px;
         font-weight: 600;
-    }
-
-    .badge-active {
-        background: rgba(0, 255, 170, 0.12);
-        color: #00e676;
-    }
-
-    .badge-inactive {
-        background: rgba(255, 100, 100, 0.12);
-        color: #ff7b7b;
-    }
-
-    .action-btn {
-        padding: 6px 14px;
-        border-radius: 8px;
-        margin: 0 4px;
-        font-weight: 600;
-        transition: 0.3s;
+        font-size: 0.8rem;
         display: inline-block;
     }
 
-    .edit {
-        color: #4fc3f7;
-        background: rgba(79, 195, 247, 0.15);
-        border: 1px solid rgba(79, 195, 247, 0.25);
+    .badge-active {
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
     }
 
-    .delete {
-        color: #ef9a9a;
-        background: rgba(239, 154, 154, 0.15);
-        border: 1px solid rgba(239, 154, 154, 0.25);
+    .badge-inactive {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
     }
+
+    .action-btn {
+        padding: 6px 12px;
+        border-radius: 999px;
+        margin: 0 3px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        display: inline-block;
+        font-size: 0.8rem;
+        border: 1px solid transparent;
+        text-decoration: none;
+    }
+
+    .edit {
+        color: #1d4ed8;
+        background: #e0ecff;
+        border-color: #bfdbfe;
+    }
+
+        .edit:hover {
+            background: #c7d7ff;
+        }
+
+    .deactivate {
+        color: #b91c1c;
+        background: #fee2e2;
+        border-color: #fecaca;
+    }
+
+        .deactivate:hover {
+            background: #fecaca;
+        }
 
     .enroll {
-        color: #aee0ff;
-        background: rgba(100, 180, 255, 0.15);
-        border: 1px solid rgba(100, 180, 255, 0.25);
+        color: #0369a1;
+        background: #e0f2fe;
+        border-color: #bae6fd;
     }
 
+        .enroll:hover {
+            background: #c5e4ff;
+        }
+
     .highlight-row {
-        background: rgba(255, 255, 0, 0.25) !important;
+        background: #fffbeb !important;
         transition: background-color 0.4s ease;
+    }
+
+    .alert-success {
+        margin-top: 16px;
+        border-radius: 10px;
+        border: 1px solid #bbf7d0;
+        background: #ecfdf5;
+        color: #166534;
+        font-size: 0.88rem;
+    }
+
+    @@media (max-width: 768px) {
+        .users-wrapper
+
+    {
+        padding: 24px 18px;
+    }
+
+    .top-row {
+        align-items: flex-start;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .users-subtitle {
+        text-align: center;
+    }
+
+    .buttons-row {
+        justify-content: center;
+    }
+
+    .filter-row {
+        justify-content: center;
+    }
+
     }
 </style>
 
 <div class="users-wrapper">
-    <h2>@pageTitle</h2>
+    <div class="top-row">
+        <div>
+            <h2>@pageTitle</h2>
+            <div class="users-subtitle">
+                Manage user accounts, access levels, and enrollment across the university.
+            </div>
+        </div>
 
-    <div class="buttons-row">
-        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">⬅️ Back to Dashboard</a>
-        <a asp-action="Create" asp-route-roleFilter="@role" class="btn btn-add">➕ Add New User</a>
+        <div class="buttons-row">
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-back">Back to Dashboard</a>
+            <a asp-action="Create" asp-route-roleFilter="@role" class="btn btn-add">Add New User</a>
+        </div>
     </div>
 
     <form method="get" asp-action="Index" class="filter-row">
@@ -177,21 +293,26 @@
         </select>
 
         <select name="status">
-            <option value="All" selected="@(status == "All")">All</option>
+            <option value="All" selected="@(status == "All")">All Statuses</option>
             <option value="Active" selected="@(status == "Active")">Active</option>
             <option value="Inactive" selected="@(status == "Inactive")">Inactive</option>
         </select>
 
-        <input type="text" name="search" value="@search" class="search-input" placeholder="Search by ID, name, or email..." />
-        <button type="submit" class="btn btn-add">🔍 Apply Filter</button>
+        <input type="text"
+               name="search"
+               value="@search"
+               class="search-input"
+               placeholder="Search by ID, name, or email..." />
+
+        <button type="submit" class="btn btn-add">Apply Filter</button>
     </form>
 
     @if (TempData["Msg"] != null)
     {
-        <div class="alert alert-success">@TempData["Msg"]</div>
+        <div class="alert alert-success mt-3">@TempData["Msg"]</div>
     }
 
-    <div class="table-container">
+    <div class="table-container mt-3">
         <table>
             <thead>
                 <tr>
@@ -221,9 +342,9 @@
                         <td>@u.FullName</td>
                         <td>@u.Email</td>
                         <td>
-                            @(u.RoleID == 1 ? "Admin 🧑‍💼" :
-                                u.RoleID == 2 ? "Teacher 👨‍🏫" :
-                                "Student 🎓")
+                            @(u.RoleID == 1 ? "Admin" :
+                                u.RoleID == 2 ? "Teacher" :
+                                "Student")
                         </td>
                         <td>
                             <span class="badge @(u.IsActive ? "badge-active" : "badge-inactive")">
@@ -236,13 +357,13 @@
                                asp-route-id="@u.UserID"
                                asp-route-role="@role"
                                asp-route-status="@status"
-                               class="action-btn edit">✏️ Edit</a>
+                               class="action-btn edit">Edit</a>
 
                             <a asp-action="Delete"
                                asp-route-id="@u.UserID"
                                asp-route-role="@role"
                                asp-route-status="@status"
-                               class="action-btn delete">🗑 Delete</a>
+                               class="action-btn deactivate">Deactivate</a>
 
                             @if (u.RoleID == 3)
                             {
@@ -251,7 +372,7 @@
                                    asp-route-studentId="@u.UserID"
                                    asp-route-role="@role"
                                    asp-route-status="@status"
-                                   class="action-btn enroll">🎓 Enroll</a>
+                                   class="action-btn enroll">Enroll</a>
                             }
                         </td>
                     </tr>
