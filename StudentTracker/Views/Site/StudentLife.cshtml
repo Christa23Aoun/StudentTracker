@@ -1,166 +1,247 @@
 ﻿@{
-    ViewData["Title"] = "Student Life";
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Student Life – WTF University";
 }
 
-<!-- ================== HERO WITH IMAGE ================== -->
-<section class="studentlife-hero">
-    <div class="studentlife-hero-overlay"></div>
-    <img src="~/images/uniHome.jpg" class="studentlife-hero-bg" />
-
-    <div class="hero-content">
-        <h1 class="fw-bold" style="font-size: 48px;">Student Life at WTF University</h1>
-        <p style="max-width: 900px; margin: 20px auto; font-size: 18px;">
-            Student life at WTF University is vibrant, diverse, and full of opportunities. From academic excellence
-            to leadership, clubs, competitions, and campus activities — students grow personally, socially,
-            and professionally.
+<!-- ================== HERO SECTION (KEPT SIMPLE) ================== -->
+<section class="simple-hero">
+    <div class="simple-hero-content">
+        <h1>Student Life at WTF University</h1>
+        <p>
+            A vibrant community where students grow academically, socially, and professionally.
         </p>
     </div>
 </section>
 
-<!-- ================== MAIN CONTENT ================== -->
-<div class="container my-5">
+<style>
+    .simple-hero {
+        padding: 80px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #003c8f, #001f3f);
+        color: white;
+    }
 
-    <div class="text-center mb-5">
-        <h2 class="fw-bold" style="color:#003c8f;">Life Beyond the Classroom</h2>
-        <p style="max-width:700px; margin:auto; color:#5b7083;">
-            Our campus experience is designed to help students build friendships, explore passions,
-            and develop leadership skills while maintaining academic success.
-        </p>
+        .simple-hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .simple-hero p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+</style>
+
+<!-- ================== STUDENT LIFE SLIDER ================== -->
+<section class="studentlife-slider-wrapper container">
+    <h2 class="slider-title">Life Beyond the Classroom</h2>
+    <p class="slider-sub">
+        Explore activities, leadership, and community initiatives shaping the WTF University experience.
+    </p>
+
+    <div class="slider-container">
+        <div class="slider-track">
+
+            <!-- CARD 1 -->
+            <div class="slide-card">
+                <i class="fas fa-users fa-3x card-icon"></i>
+                <h3>Student Clubs</h3>
+                <p>Technology, arts, robotics, cultural groups, volunteering & more.</p>
+            </div>
+
+            <!-- CARD 2 -->
+            <div class="slide-card">
+                <i class="fas fa-lightbulb fa-3x card-icon"></i>
+                <h3>Leadership Development</h3>
+                <p>Workshops, mentorships, public speaking, student councils.</p>
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="slide-card">
+                <i class="fas fa-calendar-alt fa-3x card-icon"></i>
+                <h3>Campus Events</h3>
+                <p>Hackathons, cultural nights, charity events, exhibitions.</p>
+            </div>
+
+            <!-- CARD 4 -->
+            <div class="slide-card">
+                <i class="fas fa-volleyball-ball fa-3x card-icon"></i>
+                <h3>Sports & Fitness</h3>
+                <p>Basketball, volleyball, yoga, fitness club, tournaments.</p>
+            </div>
+
+            <!-- CARD 5 -->
+            <div class="slide-card">
+                <i class="fas fa-hand-holding-heart fa-3x card-icon"></i>
+                <h3>Support Services</h3>
+                <p>Academic advising, psychological support, mentoring.</p>
+            </div>
+
+            <!-- CARD 6 -->
+            <div class="slide-card">
+                <i class="fas fa-globe fa-3x card-icon"></i>
+                <h3>Campus Community</h3>
+                <p>A welcoming environment where everyone feels connected.</p>
+            </div>
+
+        </div>
     </div>
 
-    <div class="row g-4">
+    <!-- DOTS -->
+    <div class="slider-dots"></div>
 
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-users fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Student Clubs & Societies</h5>
-                    <p class="text-muted">
-                        Technology club, robotics team, business society, arts & design club, volunteer groups
-                        and cultural associations.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-lightbulb fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Leadership Development</h5>
-                    <p class="text-muted">
-                        Workshops, mentorships, public speaking sessions, leadership camps,
-                        and student council initiatives.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-calendar-alt fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Campus Events & Activities</h5>
-                    <p class="text-muted">
-                        Hackathons, competitions, cultural nights, charity events, open days,
-                        and academic exhibitions.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-volleyball-ball fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Sports & Fitness</h5>
-                    <p class="text-muted">
-                        Basketball, volleyball, football, fitness club, yoga sessions, and inter-faculty tournaments.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-hand-holding-heart fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Student Support Services</h5>
-                    <p class="text-muted">
-                        Academic advising, psychological support, tutoring, mentoring,
-                        and career development guidance.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg card-fixed" style="border-radius:18px; width:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-globe fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Campus Community</h5>
-                    <p class="text-muted">
-                        A welcoming and collaborative environment where students feel
-                        supported, connected, and inspired.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="text-center mt-5">
-        <h3 class="fw-bold" style="color:#003c8f;">Become Part of Our Community</h3>
-        <p class="text-muted">Your journey starts here. Explore a campus full of creativity, innovation, and opportunity.</p>
+    <div class="join-block">
+        <h3>Become Part of Our Community</h3>
+        <p>Your journey starts here. Explore a campus full of creativity and opportunity.</p>
         <a asp-controller="Auth" asp-action="Login" class="btn btn-success px-4 py-2 fw-semibold" style="border-radius:12px;">
             Join WTF University
         </a>
     </div>
 
-</div>
+</section>
 
-<!-- ================== FIX HERO AGAINST LAYOUT ================== -->
+<!-- ================== SLIDER STYLES ================== -->
 <style>
-    .studentlife-hero {
-        position: relative !important;
-        height: 60vh !important;
-        min-height: 350px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        overflow: hidden !important;
-        text-align: center !important;
-        width: 100% !important;
+    .studentlife-slider-wrapper {
+        margin-top: 80px;
+        margin-bottom: 100px;
+        text-align: center;
     }
 
-    .studentlife-hero-bg {
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        filter: brightness(55%) !important;
+    .slider-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #003c8f;
+        margin-bottom: 12px;
     }
 
-    .studentlife-hero-overlay {
-        position: absolute !important;
-        inset: 0 !important;
-        background: linear-gradient(135deg, rgba(0,30,70,0.6), rgba(0,55,120,0.85)) !important;
+    .slider-sub {
+        max-width: 700px;
+        margin: auto;
+        color: #5b7083;
+        margin-bottom: 40px;
     }
 
-    .hero-content {
-        position: relative !important;
-        z-index: 2 !important;
-        max-width: 900px !important;
-        padding: 0 20px !important;
-        color:white !important;
+    /* SLIDER WRAPPER */
+    .slider-container {
+        overflow: hidden;
+        width: 100%;
+        position: relative;
     }
 
-    /* CARDS SAME HEIGHT */
-    .card-fixed {
-        height: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
+    /* TRACK: 6 cards → sliding left */
+    .slider-track {
+        display: flex;
+        transition: transform 0.8s ease;
+        will-change: transform;
+    }
+
+    /* CARD */
+    .slide-card {
+        flex: 0 0 calc(33.333% - 20px);
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.25);
+        margin: 0 10px;
+        padding: 30px 25px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        transition: 0.3s ease;
+    }
+
+        .slide-card:hover {
+            transform: translateY(-6px);
+            background: rgba(255,255,255,0.18);
+        }
+
+    .card-icon {
+        color: #003c8f;
+        margin-bottom: 15px;
+    }
+
+    /* DOTS */
+    .slider-dots {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .slider-dot {
+        width: 12px;
+        height: 12px;
+        background: #c3d4e1;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .slider-dot.active {
+            background: #003c8f;
+            transform: scale(1.25);
+        }
+
+    /* MOBILE */
+    @@media (max-width: 900px) {
+        .slide-card
+
+    {
+        flex: 0 0 calc(50% - 20px);
+    }
+
+    }
+
+    @@media (max-width: 600px) {
+        .slide-card
+
+    {
+        flex: 0 0 100%;
+    }
+
+    }
+
+    .join-block {
+        margin-top: 60px;
     }
 </style>
+
+<!-- ================== SLIDER SCRIPT ================== -->
+<script>
+    const track = document.querySelector('.slider-track');
+    const dotsContainer = document.querySelector('.slider-dots');
+
+    const totalCards = 6;
+    const visibleCount = 3;
+    const totalSlides = Math.ceil(totalCards / visibleCount);
+
+    let currentSlide = 0;
+
+    // ========== Create Dots ==========
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('slider-dot');
+        if (i === 0) dot.classList.add('active');
+        dot.dataset.index = i;
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    }
+
+    const dots = document.querySelectorAll('.slider-dot');
+
+    // ========== Go To Slide ==========
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        const offset = -(slideIndex * 100);
+        track.style.transform = `translateX(${offset}%)`;
+
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[slideIndex].classList.add('active');
+    }
+
+    // ========== Auto Slide ==========
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        goToSlide(currentSlide);
+    }, 8000);
+</script>

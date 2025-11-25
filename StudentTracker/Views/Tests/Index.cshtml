@@ -5,120 +5,176 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .tests-container {
-        max-width: 1200px;
-        margin: 80px auto;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(25px);
+        width: 92%;
+        max-width: 1300px;
+        margin: 70px auto;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 35px;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
     }
 
-    h2 {
-        text-align: center;
-        font-weight: 700;
-        margin-bottom: 30px;
-        color: #aee0ff;
+    /* PAGE HEADER */
+    .page-header {
+        text-align: left;
+        margin-bottom: 35px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
     }
 
-    .btn-add {
-        display: inline-block;
-        background: linear-gradient(135deg, #00bcd4, #1976d2);
-        color: white;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.3s;
-        float: right;
-        margin-bottom: 20px;
-    }
-
-        .btn-add:hover {
-            background: linear-gradient(135deg, #1976d2, #00bcd4);
-            transform: translateY(-2px);
+        .page-header h1 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            color: #003c8f;
         }
 
+    /* ACTION BUTTONS */
+    .btn-primary {
+        background: #003c8f;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s ease;
+        display: inline-block;
+    }
+
+        .btn-primary:hover {
+            background: #002a6a;
+        }
+
+    .btn-secondary {
+        background: #5b6e80;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s ease;
+        display: inline-block;
+    }
+
+        .btn-secondary:hover {
+            background: #445664;
+        }
+
+    .actions-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* TABLE */
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
-    }
-
-    th, td {
-        padding: 14px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.15);
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: 20px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
     thead {
-        background: rgba(255, 255, 255, 0.1);
+        background: #003c8f;
+        color: white;
     }
 
     th {
-        color: #aee0ff;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
     }
 
-    .delete {
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #edf2f7;
+        color: #1a2b4c;
+    }
+
+    tr:hover {
+        background: #f0f6ff;
+    }
+
+    /* BUTTONS INSIDE TABLE */
+    .btn-table {
+        padding: 7px 13px;
+        border-radius: 6px;
         text-decoration: none;
         font-weight: 600;
-        padding: 8px 12px;
-        border-radius: 8px;
-        background: rgba(255, 77, 77, 0.2);
-        border: 1px solid rgba(255, 77, 77, 0.4);
-        color: white;
-        transition: 0.3s;
-        margin-left: 6px;
+        transition: 0.25s ease;
         display: inline-block;
     }
 
-        .delete:hover {
-            background: rgba(255, 77, 77, 0.4);
-            transform: translateY(-2px);
+    .btn-blue {
+        background: #ffffff;
+        border: 1px solid #003c8f;
+        color: #003c8f;
+    }
+
+        .btn-blue:hover {
+            background: #003c8f;
+            color: white;
         }
 
-    .btn-grades {
-        text-decoration: none;
-        font-weight: 600;
-        padding: 8px 12px;
-        border-radius: 8px;
-        background: rgba(0, 188, 212, 0.2);
-        border: 1px solid rgba(0, 188, 212, 0.5);
-        color: #aee0ff;
-        transition: 0.3s;
-        display: inline-block;
+    .btn-green {
+        background: #ffffff;
+        border: 1px solid #008e2b;
+        color: #008e2b;
     }
 
-        .btn-grades:hover {
-            background: rgba(0, 188, 212, 0.4);
-            transform: translateY(-2px);
+        .btn-green:hover {
+            background: #008e2b;
+            color: white;
+        }
+
+    .btn-red {
+        background: #ffffff;
+        border: 1px solid #c62828;
+        color: #c62828;
+    }
+
+        .btn-red:hover {
+            background: #c62828;
+            color: white;
         }
 </style>
 
 <div class="tests-container">
-    <h2>🧪 All Tests</h2>
 
-    <div class="text-center mb-4">
+    <div class="page-header">
+        <h1>Tests</h1>
+    </div>
+
+    <div class="actions-row">
         <a asp-controller="Teacher"
            asp-action="CourseDetails"
            asp-route-id="@ViewBag.CourseID"
-           class="btn-add"
-           style="float:none; background:linear-gradient(135deg, #00bcd4, #1976d2);">
+           class="btn-secondary">
             ⬅ Back to Course
         </a>
+
+        <a asp-action="Create"
+           asp-route-courseId="@ViewBag.CourseID"
+           class="btn-primary">
+            ➕ Add Test
+        </a>
     </div>
-
-    <a asp-action="Create" asp-route-courseId="@ViewBag.CourseID" class="btn-add">➕ Add Test</a>
-
-    <div class="clearfix"></div>
 
     <table>
         <thead>
@@ -145,26 +201,25 @@
                         <td>@item.TestDate.ToShortDateString()</td>
                         <td>@item.Weight</td>
                         <td>@item.MaxScore</td>
+
                         <td>
-                            <!-- FIXED: pass BOTH courseId + testId -->
                             <a asp-controller="TestGrades"
                                asp-action="BulkCreate"
                                asp-route-courseId="@item.CourseID"
                                asp-route-testId="@item.TestID"
-                               class="btn-grades">
+                               class="btn-table btn-green">
                                 ➕ Add Grades
                             </a>
 
                             <a asp-action="Edit"
                                asp-route-id="@item.TestID"
-                               class="btn-grades"
-                               style="margin-right: 6px;">
+                               class="btn-table btn-blue">
                                 ✏ Edit
                             </a>
 
                             <a asp-action="Delete"
                                asp-route-id="@item.TestID"
-                               class="delete">
+                               class="btn-table btn-red">
                                 🗑 Delete
                             </a>
                         </td>
@@ -174,9 +229,12 @@
             else
             {
                 <tr>
-                    <td colspan="7" class="text-muted py-3">No tests available.</td>
+                    <td colspan="7" style="padding:20px; color:#5b6e80;">
+                        No tests available.
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+
 </div>

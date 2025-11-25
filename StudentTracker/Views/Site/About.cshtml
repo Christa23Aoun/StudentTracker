@@ -3,11 +3,10 @@
     ViewData["Title"] = "About – WTF University";
 }
 
+<!-- ========================= -->
+<!--      HERO SECTION         -->
+<!-- ========================= -->
 <section class="about-hero">
-    <div class="about-hero-overlay"></div>
-
-    <img src="~/images/unnamed.jpg" class="about-hero-bg" />
-
     <div class="about-hero-content container">
         <h1>About WTF University</h1>
         <p>Building leaders. Inspiring innovation. Shaping the future of education.</p>
@@ -17,51 +16,35 @@
 <style>
     .about-hero {
         position: relative;
-        height: 60vh;
+        height: 55vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        background: linear-gradient(135deg, #003c8f, #001a44);
         color: white;
-    }
-
-    .about-hero-bg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(55%);
-    }
-
-    .about-hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(0,30,70,0.6), rgba(0,55,120,0.85));
-    }
-
-    .about-hero-content {
-        position: relative;
         text-align: center;
-        max-width: 800px;
-        z-index: 2;
+        padding: 0 20px;
     }
 
-    .about-hero h1 {
-        font-size: 52px;
+    .about-hero-content h1 {
+        font-size: 50px;
         font-weight: 800;
-        margin-bottom: 10px;
-        letter-spacing: 1px;
+        margin-bottom: 12px;
     }
 
-    .about-hero p {
+    .about-hero-content p {
         font-size: 20px;
         opacity: 0.9;
+        max-width: 700px;
+        margin: 0 auto;
     }
 </style>
 
 
 
+<!-- ========================= -->
+<!--     WHO WE ARE SECTION    -->
+<!-- ========================= -->
 <section class="who-we-are">
     <div class="container who-container">
 
@@ -73,13 +56,15 @@
                 research with real-world experience, preparing students to succeed in an evolving world.
             </p>
             <p>
-                With a mission rooted in integrity and impact, WTF University provides a dynamic learning
-                environment that fosters intellectual growth, creativity, and global citizenship.
+                With a mission rooted in integrity and impact, WTF University fosters intellectual growth,
+                creativity, and global citizenship in a dynamic learning environment.
             </p>
         </div>
 
-        <div class="who-img">
-            <img src="~/images/uniHome.jpg" alt="Campus Image" />
+
+        <div class="section-img">
+            <img src="~/images/uniHome.jpg" alt="Campus Image" class="img-round" />
+       
         </div>
 
     </div>
@@ -88,7 +73,7 @@
 <style>
     .who-we-are {
         padding: 80px 0;
-        background: #f9fbff;
+        background: #f5f8ff;
     }
 
     .who-container {
@@ -96,6 +81,16 @@
         gap: 50px;
         align-items: center;
         padding: 0 20px;
+    }
+
+    .section-img {
+        flex: 1;
+    }
+
+    .img-round {
+        width: 100%;
+        border-radius: 14px;
+        box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
     }
 
     .who-text {
@@ -106,24 +101,14 @@
             font-size: 34px;
             color: #003c8f;
             margin-bottom: 20px;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         .who-text p {
             font-size: 18px;
-            line-height: 1.75;
+            line-height: 1.7;
             color: #333;
             margin-bottom: 18px;
-        }
-
-    .who-img {
-        flex: 1;
-    }
-
-        .who-img img {
-            width: 100%;
-            border-radius: 14px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
     @@media(max - width: 900px)
@@ -136,11 +121,18 @@
         text-align: center;
     }
 
+    .who-placeholder {
+        width: 100%;
+    }
+
     }
 </style>
 
 
 
+<!-- ========================= -->
+<!--      MISSION SECTION      -->
+<!-- ========================= -->
 <section class="mission-blue">
     <div class="container mission-content">
         <h2>Our Mission</h2>
@@ -159,25 +151,25 @@
         text-align: center;
     }
 
-    .mission-content {
-        max-width: 900px;
-    }
+        .mission-blue h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
 
-    .mission-blue h2 {
-        font-size: 36px;
-        font-weight: 800;
-        margin-bottom: 20px;
-    }
-
-    .mission-blue p {
-        font-size: 19px;
-        opacity: 0.9;
-        line-height: 1.8;
-    }
+        .mission-blue p {
+            font-size: 19px;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
 </style>
 
 
 
+<!-- ========================= -->
+<!--      VALUES SECTION       -->
+<!-- ========================= -->
 <section class="values-grid">
     <div class="container">
 
@@ -187,7 +179,7 @@
 
             <div class="value-box">
                 <h3>Integrity</h3>
-                <p>We uphold truth, transparency, and ethical leadership in all we do.</p>
+                <p>We uphold truth, transparency, and ethical leadership in everything we do.</p>
             </div>
 
             <div class="value-box">
@@ -197,12 +189,12 @@
 
             <div class="value-box">
                 <h3>Inclusion</h3>
-                <p>We value diversity and create opportunities for every student to succeed.</p>
+                <p>We embrace diversity and create opportunities for every learner.</p>
             </div>
 
             <div class="value-box">
                 <h3>Impact</h3>
-                <p>We drive positive change through education, research, and community engagement.</p>
+                <p>We drive positive change through research, education, and engagement.</p>
             </div>
 
         </div>
@@ -213,7 +205,7 @@
 <style>
     .values-grid {
         padding: 80px 0;
-        background: #f2f6ff;
+        background: #eef4ff;
     }
 
     .values-header {
@@ -221,7 +213,7 @@
         font-size: 34px;
         font-weight: 800;
         color: #003c8f;
-        margin-bottom: 50px;
+        margin-bottom: 45px;
     }
 
     .values-boxes {
@@ -232,15 +224,15 @@
 
     .value-box {
         background: white;
-        padding: 30px;
+        padding: 28px;
         border-radius: 14px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        transition: 0.3s;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        transition: 0.25s ease;
     }
 
         .value-box:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
         }
 
         .value-box h3 {
@@ -251,16 +243,19 @@
         }
 
         .value-box p {
-            font-size: 16px;
-            color: #444;
+            color: #555;
             line-height: 1.6;
+            font-size: 16px;
         }
 </style>
 
 
 
+<!-- ========================= -->
+<!--      WHY CHOOSE US        -->
+<!-- ========================= -->
 <section class="why-wtf-section">
-    <div class="container why-container">
+    <div class="container">
 
         <h2>Why Choose WTF University?</h2>
 
@@ -273,17 +268,17 @@
 
             <div class="why-card">
                 <h3>Modern Campus</h3>
-                <p>State-of-the-art labs, classrooms, and modern learning environments.</p>
+                <p>State-of-the-art labs, classrooms, and collaborative spaces.</p>
             </div>
 
             <div class="why-card">
                 <h3>Global Opportunities</h3>
-                <p>Exchange programs and international collaborations worldwide.</p>
+                <p>Exchange programs and cross-border academic partnerships.</p>
             </div>
 
             <div class="why-card">
                 <h3>Career Success</h3>
-                <p>Strong partnerships with industry leaders and job placement support.</p>
+                <p>Industry-driven programs with strong career placement support.</p>
             </div>
 
         </div>
@@ -293,9 +288,9 @@
 
 <style>
     .why-wtf-section {
-        background: linear-gradient(135deg, #002b66, #003c8f);
+        background: #f4f7fc; /* clean light admin color */
         padding: 80px 0;
-        color: white;
+        color: #003c8f;
     }
 
     .why-container h2 {
@@ -303,8 +298,10 @@
         font-size: 34px;
         font-weight: 800;
         margin-bottom: 50px;
+        color: #003c8f; /* deep blue title */
     }
 
+    /* Cards */
     .why-cards {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -312,27 +309,31 @@
     }
 
     .why-card {
-        background: rgba(255,255,255,0.1);
+        background: white;
         padding: 25px 20px;
         border-radius: 14px;
         transition: 0.3s;
         text-align: center;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        border: 1px solid #e5eaf3;
     }
 
         .why-card:hover {
-            background: rgba(255,255,255,0.18);
             transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
         }
 
         .why-card h3 {
             font-size: 22px;
             font-weight: 700;
             margin-bottom: 8px;
+            color: #002b66;
         }
 
         .why-card p {
             font-size: 16px;
-            opacity: 0.9;
             line-height: 1.6;
+            color: #444;
         }
+
 </style>

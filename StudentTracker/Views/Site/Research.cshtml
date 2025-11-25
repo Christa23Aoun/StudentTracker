@@ -1,167 +1,323 @@
 ﻿@{
-    ViewData["Title"] = "Research";
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Research – WTF University";
 }
 
-<section class="research-hero text-white text-center">
-    <div class="research-hero-overlay"></div>
-    <img src="~/images/unnamed.jpg" class="research-hero-bg" />
-
-    <div class="container position-relative hero-content">
-        
-        <h1 class="fw-bold" style="font-size: 48px;">Research at WTF University</h1>
-        <p style="max-width: 850px; margin: 15px auto; font-size: 18px;">
-            At WTF University, research is at the heart of innovation. Our mission is to empower students and faculty
-            to explore cutting-edge ideas, develop impactful solutions, and contribute to the scientific, technological,
-            and social progress of our community and region.
+<!-- ========================= -->
+<!-- ADMIN-STYLE BLUE HEADER -->
+<!-- ========================= -->
+<section class="research-header">
+    <div class="container header-content">
+        <h1>Research at WTF University</h1>
+        <p>
+            At WTF University, research drives innovation. We empower students and faculty to explore
+            cutting-edge ideas, create meaningful solutions, and contribute to scientific, technological,
+            and social progress.
         </p>
     </div>
 </section>
 
-<style>
-    .research-hero {
-        position: relative;
-        height: 60vh;
-        min-height: 350px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
+<!-- ========================= -->
+<!-- RESEARCH CONTENT -->
+<!-- ========================= -->
+<div class="container research-content">
 
-    .research-hero-bg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(55%);
-    }
-
-    .research-hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(0,30,70,0.6), rgba(0,55,120,0.85));
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        max-width: 900px;
-    }
-</style>
-
-<!-- ===== ORIGINAL CONTENT (UNCHANGED) ===== -->
-
-<section 
-   
-</section>
-
-<div class="container my-5">
-
-    <div class="mb-5">
-        <h2 class="fw-bold" style="color:#003c8f;">Our Research Vision</h2>
-        <p style="color:#5b7083; font-size: 16px;">
-            WTF University is committed to creating a vibrant research culture grounded in creativity,
-            interdisciplinary collaboration, and real-world impact. Our research initiatives span areas
-            such as computer science, cybersecurity, education, artificial intelligence, engineering
-            technologies, environmental science, and digital transformation.
+    <!-- Vision -->
+    <div class="vision-block">
+        <h2>Our Research Vision</h2>
+        <p>
+            WTF University is committed to building a dynamic research ecosystem rooted in creativity,
+            interdisciplinary collaboration, and real-world impact.
         </p>
-        <p style="color:#5b7083; font-size: 16px;">
-            Students and faculty work closely in laboratories, innovation hubs, and collaborative research
-            groups to turn innovative ideas into tangible projects, tools, and solutions.
+        <p>
+            Our initiatives span areas such as AI, cybersecurity, digital transformation, engineering,
+            environmental sustainability, and education—powered by labs, innovation hubs, and project-based learning.
         </p>
     </div>
 
-    <h3 class="fw-bold mb-4" style="color:#003c8f;">Key Research Areas</h3>
+    <!-- Research Areas -->
+    <h3 class="section-title">Key Research Areas</h3>
 
-    <div class="row g-4">
+    <div class="auto-slider">
 
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-brain fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Artificial Intelligence</h5>
-                    <p class="text-muted">
-                        Machine learning, neural networks, intelligent systems, and predictive analytics
-                        developed for education, healthcare, finance, and smart cities.
-                    </p>
-                </div>
+        <div class="auto-track">
+
+            <div class="auto-slide">
+                <i class="fas fa-brain icon"></i>
+                <h5>Artificial Intelligence</h5>
+                <p>Machine learning, neural networks, intelligent systems.</p>
             </div>
+
+            <div class="auto-slide">
+                <i class="fas fa-shield-alt icon"></i>
+                <h5>Cybersecurity</h5>
+                <p>Threat detection, encryption, IoT and network security.</p>
+            </div>
+
+            <div class="auto-slide">
+                <i class="fas fa-database icon"></i>
+                <h5>Data Science</h5>
+                <p>Big data, analytics, prediction & visualization models.</p>
+            </div>
+
+            <div class="auto-slide">
+                <i class="fas fa-cogs icon"></i>
+                <h5>Engineering</h5>
+                <p>Automation, renewable energy, robotics & embedded systems.</p>
+            </div>
+
+            <div class="auto-slide">
+                <i class="fas fa-graduation-cap icon"></i>
+                <h5>Educational Research</h5>
+                <p>Digital learning, performance tracking, curriculum design.</p>
+            </div>
+
+            <div class="auto-slide">
+                <i class="fas fa-leaf icon"></i>
+                <h5>Environment & Sustainability</h5>
+                <p>Green innovation, climate studies and sustainable development.</p>
+            </div>
+
         </div>
 
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-shield-alt fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Cybersecurity & Digital Safety</h5>
-                    <p class="text-muted">
-                        Research on threat detection, secure authentication, encryption, IoT security,
-                        and building resilient digital infrastructure.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-database fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Data Science & Analytics</h5>
-                    <p class="text-muted">
-                        Big data, visualization, decision-making models, and analytical techniques
-                        applied to modern industries.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-cogs fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Engineering & Technology</h5>
-                    <p class="text-muted">
-                        Research on automation, embedded systems, renewable energy, and modern
-                        engineering technologies.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-graduation-cap fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Educational Research</h5>
-                    <p class="text-muted">
-                        Innovation in teaching and learning, digital classrooms, student performance
-                        tracking, curriculum development, and assessment tools.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 d-flex">
-            <div class="card shadow-lg w-100" style="border-radius:18px; height:100%;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-leaf fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h5 class="fw-bold">Environment & Sustainability</h5>
-                    <p class="text-muted">
-                        Research on environmental protection, green technologies, climate change,
-                        and sustainable development strategies.
-                    </p>
-                </div>
-            </div>
-        </div>
+        <!-- dots auto-generated by JS -->
+        <div class="auto-dots"></div>
 
     </div>
 
-    <div class="text-center mt-5">
-        <h3 class="fw-bold" style="color:#003c8f;">Want to Join Our Research Community?</h3>
-        <p class="text-muted">Students and faculty are welcome to participate in ongoing projects and research labs.</p>
-        <a asp-controller="Auth" asp-action="Login" class="btn btn-primary px-4 py-2 fw-semibold" style="border-radius:12px;">
-            Join a Research Group
-        </a>
+
+
+    <!-- CTA -->
+    <div class="text-center join-block">
+        <h3>Want to Join Our Research Community?</h3>
+        <p class="text-muted">
+            Students and professors are welcome to participate in active research labs and innovation projects.
+        </p> </br> </br>
+        <a asp-controller="Auth" asp-action="Login" class="join-btn">Join a Research Group</a>
     </div>
 
 </div>
+
+<!-- ========================= -->
+<!-- PAGE STYLES -->
+<!-- ========================= -->
+<style>
+
+    /* ===== HEADER ===== */
+    .research-header {
+        background: linear-gradient(135deg, #003c8f, #001e44);
+        padding: 70px 0 65px;
+        text-align: center;
+        color: white;
+        margin-bottom: 50px;
+    }
+
+    .header-content h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .header-content p {
+        max-width: 900px;
+        font-size: 18px;
+        opacity: 0.9;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    /* ===== CONTENT BLOCKS ===== */
+    .research-content {
+        padding-bottom: 120px;
+    }
+
+    .vision-block h2 {
+        font-size: 34px;
+        font-weight: 800;
+        color: #003c8f;
+        margin-bottom: 15px;
+    }
+
+    .vision-block p {
+        color: #4a5d73;
+        font-size: 16px;
+        line-height: 1.75;
+        margin-bottom: 15px;
+    }
+
+    .section-title {
+        font-size: 30px;
+        font-weight: 800;
+        color: #003c8f;
+        margin: 40px 0 25px;
+    }
+
+    /* ===== CARD STYLE ===== */
+    .research-card {
+        background: white;
+        padding: 28px;
+        border-radius: 18px;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: 1px solid #dce7f9;
+        transition: 0.3s ease;
+        width: 100%;
+    }
+
+        .research-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .research-card h5 {
+            font-size: 20px;
+            color: #003c8f;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .research-card p {
+            color: #5b7083;
+            line-height: 1.6;
+        }
+
+        .research-card .icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            color: #003c8f;
+        }
+
+    /* ===== CTA BLOCK ===== */
+    .join-block {
+        margin-top: 65px;
+    }
+
+        .join-block h3 {
+            color: #003c8f;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+    .join-btn {
+        background: linear-gradient(135deg, #0066cc, #004c99);
+        padding: 12px 32px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .join-btn:hover {
+            background: linear-gradient(135deg, #0080ff, #005bb5);
+            transform: translateY(-3px);
+        }
+
+    .auto-slider {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        margin-top: 30px;
+    }
+
+    .auto-track {
+        display: flex;
+        gap: 25px;
+        transition: transform 0.7s ease-in-out;
+    }
+
+    .auto-slide {
+        flex: 0 0 calc(33.333% - 20px);
+        background: white;
+        padding: 28px;
+        border-radius: 18px;
+        text-align: center;
+        border: 1px solid #dce7f9;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        transition: 0.3s ease;
+    }
+
+        .auto-slide:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .auto-slide .icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+            color: #003c8f;
+        }
+
+    .auto-dots {
+        text-align: center;
+        margin-top: 22px;
+    }
+
+    .auto-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #bcd7f4;
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .auto-dot.active {
+            background: #003c8f;
+            transform: scale(1.2);
+        }
+
+</style>
+<script>
+    const track = document.querySelector(".auto-track");
+    const slides = document.querySelectorAll(".auto-slide");
+    const dotsContainer = document.querySelector(".auto-dots");
+
+    let currentIndex = 0;
+    const total = slides.length;
+    const visible = 3;
+    const maxIndex = total - visible;
+
+    // Create dots
+    for (let i = 0; i < total; i++) {
+        const dot = document.createElement("span");
+        dot.classList.add("auto-dot");
+        if (i === 0) dot.classList.add("active");
+        dot.dataset.index = i;
+        dotsContainer.appendChild(dot);
+
+        dot.addEventListener("click", () => {
+            currentIndex = i <= maxIndex ? i : maxIndex;
+            updateSlider();
+            restartAutoSlide();
+        });
+    }
+
+    const dots = document.querySelectorAll(".auto-dot");
+
+    function updateSlider() {
+        const offset = currentIndex * -33.333;
+        track.style.transform = `translateX(${offset}%)`;
+
+        dots.forEach(d => d.classList.remove("active"));
+        dots[currentIndex].classList.add("active");
+    }
+
+    // Auto-slide
+    let autoSlide = setInterval(() => {
+        currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
+        updateSlider();
+    }, 8000);
+
+    function restartAutoSlide() {
+        clearInterval(autoSlide);
+        autoSlide = setInterval(() => {
+            currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
+            updateSlider();
+        }, 8000);
+    }
+</script>
+
