@@ -94,6 +94,12 @@
     <form asp-action="BulkCreate" method="post">
         <input type="hidden" asp-for="CourseID" />
         <input type="hidden" asp-for="SelectedTestID" />
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" style="margin-bottom:15px;">
+                @TempData["Error"]
+            </div>
+        }
 
         <!-- ⭐ Removed ugly Test white input box ⭐ -->
         @if (Model.Students.Any())

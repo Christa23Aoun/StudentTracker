@@ -119,6 +119,13 @@
     }
 
     <form asp-action="Create" method="post">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" style="margin-bottom:15px;">
+                @TempData["Error"]
+            </div>
+        }
+
         @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="CourseID" />

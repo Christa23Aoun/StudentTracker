@@ -23,6 +23,15 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
             return await con.QueryAsync<TestGrade>("SELECT * FROM TestGrades");
         }
+        public async Task<bool> ExistsAsync(int testId, int studentId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            var count = await con.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM TestGrades WHERE TestID = @testId AND StudentID = @studentId",
+                new { testId, studentId }
+            );
+            return count > 0;
+        }
 
         public async Task<TestGrade?> GetByIdAsync(int id)
         {
@@ -30,6 +39,16 @@ namespace StudentTrackerDAL.Repositories
             return await con.QueryFirstOrDefaultAsync<TestGrade>(
                 "SELECT * FROM TestGrades WHERE TestGradeID = @TestGradeID",
                 new { TestGradeID = id });
+        }
+        public async Task<IEnumerable<TestGrade>> GetByTestAsync(int testId, int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            return await con.QueryAsync<TestGrade>(
+                "sp_GetTestGradesByCourse",
+                new { CourseID = courseId, TestID = testId },
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId)
