@@ -1,0 +1,152 @@
+﻿@model StudentTracker.Models.CourseScheduleView
+
+@{
+    ViewData["Title"] = "Delete Schedule";
+    var courseId = Model.CourseID;
+
+    string GetDayName(byte d)
+    {
+        return d switch
+        {
+            1 => "Monday",
+            2 => "Tuesday",
+            3 => "Wednesday",
+            4 => "Thursday",
+            5 => "Friday",
+            6 => "Saturday",
+            7 => "Sunday",
+            _ => "Unknown"
+        };
+    }
+}
+
+<style>
+    body {
+        background: #f5f7fb;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        max-width: 700px;
+        margin: 100px auto;
+        padding: 0 20px 40px 20px;
+    }
+
+    .confirm-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 40px 40px 35px 40px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+        border: 1px solid #e6a8a8;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 1.9rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: #b91c1c;
+    }
+
+    .subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+
+    .info-box {
+        background: #fff8f8;
+        border: 1px solid #f5d2d2;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+        .info-box p {
+            font-size: 1rem;
+            margin: 6px 0;
+            color: #7a0c0c;
+        }
+
+    .info-label {
+        font-weight: 700;
+        color: #a60f0f;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 15px;
+    }
+
+    .btn {
+        border-radius: 999px;
+        font-weight: 600;
+        padding: 12px 28px;
+        font-size: 0.97rem;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: #fff;
+        border: 1px solid #b91c1c;
+    }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+</style>
+
+<div class="page-wrapper">
+    <div class="confirm-card">
+
+        <h2>Delete Schedule?</h2>
+        <p class="subtitle">This action cannot be undone.</p>
+
+        <div class="info-box">
+            <p><span class="info-label">Day:</span> @GetDayName(Model.DayOfWeek)</p>
+            <p><span class="info-label">Start Time:</span> @Model.StartTime</p>
+            <p><span class="info-label">End Time:</span> @Model.EndTime</p>
+            <p><span class="info-label">Schedule ID:</span> @Model.ScheduleID</p>
+        </div>
+
+        <div class="actions">
+            <a asp-action="Schedule"
+               asp-route-courseId="@courseId"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+            <form asp-action="DeleteSchedule"
+                  asp-route-id="@Model.ScheduleID"
+                  asp-route-courseId="@courseId"
+                  method="post">
+                <button type="submit" class="btn btn-danger">
+                    Confirm Delete
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>

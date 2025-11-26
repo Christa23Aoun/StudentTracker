@@ -37,8 +37,9 @@ namespace StudentTracker.Models
 
         public IEnumerable<LookupItem> Departments { get; set; } = new List<LookupItem>();
         public IEnumerable<LookupItem> Semesters { get; set; } = new List<LookupItem>();
+        public IEnumerable<LookupItem> Teachers { get; set; } = new List<LookupItem>();
 
-       
+
         public string? DepartmentName { get; set; }
         public string? SemesterName { get; set; }
     }

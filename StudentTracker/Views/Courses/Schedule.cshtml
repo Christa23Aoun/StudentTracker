@@ -1,7 +1,24 @@
-﻿@model IEnumerable<StudentTracker.Models.CourseScheduleView>
+﻿@model List<StudentTracker.Models.CourseScheduleView>
 
 @{
     ViewData["Title"] = "Course Schedule";
+    var courseId = ViewBag.CourseID;
+    var courseName = ViewBag.CourseName as string ?? "Course";
+
+    string GetDayName(byte d)
+    {
+        return d switch
+        {
+            1 => "Monday",
+            2 => "Tuesday",
+            3 => "Wednesday",
+            4 => "Thursday",
+            5 => "Friday",
+            6 => "Saturday",
+            7 => "Sunday",
+            _ => "Unknown"
+        };
+    }
 }
 
 <style>
@@ -13,81 +30,73 @@
         padding: 0;
     }
 
-    .schedule-shell {
-        max-width: 1000px;
+    .schedule-page-wrapper {
+        max-width: 1100px;
         margin: 80px auto;
         padding: 0 20px 40px 20px;
     }
 
     .schedule-header {
         display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 20px;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
     }
 
-        .schedule-header h2 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            margin: 0;
-            color: #0b2540;
-            text-align: left;
-        }
+    .schedule-title-block h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+        color: #0b2540;
+    }
 
-    .schedule-subtitle {
-        font-size: 0.95rem;
+    .schedule-title-block p {
+        margin: 6px 0 0;
         color: #64748b;
+        font-size: 0.95rem;
     }
 
     .schedule-actions {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
     .btn {
         border-radius: 999px;
         font-weight: 600;
-        padding: 9px 22px;
+        padding: 10px 22px;
         cursor: pointer;
-        transition: 0.2s ease;
         border: 1px solid transparent;
-        font-size: 0.9rem;
+        font-size: 0.94rem;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 6px;
     }
 
-    .btn-add {
+    .btn-primary {
         background: linear-gradient(135deg, #0f6ae6, #1d4ed8);
         color: #ffffff;
+        border-color: transparent;
         box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
     }
 
-        .btn-add:hover {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        }
-
     .btn-secondary {
-        background: #e2e8f0;
-        color: #0f172a;
-        border-color: #cbd5e1;
+        background: #e0ecff;
+        color: #1d3b72;
+        border-color: #c4d4ff;
     }
-
-        .btn-secondary:hover {
-            background: #cbd5e1;
-        }
 
     .schedule-card {
         background: #ffffff;
         border-radius: 20px;
-        padding: 22px 20px 16px 20px;
-        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.15);
-        border: 1px solid rgba(148, 163, 184, 0.32);
+        padding: 22px 22px 14px 22px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.3);
     }
 
     table {
@@ -98,17 +107,16 @@
         background: #ffffff;
     }
 
+    thead {
+        background: #0d4b84;
+        color: #e5f0ff;
+    }
+
     th, td {
         padding: 12px 14px;
         text-align: center;
-        font-size: 0.9rem;
+        font-size: 0.92rem;
         border-bottom: 1px solid #e2e8f0;
-    }
-
-    th {
-        background: #0d4b84;
-        color: #e5f0ff;
-        font-weight: 600;
     }
 
     tbody tr:nth-child(even) {
@@ -119,105 +127,116 @@
         background: #eef4ff;
     }
 
-    .actions a,
-    .actions button {
-        margin: 0 4px;
-        padding: 7px 14px;
+    .chip-day {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 12px;
         border-radius: 999px;
-        text-decoration: none;
+        font-size: 0.82rem;
+        background: #e0ecff;
+        color: #1e3a8a;
+        border: 1px solid #bfdbfe;
         font-weight: 600;
-        border: none;
+    }
+
+    .btn-icon {
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 0.86rem;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        text-decoration: none;
         cursor: pointer;
-        font-size: 0.85rem;
-        transition: 0.2s;
     }
 
     .btn-edit {
         background: #e0ecff;
         color: #1d4ed8;
-        border: 1px solid #bfdbfe;
+        border-color: #bfdbfe;
     }
 
-        .btn-edit:hover {
-            background: #bfdbfe;
-        }
-
-    .btn-delete {
+    .btn-delete-soft {
         background: #fef2f2;
         color: #b91c1c;
-        border: 1px solid #fecaca;
+        border-color: #fecaca;
     }
 
-        .btn-delete:hover {
-            background: #fee2e2;
-        }
+    .empty-state {
+        text-align: center;
+        padding: 40px 10px;
+        color: #64748b;
+        font-size: 0.96rem;
+    }
 </style>
 
-<div class="schedule-shell">
+<div class="schedule-page-wrapper">
 
     <div class="schedule-header">
-        <h2>Course Schedule</h2>
-        <div class="schedule-subtitle">
-            @if (ViewBag.CourseName != null)
-            {
-                <span><strong>Course:</strong> @ViewBag.CourseName</span>
-            }
-            @if (ViewBag.TeacherName != null)
-            {
-                <span> | <strong>Teacher:</strong> @ViewBag.TeacherName</span>
-            }
+        <div class="schedule-title-block">
+            <h2>Course Schedule – @courseName</h2>
+            <p>Manage weekly time slots for this course.</p>
+        </div>
+
+        <div class="schedule-actions">
+            <a asp-action="AddSchedule" asp-route-courseId="@courseId" class="btn btn-primary">
+                Add Time Slot
+            </a>
+
+            <a asp-action="Index" asp-controller="Courses" class="btn btn-secondary">
+                Back to Courses
+            </a>
         </div>
     </div>
 
-    <div class="schedule-actions">
-        <a asp-action="AddSchedule" asp-route-courseId="@ViewBag.CourseID" class="btn btn-add">
-            Add Schedule
-        </a>
-        <a asp-action="Index" class="btn btn-secondary">
-            Back to Courses
-        </a>
-    </div>
-
     <div class="schedule-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Schedule ID</th>
-                    <th>Day Of Week</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var s in Model)
-                {
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                No schedule has been defined yet.
+                <span>Click <strong>Add Time Slot</strong> to create one.</span>
+            </div>
+        }
+        else
+        {
+            <table>
+                <thead>
                     <tr>
-                        <td>@s.ScheduleID</td>
-                        <td>@s.DayOfWeek</td>
-                        <td>@s.StartTime.ToString(@"hh\:mm")</td>
-                        <td>@s.EndTime.ToString(@"hh\:mm")</td>
-                        <td class="actions">
-                            <a asp-action="EditSchedule"
-                               asp-route-id="@s.ScheduleID"
-                               class="btn-edit">
-                                Edit
-                            </a>
-
-                            <form asp-action="DeleteSchedule"
-                                  asp-route-id="@s.ScheduleID"
-                                  asp-route-courseId="@s.CourseID"
-                                  method="post"
-                                  style="display:inline;">
-                                <button class="btn-delete" type="submit">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td><span class="chip-day">@GetDayName(s.DayOfWeek)</span></td>
+                            <td>@s.StartTime</td>
+                            <td>@s.EndTime</td>
+                            <td>
+                                <div style="display:flex;gap:8px;justify-content:center;">
+                                    <a asp-action="EditSchedule"
+                                       asp-route-id="@s.ScheduleID"
+                                       class="btn-icon btn-edit">
+                                        ✏️ Edit
+                                    </a>
 
+                                    <a asp-action="DeleteScheduleConfirmation"
+                                       asp-route-id="@s.ScheduleID"
+                                       class="btn-icon btn-delete-soft">
+                                        🗑️ Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>

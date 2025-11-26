@@ -69,25 +69,6 @@
             box-shadow: 0 0 0 1px #2563eb33;
         }
 
-        .form-select option {
-            background: #ffffff;
-            color: #0b2540;
-        }
-
-    .form-check {
-        margin: 6px 0 24px;
-    }
-
-    .form-check-input {
-        cursor: pointer;
-    }
-
-    .form-check-label {
-        margin-left: 4px;
-        font-weight: 500;
-        color: #0b2540;
-    }
-
     .btn-row {
         display: flex;
         justify-content: center;
@@ -143,6 +124,7 @@
         </div>
 
         <form asp-action="Create" method="post">
+
             <label class="form-label">Course Code</label>
             <input asp-for="CourseCode" class="form-control" />
 
@@ -155,22 +137,25 @@
             <span asp-validation-for="CreditHours" class="text-danger"></span>
 
             <label class="form-label">Department</label>
-            <select asp-for="DepartmentID" class="form-select"
-                    asp-items="@(new SelectList(Model.Departments, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name)))">
-                <option value="">-- select --</option>
+            <select asp-for="DepartmentID"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Departments, "Id", "Name", Model.DepartmentID))">
+                <option value="">-- Select Department --</option>
             </select>
 
             <label class="form-label">Semester</label>
-            <select asp-for="SemesterID" class="form-select"
-                    asp-items="@(new SelectList(Model.Semesters, nameof(StudentTracker.Models.LookupItem.Id), nameof(StudentTracker.Models.LookupItem.Name)))">
-                <option value="">-- select --</option>
+            <select asp-for="SemesterID"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Semesters, "Id", "Name", Model.SemesterID))">
+                <option value="">-- Select Semester --</option>
             </select>
 
-            <label class="form-label">Teacher ID (temporary)</label>
-            <input asp-for="TeacherID" type="number" class="form-control" />
-            <div class="form-text" style="font-size:0.8rem; color:#64748b;">
-                Enter an existing UserID for a teacher (temporary input).
-            </div>
+            <label class="form-label">Teacher</label>
+            <select asp-for="TeacherID"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Teachers, "Id", "Name", Model.TeacherID))">
+                <option value="">-- Select Teacher --</option>
+            </select>
 
             <div class="form-check">
                 <input class="form-check-input" asp-for="IsActive" />
@@ -181,6 +166,7 @@
                 <button class="btn btn-primary" type="submit">Save</button>
                 <a asp-action="Index" class="btn btn-secondary">Back</a>
             </div>
+
         </form>
     </div>
 </div>
