@@ -262,23 +262,15 @@
                                 <div class="actions">
                                     <a asp-action="Schedule"
                                        asp-route-courseId="@course.CourseID"
-                                       class="action-icon icon-schedule"
-                                       style="text-decoration:none;">📅</a>
+                                       class="action-icon icon-schedule">📅</a>
 
                                     <a asp-action="Edit"
                                        asp-route-id="@course.CourseID"
-                                       class="action-icon icon-edit"
-                                       style="text-decoration:none;">✏️</a>
+                                       class="action-icon icon-edit">✏️</a>
 
-                                    <form asp-action="Deactivate"
-                                          asp-route-id="@course.CourseID"
-                                          method="post">
-                                        <button type="submit"
-                                                class="action-icon icon-delete"
-                                                style="text-decoration:none;">
-                                            🚫
-                                        </button>
-                                    </form>
+                                    <a asp-action="DeactivateCourseConfirmation"
+                                       asp-route-id="@course.CourseID"
+                                       class="action-icon icon-delete">🚫</a>
                                 </div>
                             </td>
                         </tr>

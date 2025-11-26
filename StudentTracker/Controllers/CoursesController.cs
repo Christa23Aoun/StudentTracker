@@ -248,11 +248,27 @@ namespace StudentTracker.Controllers
             return RedirectToAction("Schedule", new { courseId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DeactivateCourseConfirmation(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Courses/{id}");
+            if (!res.IsSuccessStatusCode)
+                return NotFound();
+
+            var json = await res.Content.ReadAsStringAsync();
+            var model = JsonConvert.DeserializeObject<CourseView>(json);
+
+            if (model == null)
+                return NotFound();
+
+            return View("DeactivateCourseConfirmation", model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Deactivate(int id)
+        public async Task<IActionResult> DeactivateCourse(int id)
         {
-            var res = await _client.DeleteAsync($"{_apiBase}Courses/{id}");
+            var res = await _client.PutAsync($"{_apiBase}Courses/deactivate/{id}", null);
 
             TempData["CourseSuccess"] = res.IsSuccessStatusCode
                 ? "Course deactivated successfully."
