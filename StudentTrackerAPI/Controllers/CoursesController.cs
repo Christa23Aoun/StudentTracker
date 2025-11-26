@@ -22,7 +22,6 @@ namespace StudentTrackerAPI.Controllers
             _grades = grades;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -59,7 +58,13 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { message = "Course deleted successfully" });
         }
 
-        
+        [HttpPut("deactivate/{id}")]
+        public async Task<IActionResult> Deactivate(int id)
+        {
+            await _courses.DeactivateAsync(id);
+            return Ok(new { message = "Course deactivated successfully" });
+        }
+
         [HttpGet("byTeacher/{teacherId}")]
         public async Task<IActionResult> GetByTeacher(int teacherId)
         {
@@ -106,7 +111,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(result);
         }
 
-        // Used by TeacherController.CourseDetails -> Courses/details/{id}
         [HttpGet("details/{id}")]
         public async Task<IActionResult> GetDetails(int id)
         {

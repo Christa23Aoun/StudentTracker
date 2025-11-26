@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<StudentTracker.Models.CourseView>
+
 @{
     ViewData["Title"] = "Course Management";
 }
@@ -108,7 +109,8 @@
         color: #e5f0ff;
     }
 
-    th, td {
+    th,
+    td {
         padding: 12px 14px;
         text-align: center;
         font-size: 0.92rem;
@@ -162,11 +164,12 @@
         border-radius: 999px;
         border: none;
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         transition: 0.2s ease;
+        text-decoration: none;
     }
 
     .icon-schedule {
@@ -198,24 +201,9 @@
         .icon-delete:hover {
             background: #fee2e2;
         }
-
-    @@media (max-width: 768px) {
-        .courses-header
-
-    {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .courses-actions {
-        justify-content: flex-start;
-    }
-
-    }
 </style>
 
 <div class="courses-page-wrapper">
-
     <div class="courses-header">
         <div class="courses-title-block">
             <h2>Course Management</h2>
@@ -241,13 +229,14 @@
                         <th>Code</th>
                         <th>Name</th>
                         <th>CH</th>
-                        <th>Department ID</th>
-                        <th>Teacher ID</th>
-                        <th>Semester ID</th>
+                        <th>Department</th>
+                        <th>Teacher</th>
+                        <th>Semester</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach (var course in Model)
                     {
@@ -256,9 +245,9 @@
                             <td>@course.CourseCode</td>
                             <td>@course.CourseName</td>
                             <td>@course.CreditHours</td>
-                            <td>@course.DepartmentID</td>
-                            <td>@course.TeacherID</td>
-                            <td>@course.SemesterID</td>
+                            <td>@course.DepartmentName</td>
+                            <td>@course.TeacherName</td>
+                            <td>@course.SemesterName</td>
                             <td>
                                 @if (course.IsActive)
                                 {
@@ -273,35 +262,22 @@
                                 <div class="actions">
                                     <a asp-action="Schedule"
                                        asp-route-courseId="@course.CourseID"
-                                       class="action-icon icon-schedule"
-                                       title="Schedule">
-                                        🕒
-                                    </a>
+                                       class="action-icon icon-schedule">📅</a>
 
                                     <a asp-action="Edit"
                                        asp-route-id="@course.CourseID"
-                                       class="action-icon icon-edit"
-                                       title="Edit">
-                                        ✏️
-                                    </a>
+                                       class="action-icon icon-edit">✏️</a>
 
-                                    <form asp-action="Delete"
-                                          asp-route-id="@course.CourseID"
-                                          method="post"
-                                          style="display:inline;">
-                                        <button type="submit"
-                                                class="action-icon icon-delete"
-                                                title="Delete">
-                                            🗑️
-                                        </button>
-                                    </form>
+                                    <a asp-action="DeactivateCourseConfirmation"
+                                       asp-route-id="@course.CourseID"
+                                       class="action-icon icon-delete">🚫</a>
                                 </div>
                             </td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     </div>
-
 </div>

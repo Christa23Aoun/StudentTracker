@@ -1,0 +1,118 @@
+﻿@model StudentTracker.Models.CourseView
+
+@{
+    ViewData["Title"] = "Deactivate Course";
+}
+
+<style>
+    body {
+        background: #f5f7fb;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        max-width: 750px;
+        margin: 100px auto;
+        padding: 0 20px 40px 20px;
+    }
+
+    .confirm-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 40px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+        border: 1px solid #e6a8a8;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        color: #b91c1c;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+
+    .info-box {
+        background: #fff8f8;
+        border: 1px solid #f5d2d2;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+        .info-box p {
+            margin: 8px 0;
+            font-size: 1rem;
+            color: #7f1d1d;
+        }
+
+    .label {
+        font-weight: 700;
+        color: #991b1b;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 12px 26px;
+        border-radius: 999px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        font-size: 0.95rem;
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+        border: 1px solid #b91c1c;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="confirm-card">
+
+        <h2>Deactivate Course?</h2>
+        <p class="subtitle">Are you sure you want to deactivate this course?</p>
+
+        <div class="info-box">
+            <p><span class="label">Course Name:</span> @Model.CourseName</p>
+            <p><span class="label">Code:</span> @Model.CourseCode</p>
+            <p><span class="label">Credit Hours:</span> @Model.CreditHours</p>
+            <p><span class="label">Department:</span> @Model.DepartmentName</p>
+            <p><span class="label">Teacher:</span> @Model.TeacherName</p>
+            <p><span class="label">Status:</span> @(Model.IsActive ? "Active" : "Inactive")</p>
+        </div>
+
+        <div class="actions">
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+            <form asp-action="DeactivateCourse" method="post" asp-route-id="@Model.CourseID">
+                <button type="submit" class="btn btn-danger">Confirm Deactivate</button>
+            </form>
+        </div>
+
+    </div>
+</div>

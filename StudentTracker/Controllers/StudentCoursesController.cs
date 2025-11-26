@@ -116,7 +116,7 @@ namespace StudentTracker.Controllers
                             DepartmentName = d.DepartmentName
                         });
                     }
-                }
+                 }
 
                 departmentCourses.Add(depCourses);
             }

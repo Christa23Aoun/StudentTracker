@@ -75,7 +75,14 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ===== Teacher-related helpers =====
+        public async Task<int> DeactivateAsync(int id)
+        {
+            using var conn = _factory.Create();
+            return await conn.ExecuteScalarAsync<int>(
+                "dbo.Courses_Deactivate",
+                new { CourseID = id },
+                commandType: CommandType.StoredProcedure);
+        }
 
         public async Task<List<Course>> GetByTeacherIdAsync(int teacherId)
         {
@@ -116,7 +123,8 @@ namespace StudentTrackerDAL.Repositories
                     u.FullName AS TeacherName,
                     c.IsActive
                 FROM Courses c
-                INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
+    
+INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
                 INNER JOIN Users u ON u.UserID = c.TeacherID
                 ORDER BY c.CourseName;";
             return await conn.QueryAsync(sql);
