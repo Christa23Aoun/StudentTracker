@@ -1,0 +1,270 @@
+﻿@model StudentTracker.Models.StudentCourseDetailsVM
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<style>
+    body {
+        background: #f2f4fb;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+    }
+
+    .page-wrapper {
+        max-width: 1200px;
+        margin: 70px auto;
+        padding: 0 20px 40px;
+    }
+
+    /* HEADER */
+    .header-title h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .subtitle {
+        color: #64748b;
+        margin-top: 4px;
+        margin-bottom: 25px;
+        font-size: 0.95rem;
+    }
+
+    .back-btn-container {
+        width: 100%;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .back-btn-bottom {
+        display: inline-block;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        transition: 0.25s ease;
+    }
+
+        .back-btn-bottom:hover {
+            background: linear-gradient(135deg, #1e40af, #1d4ed8);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.35);
+        }
+
+
+    /* INFO CARD */
+    .info-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 22px 26px;
+        border: 1px solid #d8e3f2;
+        margin-bottom: 35px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .info-left strong {
+        color: #0b2540;
+    }
+
+    .pill {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+
+    .pill-green {
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+
+    .pill-blue {
+        background: #eef6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+    }
+
+    /* SECTION CARD */
+    .section-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid #d8e3f2;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: #0b2540;
+    }
+
+    /* TABLES */
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    thead {
+        background: #0d4b84;
+        color: #e5f0ff;
+    }
+
+    th, td {
+        padding: 12px 14px;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.92rem;
+        white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+    tbody tr:hover {
+        background: #eef4ff;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #b45309;
+        border: 1px solid #fdba74;
+    }
+
+    .status-ok {
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+</style>
+
+<div class="page-wrapper">
+
+    <div class="header-title">
+        <h2>Course Details</h2>
+        <p class="subtitle">Personalized view of your grades and attendance for this course.</p>
+@*         <a href="/StudentDashboard" class="back-btn">← Back to My Dashboard</a>
+ *@    </div>
+
+    <!-- SUMMARY CARD -->
+    <div class="info-card">
+        <div>
+            <strong>Taught by:</strong> @Model.TeacherName
+            &nbsp;·&nbsp;
+            <strong>Credit hours:</strong> @Model.CreditHours
+        </div>
+
+        <div>
+            <span class="pill pill-green">Attendance: @Model.AttendanceRate.ToString("0.0")%</span>
+            <span class="pill pill-blue">Current Average: @Model.CurrentAverage.ToString("0.0")</span>
+        </div>
+    </div>
+
+    <!-- TESTS -->
+    <div class="section-card">
+        <div class="section-title">Tests & Your Grades</div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Date</th>
+                        <th>Max</th>
+                        <th>Weight %</th>
+                        <th>Your Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Tests.Any())
+                    {
+                        foreach (var t in Model.Tests)
+                        {
+                            <tr>
+                                <td>@t.TestName</td>
+                                <td>@t.TestDate.ToString("yyyy-MM-dd")</td>
+                                <td>@t.MaxScore</td>
+                                <td>@t.Weight</td>
+                                <td>@t.StudentScore</td>
+                                <td>
+                                    <span class="status-badge @(t.IsValidated == 1 ? "status-ok" : "status-pending")">
+                                        @(t.IsValidated == 1 ? "Validated" : "Pending")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="6">No tests have been registered yet for this course.</td></tr>
+                    }
+                </tbody>
+            </table>
+          
+
+        </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="section-card">
+        <div class="section-title">Attendance History</div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Attendance.Any())
+                    {
+                        foreach (var a in Model.Attendance)
+                        {
+                            <tr>
+                                <td>@a.AttendanceDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@(a.IsPresent ? "Present" : "Absent")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="2">No attendance records found yet for this course.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="back-btn-container">
+        <a href="/StudentDashboard" class="back-btn-bottom">← Back to My Dashboard</a>
+    </div>
+</div>

@@ -37,12 +37,11 @@ builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 builder.Services.AddScoped<ICourseScheduleRepository>(provider =>
     new CourseScheduleRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddScoped<ITestGradeRepository>(sp =>
     new TestGradeRepository(connectionString));
-
 builder.Services.AddScoped<IAttendanceRepository>(sp =>
     new AttendanceRepository(connectionString));
+builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
 
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
@@ -51,6 +50,9 @@ builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
+builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
+builder.Services.AddScoped<IStudentCourseDetailsRepository, StudentCourseDetailsRepository>();
+builder.Services.AddScoped<IStudentCourseDetailsService, StudentCourseDetailsService>();
 
 var app = builder.Build();
 

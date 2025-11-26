@@ -89,6 +89,12 @@ namespace StudentTracker.Controllers
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
 
+
+                if (roleName == "Student")
+                {
+                    HttpContext.Session.SetInt32("StudentId", user.UserID);
+                }
+
                 if (roleName == "Teacher")
                 {
                     var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{user.Email}");
