@@ -5,145 +5,175 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
-    .course-details-wrapper {
-        padding: 60px 5%;
-        text-align: center;
+    .course-container {
+        width: 92%;
+        max-width: 1300px;
+        margin: 70px auto;
     }
 
     .course-header {
+        text-align: left;
         margin-bottom: 40px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
     }
 
-        .course-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+        .course-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
         }
 
         .course-header p {
-            color: #cfd8dc;
-            margin: 0;
+            font-size: 16px;
+            color: #5b6e80;
+            margin-top: 6px;
         }
 
-    .course-info {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 25px;
-        margin-bottom: 40px;
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
     }
 
     .info-card {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
-        padding: 25px 40px;
-        min-width: 200px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        padding: 25px;
+        text-align: left;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.06);
+        transition: 0.25s ease;
+        cursor: default;
     }
 
-        .info-card h4 {
-            margin: 0;
-            color: #90caf9;
+        .info-card:hover {
+            border-color: #003c8f;
+            transform: translateY(-4px);
+            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.10);
         }
 
-    .actions-row {
-        margin-top: 25px;
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        background: #2196f3;
-        color: white;
-        padding: 10px 22px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: 0.3s;
+    .info-card-title {
+        font-size: 14px;
+        text-transform: uppercase;
         font-weight: 600;
+        color: #5e6a78;
+        margin-bottom: 5px;
+        letter-spacing: 0.5px;
     }
 
-        .btn:hover {
-            background: #1769aa;
+    .info-card-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #003c8f;
+        margin-top: 4px;
+    }
+
+    .info-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .actions-section {
+        margin-top: 60px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 20px;
+    }
+
+    .action-btn {
+        background: #003c8f;
+        color: white;
+        padding: 14px 22px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+        display: inline-block;
+        transition: 0.25s ease;
+        text-decoration: none;
+    }
+
+        .action-btn:hover {
+            background: #002a6a;
         }
 
     .back-btn {
-        background: #555;
+        background: #5b6e80;
     }
+
+        .back-btn:hover {
+            background: #425060;
+        }
 </style>
 
-<div class="course-details-wrapper">
+<div class="course-container">
 
     <div class="course-header">
-        <h2>@Model.CourseName (@Model.CourseCode)</h2>
-        <p>@Model.DepartmentName — Semester: @Model.SemesterName</p>
+        <h1>@Model.CourseName (@Model.CourseCode)</h1>
+        <p>@Model.DepartmentName — Semester @Model.SemesterName</p>
     </div>
 
-    <div class="course-info">
+    <div class="info-grid">
+
         <div class="info-card">
-            <h4>📊 Average Grade</h4>
-            <p>@Model.AverageGrade %</p>
+            <div class="info-card-title">Average Grade</div>
+            <div class="info-card-value">@Model.AverageGrade %</div>
         </div>
 
         <div class="info-card">
-            <h4>🕒 Attendance Rate</h4>
-            <p>@Model.AttendanceRate %</p>
+            <div class="info-card-title">Attendance Rate</div>
+            <div class="info-card-value">@Model.AttendanceRate %</div>
         </div>
 
-        <a asp-controller="Teacher"
+        <a class="info-link"
+           asp-controller="Teacher"
            asp-action="StudentsInCourse"
-           asp-route-courseId="@Model.CourseID"
-           style="text-decoration:none; color:inherit;">
+           asp-route-courseId="@Model.CourseID">
             <div class="info-card" style="cursor:pointer;">
-                <h4>👩‍🎓 Students</h4>
-                <p>@Model.StudentCount (View List)</p>
+                <div class="info-card-title">Students Enrolled</div>
+                <div class="info-card-value">@Model.StudentCount</div>
             </div>
         </a>
+
     </div>
 
-    <!-- ATTENDANCE -->
-    <div class="actions-row">
+    <div class="actions-section">
+
         <a asp-controller="Attendance"
            asp-action="Index"
            asp-route-courseId="@Model.CourseID"
-           class="btn">
-            👁 View Attendance
+           class="action-btn">
+            View Attendance
         </a>
-    </div>
 
-    <!-- TESTS -->
-    <div class="actions-row">
         <a asp-controller="Tests"
            asp-action="Index"
            asp-route-courseId="@Model.CourseID"
-           class="btn">
-            📘 View Tests
+           class="action-btn">
+            View Tests
         </a>
-    </div>
 
-    <!-- GRADES -->
-    <div class="actions-row">
         <a asp-controller="TestGrades"
            asp-action="Index"
            asp-route-courseId="@Model.CourseID"
-           class="btn">
-            🏅 View Grades
+           class="action-btn">
+            View Grades
         </a>
-    </div>
 
-    <!-- BACK -->
-    <div class="actions-row">
-        <a asp-controller="Teacher" asp-action="Dashboard" class="btn back-btn">
+        <a asp-controller="Teacher"
+           asp-action="Dashboard"
+           class="action-btn back-btn">
             ⬅ Back to Dashboard
         </a>
+
     </div>
 </div>

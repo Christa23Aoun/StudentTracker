@@ -6,17 +6,21 @@
     ViewData["Title"] = "Faculties – WTF University";
 }
 
-<section class="faculty-hero">
-    <div class="faculty-hero-overlay"></div>
-    <img src="~/images/uniHome.jpg" class="faculty-hero-bg" />
-
-    <div class="faculty-hero-content container">
+<!-- ===================== -->
+<!-- ADMIN-STYLE HEADER -->
+<!-- ===================== -->
+<section class="faculty-header">
+    <div class="faculty-header-content container">
         <h1>Faculties & Departments</h1>
         <p>Explore the academic divisions that shape the leaders of tomorrow.</p>
     </div>
 </section>
 
+<!-- ===================== -->
+<!-- FACULTIES LIST -->
+<!-- ===================== -->
 <section class="faculty-section container">
+
     @if (ViewBag.Error != null)
     {
         <div class="alert alert-danger text-center mt-4">@ViewBag.Error</div>
@@ -34,6 +38,7 @@
                 <div class="faculty-card">
                     <div class="faculty-card-header">
                         <h3>@dept.DepartmentName</h3>
+
                         <span class="status @(dept.IsActive ? "status-active" : "status-inactive")">
                             @(dept.IsActive ? "Active" : "Inactive")
                         </span>
@@ -53,55 +58,37 @@
     }
 </section>
 
+<!-- ===================== -->
+<!-- CSS STYLING -->
+<!-- ===================== -->
 <style>
-    .faculty-hero {
-        position: relative;
-        height: 58vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        overflow: hidden;
-    }
 
-    .faculty-hero-bg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(60%);
-    }
-
-    .faculty-hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(0,40,90,0.55), rgba(0,60,130,0.75));
-    }
-
-    .faculty-hero-content {
-        position: relative;
+    /* ===== HEADER (ADMIN STYLE) ===== */
+    .faculty-header {
+        background: linear-gradient(135deg, #003c8f, #001e44);
+        padding: 70px 0;
         text-align: center;
-        z-index: 2;
-        max-width: 900px;
+        color: white;
+        margin-bottom: 40px;
     }
 
-        .faculty-hero-content h1 {
-            font-size: 44px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
+    .faculty-header-content h1 {
+        font-size: 46px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
 
-        .faculty-hero-content p {
-            font-size: 18px;
-            opacity: 0.95;
-        }
+    .faculty-header-content p {
+        font-size: 18px;
+        opacity: 0.9;
+    }
 
+    /* ===== SECTION SPACING ===== */
     .faculty-section {
-        padding-top: 40px;
-        padding-bottom: 140px; 
+        padding-bottom: 120px;
     }
 
+    /* ===== GRID ===== */
     .faculty-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -109,18 +96,19 @@
         margin-top: 30px;
     }
 
+    /* ===== CARD (ADMIN STYLE) ===== */
     .faculty-card {
         background: white;
-        border-radius: 20px;
+        border-radius: 18px;
         padding: 28px;
-        border: 1px solid #dce7f9;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        border: 1px solid #d6e4fa;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.09);
         transition: 0.3s ease;
     }
 
         .faculty-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+            box-shadow: 0 14px 32px rgba(0,0,0,0.15);
         }
 
     .faculty-card-header {
@@ -136,8 +124,9 @@
             margin: 0;
         }
 
+    /* ===== STATUS BADGES ===== */
     .status {
-        padding: 7px 12px;
+        padding: 6px 12px;
         border-radius: 30px;
         font-size: 12px;
         font-weight: 600;
@@ -145,14 +134,15 @@
 
     .status-active {
         background: #d4f6df;
-        color: #1b7d3a;
+        color: #157a31;
     }
 
     .status-inactive {
-        background: #eee;
+        background: #f0f0f0;
         color: #666;
     }
 
+    /* ===== DESCRIPTION ===== */
     .faculty-description {
         margin: 18px 0;
         color: #444;
@@ -167,4 +157,5 @@
         color: #003c8f;
         margin-top: 10px;
     }
+
 </style>

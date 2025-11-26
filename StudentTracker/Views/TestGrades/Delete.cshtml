@@ -7,86 +7,101 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .delete-wrapper {
-        max-width: 600px;
-        margin: 100px auto;
-        padding: 35px;
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        background: rgba(0, 45, 90, 0.75);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        width: 92%;
+        max-width: 650px;
+        margin: 80px auto;
+        background: #ffffff;
+        padding: 40px 45px;
+        border-radius: 8px;
+        border: 1px solid #d9e1ec;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
         text-align: center;
     }
 
-    h2 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: #ffcccc;
-    }
-
-    p.info {
-        color: #e0e0e0;
-        font-size: 1.1rem;
-        margin-bottom: 25px;
-    }
-
-    .details-box {
-        background: rgba(255,255,255,0.12);
-        padding: 20px;
-        border-radius: 15px;
+    .page-header {
+        border-left: 5px solid #c62828;
+        padding-left: 14px;
         text-align: left;
-        margin-bottom: 30px;
-        border: 1px solid rgba(255,255,255,0.2);
+        margin-bottom: 20px;
     }
 
-        .details-box p {
-            margin: 6px 0;
-            font-size: 1rem;
+        .page-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #c62828;
         }
 
-    .btn-danger {
-        background: linear-gradient(135deg, #ff3d3d, #c62828);
-        padding: 12px 25px;
-        border-radius: 10px;
-        color: #fff;
+    .info-text {
+        font-size: 15px;
+        color: #5b6e80;
+        margin-bottom: 20px;
+    }
+
+    /* DETAILS BOX */
+    .details-box {
+        background: #f7f9fc;
+        border: 1px solid #e4e9f0;
+        padding: 20px 25px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+        font-size: 15px;
+        color: #1a2b4c;
+        line-height: 1.7;
+    }
+
+        .details-box strong {
+            color: #003c8f;
+            font-weight: 700;
+        }
+
+    /* BUTTONS */
+    .btn-back, .btn-danger {
+        padding: 12px 24px;
+        border-radius: 6px;
         font-weight: 700;
         text-decoration: none;
-        border: none;
-        transition: 0.3s;
+        transition: 0.25s ease;
+        display: inline-block;
+        margin: 5px;
     }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #c62828, #ff3d3d);
-            transform: translateY(-2px);
-            box-shadow: 0 0 10px rgba(255,80,80,0.5);
-        }
 
     .btn-back {
-        background: #666;
-        padding: 12px 25px;
-        border-radius: 10px;
-        color: #fff;
-        text-decoration: none;
-        margin-right: 10px;
-        font-weight: 600;
-        transition: 0.3s;
+        background: #5b6e80;
+        color: white;
     }
 
         .btn-back:hover {
-            background: #888;
-            transform: translateY(-2px);
+            background: #445664;
+        }
+
+    .btn-danger {
+        background: #c62828;
+        color: white;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background: #9e1f1f;
         }
 </style>
 
 <div class="delete-wrapper">
-    <h2>🗑 Confirm Delete</h2>
-    <p class="info">Are you sure you want to delete this grade?</p>
+
+    <div class="page-header">
+        <h1>Delete Grade</h1>
+    </div>
+
+    <p class="info-text">Are you sure you want to delete this grade? This action cannot be undone.</p>
 
     <div class="details-box">
         <p><strong>Grade ID:</strong> @Model.GradeID</p>
@@ -97,14 +112,17 @@
     </div>
 
     <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="id" value="@Model.GradeID" />
         <input type="hidden" name="courseId" value="@courseId" />
 
         <a asp-controller="TestGrades"
            asp-action="Index"
            asp-route-courseId="@courseId"
-           class="btn-back">⬅ Cancel</a>
+           class="btn-back">
+            ⬅ Cancel
+        </a>
 
-        <button type="submit" class="btn-danger">Delete</button>
+        <button type="submit" class="btn-danger">🗑 Delete</button>
     </form>
 </div>

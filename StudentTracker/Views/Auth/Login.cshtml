@@ -7,117 +7,111 @@
 <style>
     html, body {
         height: 100%;
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
-        overflow-x: hidden;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .login-box {
+        width: 92%;
         max-width: 420px;
         margin: 100px auto;
-        background: rgba(0, 45, 90, 0.85);
-        border-radius: 25px;
+        background: #ffffff;
+        border-radius: 8px;
         padding: 45px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-        text-align: center;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid #d9e1ec;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
     }
 
-    h3 {
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: #fff;
+    .page-header {
+        border-left: 5px solid #003c8f;
+        padding-left: 14px;
+        margin-bottom: 25px;
+        text-align: left;
     }
 
+        .page-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #003c8f;
+        }
+
+    /* Role Label */
     .login-role-label {
-        background: rgba(0,150,255,0.18);
-        border: 1px solid rgba(0,150,255,0.35);
-        color: #cfeaff;
-        padding: 12px 18px;
-        border-radius: 12px;
-        text-align: center;
-        margin-bottom: 20px;
+        background: #f1f4f9;
+        border: 1px solid #dde4ee;
+        color: #003c8f;
+        padding: 12px 14px;
+        border-radius: 6px;
         font-weight: 600;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        animation: fadeIn 0.4s ease-out;
+        margin-bottom: 20px;
+        text-align: center;
     }
 
     label {
         font-weight: 600;
-        color: #cfe6ff;
+        color: #003c8f;
         margin-bottom: 6px;
+        display: inline-block;
     }
 
     .form-control {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        color: #fff;
-        border-radius: 10px;
+        background: #f7f9fc;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
         padding: 12px;
-        margin-bottom: 20px;
-        transition: all 0.2s ease;
+        color: #1a2b4c;
+        width: 100%;
+        margin-bottom: 18px;
+        transition: 0.25s ease;
     }
 
         .form-control:focus {
-            border-color: #2196f3;
-            box-shadow: 0 0 12px rgba(33,150,243,0.6);
+            border-color: #003c8f;
             outline: none;
         }
 
     .btn-primary {
         width: 100%;
-        background: linear-gradient(135deg, #006aff, #0048b3);
+        background: #003c8f;
         border: none;
-        border-radius: 10px;
+        border-radius: 6px;
         padding: 12px;
-        color: #fff;
-        font-weight: 600;
-        transition: 0.3s ease;
+        color: white;
+        font-weight: 700;
+        transition: 0.25s ease;
+        margin-top: 10px;
     }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #007bff, #003f91);
-            box-shadow: 0 0 15px rgba(0,150,255,0.6);
-            transform: translateY(-2px);
+            background: #002c6a;
         }
 
+    /* Error Message */
     .alert {
-        border-radius: 10px;
-        padding: 10px;
+        border-radius: 6px;
+        padding: 10px 12px;
         margin-top: 15px;
-        background: rgba(255,80,80,0.2);
-        color: #ffb3b3;
-    }
-
-    @@keyframes fadeIn {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+        background: #ffe6e6;
+        border: 1px solid #ffcccc;
+        color: #b30000;
+        font-size: 14px;
     }
 </style>
 
 <div class="login-box">
 
-    <h3>🔐 Login</h3>
+    <div class="page-header">
+        <h1>Login</h1>
+    </div>
 
     @if (ViewBag.Role != null && ViewBag.Role.ToString() != "")
     {
         <div class="login-role-label">
-            You are logging in as: <strong>@ViewBag.Role</strong>
+            You are logging in as <strong>@ViewBag.Role</strong>
         </div>
     }
 
@@ -126,20 +120,20 @@
 
         <input type="hidden" name="Role" value="@ViewBag.Role" />
 
-        <div class="mb-3 text-start">
-            <label class="form-label">Email</label>
-            <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+        <!-- Email -->
+        <label>Email</label>
+        <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
 
-        <div class="mb-3 text-start">
-            <label class="form-label">Password</label>
-            <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" required />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+        <!-- Password -->
+        <label>Password</label>
+        <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
 
+        <!-- Submit -->
         <button type="submit" class="btn-primary">Login</button>
 
+        <!-- Error message -->
         @if (ViewBag.Error != null)
         {
             <div class="alert">@ViewBag.Error</div>

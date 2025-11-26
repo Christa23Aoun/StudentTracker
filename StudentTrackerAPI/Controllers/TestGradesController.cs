@@ -19,6 +19,12 @@ namespace StudentTrackerAPI.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        [HttpGet("ByTest")]
+        public async Task<IActionResult> GetByTest(int courseId, int testId)
+        {
+            var result = await _service.GetGradesByTestAsync(testId, courseId);
+            return Ok(result);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id) => Ok(await _service.GetByIdAsync(id));
@@ -28,10 +34,13 @@ namespace StudentTrackerAPI.Controllers
             Ok(await _service.GetByCourseAsync(courseId));
 
         [HttpPost]
-        public async Task<IActionResult> Create(TestGrade g)
+        public async Task<IActionResult> Create(TestGrade grade)
         {
-            await _service.CreateAsync(g);
-            return Ok("Grade created successfully");
+            if (await _service.ExistsAsync(grade.TestID, grade.StudentID))
+                return Conflict("A grade already exists for this student and test.");
+
+            var id = await _service.CreateAsync(grade);
+            return Ok(id);
         }
 
         [HttpPut]

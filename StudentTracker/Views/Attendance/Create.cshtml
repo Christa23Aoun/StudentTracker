@@ -8,108 +8,169 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .attendance-container {
-        width: 90%;
-        max-width: 900px;
-        margin: 50px auto;
-        background: rgba(255,255,255,0.08);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        width: 92%;
+        max-width: 1000px;
+        margin: 70px auto;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 40px 45px;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
     }
 
-    h2 {
-        text-align: center;
-        font-weight: 700;
-        margin-bottom: 10px;
+    /* PAGE HEADER */
+    .page-header {
+        text-align: left;
+        margin-bottom: 25px;
+        border-left: 5px solid #003c8f;
+        padding-left: 14px;
     }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 800;
+            color: #003c8f;
+        }
 
     .course-title {
-        text-align: center;
-        color: #90caf9;
-        font-weight: 600;
-        margin-bottom: 25px;
+        font-size: 16px;
+        color: #5b6e80;
+        margin-top: 4px;
     }
 
+    /* DATE + TIME INPUTS */
     .session-inputs {
         display: flex;
-        justify-content: center;
         gap: 20px;
-        margin-bottom: 25px;
+        flex-wrap: wrap;
+        margin: 30px 0 25px 0;
     }
 
+        .session-inputs label {
+            font-weight: 600;
+            color: #1a2b4c;
+        }
+
+        .session-inputs input {
+            padding: 9px 12px;
+            border-radius: 6px;
+            border: 1px solid #d9e1ec;
+            background: #ffffff;
+            color: #1a2b4c;
+            width: 210px;
+        }
+
+    /* TABLE */
     table {
         width: 100%;
         border-collapse: collapse;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        overflow: hidden;
         margin-top: 10px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
-    th, td {
-        padding: 12px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+    thead {
+        background: #003c8f;
+        color: white;
     }
 
     th {
-        background: rgba(255,255,255,0.15);
-        color: #bbdefb;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #edf2f7;
+        color: #1a2b4c;
+    }
+
+    tr:hover {
+        background: #f0f6ff;
     }
 
     select {
-        background: rgba(255,255,255,0.1);
-        color: white;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.3);
-        padding: 6px 10px;
+        padding: 9px 12px;
+        border-radius: 6px;
+        border: 1px solid #d9e1ec;
+        background: #ffffff;
+        color: #1a2b4c;
+        cursor: pointer;
+        width: 130px;
     }
 
+    /* BUTTONS */
     .btn-save {
-        background: #00c853;
+        background: #003c8f;
         border: none;
         padding: 12px 25px;
         color: white;
-        border-radius: 10px;
-        font-weight: 600;
+        font-weight: 700;
+        border-radius: 6px;
         display: block;
-        margin: 30px auto 10px auto;
+        margin: 35px auto 10px auto;
+        cursor: pointer;
+        transition: 0.25s ease;
+        width: 220px;
+        text-align: center;
     }
 
+        .btn-save:hover {
+            background: #002a6a;
+        }
+
     .btn-cancel {
-        background: rgba(255,255,255,0.2);
-        color: #fff;
+        background: #5b6e80;
+        color: white;
         padding: 12px 25px;
-        border-radius: 10px;
+        border-radius: 6px;
         display: block;
-        width: 200px;
-        margin: 10px auto 0 auto;
+        width: 220px;
+        margin: 10px auto;
         text-align: center;
         font-weight: 600;
         text-decoration: none;
+        transition: 0.25s ease;
     }
+
+        .btn-cancel:hover {
+            background: #445664;
+        }
 </style>
 
 <div class="attendance-container">
-    <h2>🧾 Mark Attendance</h2>
-    <p class="course-title">@courseName</p>
+
+    <div class="page-header">
+        <h1>Mark Attendance</h1>
+        <p class="course-title">@courseName</p>
+    </div>
 
     <form asp-action="Create" method="post">
-
         <input type="hidden" name="courseId" value="@courseId" />
 
         <div class="session-inputs">
             <div>
-                <label>Date:</label>
-                <input type="date" name="AttendanceDate" class="form-control" required />
+                <label>Date:</label><br />
+                <input type="date" name="AttendanceDate" required />
             </div>
 
             <div>
-                <label>Time:</label>
-                <input type="time" name="SessionTime" class="form-control" required />
+                <label>Time:</label><br />
+                <input type="time" name="SessionTime" required />
             </div>
         </div>
 
@@ -150,6 +211,6 @@
         <a asp-action="Index" asp-route-courseId="@courseId" class="btn-cancel">
             ✖ Cancel
         </a>
-
     </form>
+
 </div>

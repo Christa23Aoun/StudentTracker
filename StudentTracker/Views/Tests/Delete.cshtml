@@ -6,86 +6,107 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .delete-container {
+        width: 92%;
         max-width: 700px;
-        margin: 100px auto;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(25px);
+        margin: 80px auto;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 40px 45px;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
         text-align: center;
     }
 
-    h2 {
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: #ffb3b3;
+    .page-header {
+        border-left: 5px solid #c62828;
+        padding-left: 14px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #c62828;
+        }
+
+    p.warning-text {
+        font-size: 15px;
+        color: #5b6e80;
+        margin-top: 8px;
     }
 
     .test-info {
-        margin: 20px 0 30px 0;
         text-align: left;
-        line-height: 1.7;
+        line-height: 1.8;
+        background: #f7f9fc;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e4e9f0;
+        margin-top: 20px;
+        margin-bottom: 30px;
     }
 
         .test-info span {
-            color: #aee0ff;
-            font-weight: 600;
+            font-weight: 700;
+            color: #003c8f;
         }
 
+    /* BUTTONS */
     .btn-row {
         display: flex;
         justify-content: center;
         gap: 20px;
-        margin-top: 10px;
+        margin-top: 5px;
+        flex-wrap: wrap;
     }
 
     .btn-cancel,
-    .btn-confirm {
-        padding: 10px 24px;
-        border-radius: 10px;
-        font-weight: 600;
+    .btn-delete {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 700;
         text-decoration: none;
-        border: none;
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.25s ease;
+        border: none;
         display: inline-block;
     }
 
     .btn-cancel {
-        background: rgba(255, 255, 255, 0.15);
-        color: #aee0ff;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: #5b6e80;
+        color: white;
     }
 
         .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+            background: #445664;
         }
 
-    .btn-confirm {
-        background: rgba(255, 77, 77, 0.3);
-        color: #fff;
-        border: 1px solid rgba(255, 77, 77, 0.6);
+    .btn-delete {
+        background: #c62828;
+        color: white;
     }
 
-        .btn-confirm:hover {
-            background: rgba(255, 77, 77, 0.5);
-            transform: translateY(-2px);
+        .btn-delete:hover {
+            background: #9e1f1f;
         }
 </style>
 
 <div class="delete-container">
-    <h2>⚠ Delete Test</h2>
-    <p>Are you sure you want to delete this test? This action cannot be undone.</p>
+
+    <div class="page-header">
+        <h1>Delete Test</h1>
+        <p class="warning-text">This action cannot be undone. Please confirm your choice.</p>
+    </div>
 
     <div class="test-info">
         <p><span>Test ID:</span> @Model.TestID</p>
@@ -106,7 +127,7 @@
             @Html.AntiForgeryToken()
             <input asp-for="TestID" type="hidden" />
             <input asp-for="CourseID" type="hidden" />
-            <button type="submit" class="btn-confirm">🗑 Yes, Delete</button>
+            <button type="submit" class="btn-delete">🗑 Confirm Delete</button>
         </form>
     </div>
 </div>

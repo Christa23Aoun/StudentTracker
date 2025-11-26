@@ -7,113 +7,152 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
-    .container {
-        max-width: 1100px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 20px;
-        backdrop-filter: blur(25px);
-        padding: 40px 50px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    .attendance-container {
+        width: 92%;
+        max-width: 1300px;
+        margin: 70px auto;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 35px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.06);
     }
 
-    h2 {
-        text-align: center;
-        font-weight: 700;
-        margin-bottom: 30px;
-        color: #fff;
+    .page-header {
+        text-align: left;
+        margin-bottom: 35px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
     }
 
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
+        }
+
+    /* ACTION BUTTONS */
     .top-actions {
         display: flex;
         justify-content: space-between;
         margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .btn-primary, .btn-secondary {
-        background: linear-gradient(135deg, #006aff, #0048b3);
-        border: none;
-        border-radius: 10px;
+    .btn-primary {
+        background: #003c8f;
+        color: white;
         padding: 12px 22px;
-        color: #fff;
+        border-radius: 6px;
         font-weight: 600;
         text-decoration: none;
-        transition: 0.3s;
+        transition: 0.25s ease;
     }
+
+        .btn-primary:hover {
+            background: #002a6a;
+        }
 
     .btn-secondary {
-        background: #666;
+        background: #5b6e80;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s ease;
     }
 
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #0056d2, #007bff);
-        transform: translateY(-2px);
-        box-shadow: 0 0 10px rgba(0,150,255,0.6);
-    }
+        .btn-secondary:hover {
+            background: #445664;
+        }
 
+    /* FILTERS */
     .filters {
         display: flex;
         gap: 15px;
         margin-bottom: 20px;
+        flex-wrap: wrap;
     }
 
         .filters input {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            padding: 9px 12px;
+            border-radius: 6px;
+            border: 1px solid #d9e1ec;
+            background: #ffffff;
+            color: #1a2b4c;
+            width: 200px;
         }
 
+    /* TABLE */
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
-        margin-top: 20px;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
     thead {
-        background: rgba(0, 90, 180, 0.6);
+        background: #003c8f;
+        color: white;
     }
 
-    th, td {
+    th {
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    td {
         padding: 14px;
         text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid #edf2f7;
+        color: #1a2b4c;
     }
 
-    tbody tr:hover {
-        background: rgba(255,255,255,0.1);
-        transition: 0.3s;
+    tr:hover {
+        background: #f0f6ff;
     }
 
+    /* DELETE BUTTON */
     .btn-danger {
-        background: linear-gradient(135deg, #ff3d3d, #c62828);
-        border: none;
-        border-radius: 8px;
-        padding: 6px 14px;
-        color: #fff;
+        background: #c62828;
+        padding: 7px 16px;
+        border-radius: 6px;
         font-weight: 600;
-        transition: 0.3s;
+        color: white;
+        text-decoration: none;
+        transition: 0.25s ease;
     }
+
+        .btn-danger:hover {
+            background: #a71f1f;
+        }
 </style>
 
-<div class="container">
+<div class="attendance-container">
 
-    <h2>🗓️ Attendance Records</h2>
+    <div class="page-header">
+        <h1>Attendance Records</h1>
+    </div>
 
     <div class="top-actions">
         <a class="btn-primary"
            asp-action="Create"
            asp-route-courseId="@courseId">
-            📋 Mark Attendance
+            Mark Attendance
         </a>
 
         <a class="btn-secondary"
@@ -127,7 +166,7 @@
     <!-- FILTERS -->
     <div class="filters">
         <input type="date" id="filterDate" />
-        <input type="text" id="filterName" placeholder="Search by student name..." />
+        <input type="text" id="filterName" placeholder="Search student name..." />
     </div>
 
     <table id="attendanceTable">
@@ -149,17 +188,16 @@
                     <tr>
                         <td class="student-name">@item.StudentName</td>
                         <td>@item.CourseName</td>
-
                         <td class="date-cell">@item.AttendanceDate.ToString("yyyy-MM-dd HH:mm")</td>
 
-                        <td class="@(item.IsPresent ? "status-yes" : "status-no")">
-                            @(item.IsPresent ? "Present ✅" : "Absent ❌")
+                        <td style="font-weight:600; color:@(item.IsPresent ? "#0a7d2c" : "#b30000")">
+                            @(item.IsPresent ? "Present ✔" : "Absent ✘")
                         </td>
 
                         <td>
                             <a class="btn-danger"
                                href="/Attendance/Delete?id=@item.AttendanceID&courseId=@courseId">
-                                🗑️ Delete
+                                Delete
                             </a>
                         </td>
                     </tr>
@@ -167,7 +205,7 @@
             }
             else
             {
-                <tr><td colspan="6" class="text-center py-4">No attendance records found.</td></tr>
+                <tr><td colspan="6" style="padding:20px; color:#5b6e80;">No attendance records found.</td></tr>
             }
         </tbody>
     </table>
@@ -195,13 +233,4 @@
 
     filterDate.addEventListener("change", applyFilters);
     filterName.addEventListener("keyup", applyFilters);
-</script>
-
-<!-- 🔍 DEBUG CLICK LOG -->
-<script>
-    document.querySelectorAll("a.btn-danger").forEach(btn => {
-        btn.addEventListener("click", function (e) {
-            console.log("DELETE CLICK DETECTED:", this.href);
-        });
-    });
 </script>

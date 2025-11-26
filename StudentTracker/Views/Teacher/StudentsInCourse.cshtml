@@ -6,63 +6,85 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001f3f, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: white;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
     .wrapper {
-        margin: 60px auto;
-        width: 85%;
-        max-width: 900px;
+        width: 92%;
+        max-width: 1100px;
+        margin: 70px auto;
     }
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
+    .page-header {
+        text-align: left;
+        margin-bottom: 35px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
     }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
+        }
 
     table {
         width: 100%;
-        background: rgba(255,255,255,0.1);
-        border-radius: 12px;
-        overflow: hidden;
+        background: #ffffff;
         border-collapse: collapse;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
     th {
-        background: rgba(255,255,255,0.2);
-        padding: 12px;
+        background: #003c8f;
+        color: white;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
         text-align: center;
     }
 
     td {
-        padding: 12px;
+        padding: 14px;
         text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid #edf2f7;
+        color: #1a2b4c;
     }
 
     tr:hover {
-        background: rgba(255,255,255,0.1);
+        background: #f0f6ff;
     }
 
-    .back {
-        margin-top: 25px;
-        display: block;
-        text-align: center;
-        background: #555;
-        padding: 10px 15px;
-        border-radius: 8px;
-        width: 200px;
-        margin-left: auto;
-        margin-right: auto;
+    .back-btn {
+        margin-top: 30px;
+        display: inline-block;
+        background: #5b6e80;
+        padding: 12px 20px;
+        border-radius: 6px;
         text-decoration: none;
         color: white;
+        font-weight: 600;
+        transition: 0.25s ease;
     }
+
+        .back-btn:hover {
+            background: #445664;
+        }
 </style>
 
 <div class="wrapper">
-    <h2>👩‍🎓 Students Enrolled</h2>
+
+    <div class="page-header">
+        <h1>Students Enrolled</h1>
+    </div>
 
     <table>
         <thead>
@@ -88,13 +110,19 @@
             else
             {
                 <tr>
-                    <td colspan="2">No students enrolled.</td>
+                    <td colspan="2" style="padding:20px; color:#5b6e80;">
+                        No students enrolled in this course.
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <a class="back" asp-controller="Teacher" asp-action="CourseDetails" asp-route-id="@ViewBag.CourseID">
+    <a class="back-btn"
+       asp-controller="Teacher"
+       asp-action="CourseDetails"
+       asp-route-id="@ViewBag.CourseID">
         ⬅ Back to Course
     </a>
+
 </div>
