@@ -16,16 +16,10 @@ namespace StudentTrackerAPI.Controllers
             _service = new TestGradeService(conn);
         }
 
-        // ======================================================
-        // GET ALL GRADES
-        // ======================================================
         [HttpGet]
         public async Task<IActionResult> GetAll() =>
             Ok(await _service.GetAllAsync());
 
-        // ======================================================
-        // GET GRADES BY TEST + COURSE (Used in UI)
-        // ======================================================
         [HttpGet("ByTest")]
         public async Task<IActionResult> GetByTest(int courseId, int testId)
         {
@@ -33,9 +27,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(result);
         }
 
-        // ======================================================
-        // GET BY GRADE ID
-        // ======================================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,9 +37,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(item);
         }
 
-        // ======================================================
-        // GET BY COURSE (rare usage, still useful)
-        // ======================================================
         [HttpGet("byCourse/{courseId}")]
         public async Task<IActionResult> GetByCourse(int courseId)
         {
@@ -57,12 +45,28 @@ namespace StudentTrackerAPI.Controllers
         }
 
         // ======================================================
-        // CREATE
+        // NEW ENDPOINT: Get AVERAGE for one TEST
         // ======================================================
+        [HttpGet("AverageByTest/{testId}")]
+        public async Task<IActionResult> GetAverageByTest(int testId)
+        {
+            var avg = await _service.GetAverageByTestAsync(testId);
+            return Ok(avg);
+        }
+
+        // ======================================================
+        // NEW ENDPOINT: Get AVERAGE for course
+        // ======================================================
+        [HttpGet("AverageByCourse/{courseId}")]
+        public async Task<IActionResult> GetAverageByCourse(int courseId)
+        {
+            var avg = await _service.GetAverageByCourseAsync(courseId);
+            return Ok(avg);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(TestGrade grade)
         {
-            // prevent duplicates
             if (await _service.ExistsAsync(grade.TestID, grade.StudentID))
                 return Conflict("A grade already exists for this student and test.");
 
@@ -70,9 +74,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { message = "Grade created successfully", created });
         }
 
-        // ======================================================
-        // UPDATE
-        // ======================================================
         [HttpPut]
         public async Task<IActionResult> Update(TestGrade grade)
         {
@@ -80,9 +81,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok("Grade updated successfully");
         }
 
-        // ======================================================
-        // DELETE
-        // ======================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

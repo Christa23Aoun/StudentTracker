@@ -179,6 +179,7 @@
                 <th>Date</th>
                 <th>Weight (%)</th>
                 <th>Max Score</th>
+                <th>Average Grade</th>   @* NEW COLUMN *@
                 <th>Actions</th>
             </tr>
         </thead>
@@ -193,6 +194,11 @@
                         <td>@item.TestDate.ToShortDateString()</td>
                         <td>@item.Weight</td>
                         <td>@item.MaxScore</td>
+
+                        <!-- NEW AVERAGE COLUMN -->
+                        <td style="font-weight:700; color:#003c8f;">
+                            @(item.AverageScore == 0 ? "—" : item.AverageScore.ToString("0.00"))
+                        </td>
 
                         <td>
                             <a asp-controller="TestGrades"
@@ -221,7 +227,7 @@
             else
             {
                 <tr>
-                    <td colspan="5" style="padding:20px; color:#5b6e80;">
+                    <td colspan="6" style="padding:20px; color:#5b6e80;">
                         No tests available.
                     </td>
                 </tr>

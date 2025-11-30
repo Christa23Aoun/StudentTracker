@@ -18,18 +18,12 @@ namespace StudentTrackerDAL.Repositories
             _connectionString = connectionString;
         }
 
-        // =====================================================
-        // GET ALL
-        // =====================================================
         public async Task<IEnumerable<TestGrade>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
             return await con.QueryAsync<TestGrade>("SELECT * FROM TestGrades");
         }
 
-        // =====================================================
-        // CHECK IF EXISTS
-        // =====================================================
         public async Task<bool> ExistsAsync(int testId, int studentId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -40,9 +34,6 @@ namespace StudentTrackerDAL.Repositories
             return count > 0;
         }
 
-        // =====================================================
-        // GET BY ID
-        // =====================================================
         public async Task<TestGrade?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -51,10 +42,6 @@ namespace StudentTrackerDAL.Repositories
                 new { TestGradeID = id });
         }
 
-        // =====================================================
-        // GET BY TEST + COURSE (WITH STUDENT NAME)
-        // Used by MVC & API
-        // =====================================================
         public async Task<IEnumerable<TestGrade>> GetByTestWithStudentAsync(int testId, int courseId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -76,9 +63,6 @@ namespace StudentTrackerDAL.Repositories
             return await con.QueryAsync<TestGrade>(sql, new { TestID = testId, CourseID = courseId });
         }
 
-        // =====================================================
-        // GET BY COURSE
-        // =====================================================
         public async Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -100,9 +84,6 @@ namespace StudentTrackerDAL.Repositories
             return await con.QueryAsync<TestGrade>(sql, new { CourseID = courseId });
         }
 
-        // =====================================================
-        // CREATE
-        // =====================================================
         public async Task<int> CreateAsync(TestGrade grade)
         {
             using var con = new SqlConnection(_connectionString);
@@ -121,9 +102,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // =====================================================
-        // UPDATE
-        // =====================================================
         public async Task<int> UpdateAsync(TestGrade grade)
         {
             using var con = new SqlConnection(_connectionString);
@@ -136,9 +114,6 @@ namespace StudentTrackerDAL.Repositories
                 grade);
         }
 
-        // =====================================================
-        // DELETE — USING STORED PROCEDURE
-        // =====================================================
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -149,9 +124,6 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // =====================================================
-        // ADMIN PENDING VALIDATION
-        // =====================================================
         public async Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync()
         {
             using var con = new SqlConnection(_connectionString);
@@ -168,9 +140,6 @@ namespace StudentTrackerDAL.Repositories
                 WHERE tg.IsValidated = 0 AND tg.IsRejected = 0");
         }
 
-        // =====================================================
-        // VALIDATION
-        // =====================================================
         public async Task<int> MarkGradeAsValidatedAsync(int testGradeId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -183,9 +152,6 @@ namespace StudentTrackerDAL.Repositories
                 new { TestGradeID = testGradeId });
         }
 
-        // =====================================================
-        // ADMIN REJECT GRADE
-        // =====================================================
         public async Task<int> DeleteGradeAsync(int testGradeId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -199,18 +165,34 @@ namespace StudentTrackerDAL.Repositories
         }
 
         // =====================================================
-        // AVERAGE GRADE
+        // FIXED: AVERAGE GRADE BY COURSE (NO VALIDATION REQUIRED)
         // =====================================================
         public async Task<decimal> GetAverageGradeByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
             var result = await con.ExecuteScalarAsync<decimal?>(@"
-                SELECT AVG(Score)
+                SELECT AVG(CAST(tg.Score AS FLOAT))
                 FROM TestGrades tg
                 JOIN Tests t ON tg.TestID = t.TestID
-                WHERE t.CourseID = @CourseID AND tg.IsValidated = 1",
+                WHERE t.CourseID = @CourseID",
                 new { CourseID = courseId });
+
+            return result ?? 0;
+        }
+
+        // =====================================================
+        // NEW: AVERAGE GRADE BY SINGLE TEST
+        // =====================================================
+        public async Task<decimal> GetAverageByTestAsync(int testId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var result = await con.ExecuteScalarAsync<decimal?>(@"
+                SELECT AVG(CAST(Score AS FLOAT))
+                FROM TestGrades
+                WHERE TestID = @TestID",
+                new { TestID = testId });
 
             return result ?? 0;
         }

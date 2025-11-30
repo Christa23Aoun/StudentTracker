@@ -18,11 +18,15 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
+        // ================================================================
+        // INDEX — NOW WITH AVERAGE GRADE PER TEST
+        // ================================================================
         public async Task<IActionResult> Index(int? courseId)
         {
             ViewBag.CourseID = courseId;
             var list = new List<TestView>();
 
+            // Load course name
             if (courseId.HasValue)
             {
                 var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
@@ -34,6 +38,7 @@ namespace StudentTracker.Controllers
                 }
             }
 
+            // Fetch tests
             string endpoint = courseId.HasValue
                 ? $"{_apiBase}Tests/byCourse/{courseId}"
                 : $"{_apiBase}Tests";
@@ -46,9 +51,31 @@ namespace StudentTracker.Controllers
                 list = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
             }
 
+            // ========================================================
+            // LOAD AVERAGE FOR EACH TEST
+            // ========================================================
+            foreach (var t in list)
+            {
+                var avgRes = await _client.GetAsync($"{_apiBase}TestGrades/AverageByTest/{t.TestID}");
+
+                if (avgRes.IsSuccessStatusCode)
+                {
+                    var avgJson = await avgRes.Content.ReadAsStringAsync();
+                    decimal avg = JsonConvert.DeserializeObject<decimal>(avgJson);
+                    t.AverageScore = avg;
+                }
+                else
+                {
+                    t.AverageScore = 0;
+                }
+            }
+
             return View(list);
         }
 
+        // ================================================================
+        // CREATE (GET)
+        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Create(int courseId)
         {
@@ -82,6 +109,9 @@ namespace StudentTracker.Controllers
             ViewBag.CourseID = courseId;
         }
 
+        // ================================================================
+        // CREATE (POST)
+        // ================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
@@ -116,6 +146,9 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
+        // ================================================================
+        // EDIT (GET)
+        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -129,6 +162,9 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
+        // ================================================================
+        // EDIT (POST)
+        // ================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TestView model)
@@ -158,13 +194,12 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ================================
+        // ================================================================
         // DELETE (GET)
-        // ================================
+        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            // Load test
             var testRes = await _client.GetAsync($"{_apiBase}Tests/{id}");
             if (!testRes.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index));
@@ -175,7 +210,7 @@ namespace StudentTracker.Controllers
             if (test == null)
                 return RedirectToAction(nameof(Index));
 
-            // Load grades for validation check
+            // Check validated grades
             var gradeRes = await _client.GetAsync(
                 $"{_apiBase}TestGrades/ByTest?courseId={test.CourseID}&testId={test.TestID}"
             );
@@ -195,14 +230,14 @@ namespace StudentTracker.Controllers
             return View(test);
         }
 
-        // ================================
+        // ================================================================
         // DELETE (POST)
-        // ================================
+        // ================================================================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int TestID, int CourseID)
         {
-            // Double check before delete
+            // Re-check for validated grades
             var gradeRes = await _client.GetAsync(
                 $"{_apiBase}TestGrades/ByTest?courseId={CourseID}&testId={TestID}"
             );
@@ -219,7 +254,7 @@ namespace StudentTracker.Controllers
                 }
             }
 
-            // If no validated grades → delete
+            // Delete
             await _client.DeleteAsync($"{_apiBase}Tests/{TestID}");
             TempData["Msg"] = "Test deleted successfully.";
 

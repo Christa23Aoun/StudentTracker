@@ -45,7 +45,6 @@
         margin-bottom: 25px;
     }
 
-    /* TABLE */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -97,7 +96,6 @@
         margin-bottom: 18px;
     }
 
-    /* BUTTONS */
     .btn-save, .btn-cancel {
         padding: 12px 26px;
         border-radius: 8px;
@@ -164,7 +162,6 @@
                         <th>Student</th>
                         <th>ID</th>
                         <th>Score</th>
-                      
                     </tr>
                 </thead>
 
@@ -183,29 +180,29 @@
                             </td>
 
                             <td>
+
                                 @if (Model.Students[i].IsValidated)
                                 {
-                                    <!-- Show existing grade (read-only) -->
+                                    <!-- Read-only display -->
                                     <input value="@Model.Students[i].Score"
                                            type="number"
-                                           class="read-only-grade"
                                            disabled />
 
                                     <span style="color:#888; font-size:12px; margin-left:5px;">
                                         (Already graded)
                                     </span>
 
-                                    <!-- Keep hidden copy of the score so model stays intact -->
-                                    <input type="hidden" name="Students[@i].Score" value="@Model.Students[i].Score" />
+                                    <!-- Only keep validated flag -->
+                                    <input type="hidden" asp-for="Students[i].IsValidated" />
                                 }
                                 else
                                 {
-                                    <!-- Normal Editable Mode -->
-                                    <input asp-for="Students[i].Score" type="number" step="0.01" min="0" />
+                                    <!-- Editable score -->
+                                    <input asp-for="Students[i].Score"
+                                           type="number" step="0.01" min="0" />
                                 }
-                            </td>
 
-                          
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -221,7 +218,6 @@
                class="btn-cancel">
                 Cancel
             </a>
-
         </div>
 
     </form>

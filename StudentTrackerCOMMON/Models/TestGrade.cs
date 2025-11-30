@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentTrackerCOMMON.Models
 {
     public class TestGrade
     {
-        public string StudentName { get; set; }
+        public string? StudentName { get; set; } = null;
 
         public int TestGradeID { get; set; }
         public int TestID { get; set; }
@@ -18,4 +14,3 @@ namespace StudentTrackerCOMMON.Models
         public DateTime? ValidationDate { get; set; }
     }
 }
-
