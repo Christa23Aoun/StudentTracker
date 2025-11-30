@@ -164,7 +164,7 @@
                         <th>Student</th>
                         <th>ID</th>
                         <th>Score</th>
-                        <th>Status</th>
+                      
                     </tr>
                 </thead>
 
@@ -183,13 +183,29 @@
                             </td>
 
                             <td>
-                                <input asp-for="Students[i].Score" type="number" step="0.01" min="0" />
+                                @if (Model.Students[i].IsValidated)
+                                {
+                                    <!-- Show existing grade (read-only) -->
+                                    <input value="@Model.Students[i].Score"
+                                           type="number"
+                                           class="read-only-grade"
+                                           disabled />
+
+                                    <span style="color:#888; font-size:12px; margin-left:5px;">
+                                        (Already graded)
+                                    </span>
+
+                                    <!-- Keep hidden copy of the score so model stays intact -->
+                                    <input type="hidden" name="Students[@i].Score" value="@Model.Students[i].Score" />
+                                }
+                                else
+                                {
+                                    <!-- Normal Editable Mode -->
+                                    <input asp-for="Students[i].Score" type="number" step="0.01" min="0" />
+                                }
                             </td>
 
-                            <td>
-                                <input type="hidden" asp-for="Students[i].IsValidated" value="false" />
-                                <span style="color:#5b6e80; font-weight:600;">Pending</span>
-                            </td>
+                          
                         </tr>
                     }
                 </tbody>
@@ -199,12 +215,13 @@
         <div class="actions-row">
             <button type="submit" class="btn-save">Save Grades</button>
 
-            <a asp-controller="Teacher"
-               asp-action="CourseDetails"
-               asp-route-id="@Model.CourseID"
+            <a asp-controller="Tests"
+               asp-action="Index"
+               asp-route-courseId="@Model.CourseID"
                class="btn-cancel">
                 Cancel
             </a>
+
         </div>
 
     </form>

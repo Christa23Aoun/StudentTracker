@@ -1,4 +1,5 @@
 ﻿using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.DTOs;
 using StudentTrackerDAL.Repositories;
 
 public class TestService
@@ -10,11 +11,10 @@ public class TestService
         _repository = new TestRepository(connectionString);
     }
 
-    public Task<IEnumerable<Test>> GetAllAsync() => _repository.GetAllAsync();
-    public Task<Test?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
-    public Task<IEnumerable<Test>> GetByCourseIdAsync(int courseId) => _repository.GetByCourseIdAsync(courseId);
+    public Task<IEnumerable<TestDto>> GetAllAsync() => _repository.GetAllAsync();
+    public Task<TestDto?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
+    public Task<IEnumerable<TestDto>> GetByCourseIdAsync(int courseId) => _repository.GetByCourseIdAsync(courseId);
 
-    // CREATE
     public async Task<int> CreateAsync(Test t)
     {
         if (string.IsNullOrWhiteSpace(t.TestName))
@@ -31,7 +31,6 @@ public class TestService
         return await _repository.CreateAsync(t);
     }
 
-    // UPDATE
     public async Task<int> UpdateAsync(Test t)
     {
         if (t.Weight <= 0)
@@ -50,7 +49,6 @@ public class TestService
 
     public Task<int> DeleteAsync(int id) => _repository.DeleteAsync(id);
 
-    // TOTAL WEIGHT CALCULATION
     private async Task<decimal> GetTotalWeightForCourseAsync(int courseId)
     {
         var list = await _repository.GetByCourseIdAsync(courseId);

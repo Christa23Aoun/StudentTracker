@@ -23,7 +23,6 @@
         box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
     }
 
-    /* PAGE HEADER */
     .page-header {
         text-align: left;
         margin-bottom: 35px;
@@ -38,7 +37,6 @@
             color: #003c8f;
         }
 
-    /* ACTION BUTTONS */
     .btn-primary {
         background: #003c8f;
         color: white;
@@ -77,7 +75,6 @@
         gap: 10px;
     }
 
-    /* TABLE */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -111,7 +108,6 @@
         background: #f0f6ff;
     }
 
-    /* BUTTONS INSIDE TABLE */
     .btn-table {
         padding: 7px 13px;
         border-radius: 6px;
@@ -158,7 +154,7 @@
 <div class="tests-container">
 
     <div class="page-header">
-        <h1>Tests</h1>
+        <h1>Tests for @ViewBag.CourseName</h1>
     </div>
 
     <div class="actions-row">
@@ -179,8 +175,6 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Course</th>
                 <th>Name</th>
                 <th>Date</th>
                 <th>Weight (%)</th>
@@ -195,8 +189,6 @@
                 foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.TestID</td>
-                        <td>@item.CourseID</td>
                         <td>@item.TestName</td>
                         <td>@item.TestDate.ToShortDateString()</td>
                         <td>@item.Weight</td>
@@ -229,7 +221,7 @@
             else
             {
                 <tr>
-                    <td colspan="7" style="padding:20px; color:#5b6e80;">
+                    <td colspan="5" style="padding:20px; color:#5b6e80;">
                         No tests available.
                     </td>
                 </tr>

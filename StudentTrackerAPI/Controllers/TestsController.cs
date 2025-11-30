@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerBLL.Services;
+using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Models;
 
 namespace StudentTrackerAPI.Controllers
@@ -16,22 +17,18 @@ namespace StudentTrackerAPI.Controllers
             _service = new TestService(conn);
         }
 
-        // GET /api/Tests
         [HttpGet]
         public async Task<IActionResult> GetAll() =>
             Ok(await _service.GetAllAsync());
 
-        // GET /api/Tests/byCourse/5
         [HttpGet("byCourse/{courseId}")]
         public async Task<IActionResult> GetByCourse(int courseId) =>
             Ok(await _service.GetByCourseIdAsync(courseId));
 
-        // GET /api/Tests/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id) =>
             Ok(await _service.GetByIdAsync(id));
 
-        // POST /api/Tests
         [HttpPost]
         public async Task<IActionResult> Create(Test t)
         {
@@ -42,12 +39,10 @@ namespace StudentTrackerAPI.Controllers
             }
             catch (ArgumentException ex)
             {
-                // validation error (weight > 100)
                 return BadRequest(ex.Message);
             }
-            catch (Exception ex)
+            catch
             {
-                // unexpected error
                 return StatusCode(500, "Server error");
             }
         }
@@ -70,8 +65,6 @@ namespace StudentTrackerAPI.Controllers
             }
         }
 
-
-        // DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

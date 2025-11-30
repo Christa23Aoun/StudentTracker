@@ -1,16 +1,20 @@
 ﻿@model StudentTracker.Models.TestGradeView
 
 @{
-    ViewData["Title"] = "Delete Test Grade";
+    ViewData["Title"] = "Delete Grade";
+
     var courseId = ViewBag.CourseID;
+    var testId = ViewBag.TestID;
+    var testName = ViewBag.TestName;
+    var courseName = ViewBag.CourseName;
 }
 
 <style>
     body {
         background: #f5f7fa;
+        font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
-        font-family: 'Inter', sans-serif;
         color: #1a2b4c;
     }
 
@@ -18,18 +22,15 @@
         width: 92%;
         max-width: 650px;
         margin: 80px auto;
-        background: #ffffff;
-        padding: 40px 45px;
-        border-radius: 8px;
-        border: 1px solid #d9e1ec;
-        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
-        text-align: center;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 6px 15px rgba(0,0,0,0.07);
     }
 
     .page-header {
         border-left: 5px solid #c62828;
         padding-left: 14px;
-        text-align: left;
         margin-bottom: 20px;
     }
 
@@ -40,39 +41,41 @@
             color: #c62828;
         }
 
-    .info-text {
-        font-size: 15px;
-        color: #5b6e80;
-        margin-bottom: 20px;
-    }
-
-    /* DETAILS BOX */
     .details-box {
         background: #f7f9fc;
         border: 1px solid #e4e9f0;
-        padding: 20px 25px;
+        padding: 22px;
         border-radius: 8px;
         margin-bottom: 30px;
-        text-align: left;
-        font-size: 15px;
-        color: #1a2b4c;
-        line-height: 1.7;
     }
 
-        .details-box strong {
-            color: #003c8f;
-            font-weight: 700;
-        }
+    .label {
+        font-weight: 800;
+        color: #003c8f;
+    }
 
-    /* BUTTONS */
-    .btn-back, .btn-danger {
+    .badge {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .badge-green {
+        background: #c8f7d4;
+        color: #0f7b2d;
+    }
+
+    .badge-red {
+        background: #ffd4d4;
+        color: #9a1a1a;
+    }
+
+    .btn-danger, .btn-back {
         padding: 12px 24px;
         border-radius: 6px;
         font-weight: 700;
         text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
-        margin: 5px;
     }
 
     .btn-back {
@@ -80,20 +83,13 @@
         color: white;
     }
 
-        .btn-back:hover {
-            background: #445664;
-        }
-
     .btn-danger {
         background: #c62828;
         color: white;
         border: none;
     }
-
-        .btn-danger:hover {
-            background: #9e1f1f;
-        }
 </style>
+
 
 <div class="delete-wrapper">
 
@@ -101,28 +97,54 @@
         <h1>Delete Grade</h1>
     </div>
 
-    <p class="info-text">Are you sure you want to delete this grade? This action cannot be undone.</p>
+    <p>Are you sure you want to delete this grade?</p>
 
     <div class="details-box">
-        <p><strong>Grade ID:</strong> @Model.GradeID</p>
-        <p><strong>Test ID:</strong> @Model.TestID</p>
-        <p><strong>Student ID:</strong> @Model.StudentID</p>
-        <p><strong>Score:</strong> @Model.Score</p>
-        <p><strong>Validated:</strong> @(Model.IsValidated ? "Yes" : "No")</p>
-    </div>
 
-    <form asp-action="Delete" method="post">
+        <p><span class="label">Student:</span> @Model.StudentName</p>
+
+        <p><span class="label">Course:</span> @courseName</p>
+
+        <p><span class="label">Test:</span> @testName</p>
+
+        <p><span class="label">Score:</span> @Model.Score</p>
+
+        <p>
+            <span class="label">Status:</span>
+            @if (Model.IsValidated)
+            {
+                <span class="badge badge-green">Validated</span>
+            }
+            else
+            {
+                <span class="badge badge-red">Pending</span>
+            }
+        </p>
+
+    </div>
+    <form asp-controller="TestGrades" asp-action="DeleteConfirmed" method="post">
         @Html.AntiForgeryToken()
-        <input type="hidden" name="id" value="@Model.GradeID" />
+
+        <input type="hidden" name="id" value="@Model.TestGradeID" />
         <input type="hidden" name="courseId" value="@courseId" />
+        <input type="hidden" name="testId" value="@testId" />
 
         <a asp-controller="TestGrades"
            asp-action="Index"
            asp-route-courseId="@courseId"
-           class="btn-back">
-            ⬅ Cancel
-        </a>
+           asp-route-testId="@testId"
+           class="btn-back">⬅ Cancel</a>
 
-        <button type="submit" class="btn-danger">🗑 Delete</button>
+        @if (!Model.IsValidated)
+        {
+            <button type="submit" class="btn-danger">🗑 Delete</button>
+        }
+        else
+        {
+            <span style="color:#c62828; font-weight:700;">
+                (Cannot delete validated grade)
+            </span>
+        }
     </form>
+
 </div>

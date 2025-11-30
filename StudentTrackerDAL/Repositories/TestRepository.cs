@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.DTOs;
 using System.Data;
 
 namespace StudentTrackerDAL.Repositories
@@ -28,38 +29,38 @@ namespace StudentTrackerDAL.Repositories
             return await con.ExecuteAsync("sp_CreateTest", parameters, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Test>> GetAllAsync()
+        public async Task<IEnumerable<TestDto>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.QueryAsync<Test>("sp_GetAllTests", commandType: CommandType.StoredProcedure);
+            return await con.QueryAsync<TestDto>("sp_GetAllTests", commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<Test?> GetByIdAsync(int id)
+        public async Task<TestDto?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.QueryFirstOrDefaultAsync<Test>("sp_GetTestByID", new { TestID = id }, commandType: CommandType.StoredProcedure);
+            return await con.QueryFirstOrDefaultAsync<TestDto>("sp_GetTestByID", new { TestID = id }, commandType: CommandType.StoredProcedure);
         }
-        public async Task<IEnumerable<Test>> GetByCourseIdAsync(int courseId)
+
+        public async Task<IEnumerable<TestDto>> GetByCourseIdAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
             string sql = @"
-        SELECT 
-            t.TestID,
-            t.CourseID,
-            c.CourseName,
-            t.TestName,
-            t.TestDate,
-            t.Weight,
-            t.MaxScore
-        FROM Tests t
-        INNER JOIN Courses c ON t.CourseID = c.CourseID
-        WHERE t.CourseID = @CourseID
-        ORDER BY t.TestDate DESC";
+                SELECT 
+                    t.TestID,
+                    t.CourseID,
+                    c.CourseName,
+                    t.TestName,
+                    t.TestDate,
+                    t.Weight,
+                    t.MaxScore
+                FROM Tests t
+                INNER JOIN Courses c ON t.CourseID = c.CourseID
+                WHERE t.CourseID = @CourseID
+                ORDER BY t.TestDate DESC";
 
-            return await con.QueryAsync<Test>(sql, new { CourseID = courseId });
+            return await con.QueryAsync<TestDto>(sql, new { CourseID = courseId });
         }
-
 
         public async Task<int> UpdateAsync(Test test)
         {

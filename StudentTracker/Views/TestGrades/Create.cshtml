@@ -5,6 +5,11 @@
     var courseName = ViewBag.CourseName as string ?? "";
     var tests = ViewBag.Tests as List<StudentTracker.Models.TestView>;
     var students = ViewBag.Students as List<StudentTracker.Models.StudentCourseView>;
+
+    // SAFETY FIX — prevents NullReferenceException
+    tests ??= new List<StudentTracker.Models.TestView>();
+    students ??= new List<StudentTracker.Models.StudentCourseView>();
+
 }
 
 <style>

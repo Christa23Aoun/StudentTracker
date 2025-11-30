@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerBLL.Services;
 using StudentTrackerCOMMON.Models;
-using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -17,8 +16,16 @@ namespace StudentTrackerAPI.Controllers
             _service = new TestGradeService(conn);
         }
 
+        // ======================================================
+        // GET ALL GRADES
+        // ======================================================
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll() =>
+            Ok(await _service.GetAllAsync());
+
+        // ======================================================
+        // GET GRADES BY TEST + COURSE (Used in UI)
+        // ======================================================
         [HttpGet("ByTest")]
         public async Task<IActionResult> GetByTest(int courseId, int testId)
         {
@@ -26,30 +33,56 @@ namespace StudentTrackerAPI.Controllers
             return Ok(result);
         }
 
+        // ======================================================
+        // GET BY GRADE ID
+        // ======================================================
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id) => Ok(await _service.GetByIdAsync(id));
+        public async Task<IActionResult> GetById(int id)
+        {
+            var item = await _service.GetByIdAsync(id);
+            if (item == null)
+                return NotFound("Grade not found.");
 
+            return Ok(item);
+        }
+
+        // ======================================================
+        // GET BY COURSE (rare usage, still useful)
+        // ======================================================
         [HttpGet("byCourse/{courseId}")]
-        public async Task<IActionResult> GetByCourse(int courseId) =>
-            Ok(await _service.GetByCourseAsync(courseId));
+        public async Task<IActionResult> GetByCourse(int courseId)
+        {
+            var result = await _service.GetByCourseAsync(courseId);
+            return Ok(result);
+        }
 
+        // ======================================================
+        // CREATE
+        // ======================================================
         [HttpPost]
         public async Task<IActionResult> Create(TestGrade grade)
         {
+            // prevent duplicates
             if (await _service.ExistsAsync(grade.TestID, grade.StudentID))
                 return Conflict("A grade already exists for this student and test.");
 
-            var id = await _service.CreateAsync(grade);
-            return Ok(id);
+            var created = await _service.CreateAsync(grade);
+            return Ok(new { message = "Grade created successfully", created });
         }
 
+        // ======================================================
+        // UPDATE
+        // ======================================================
         [HttpPut]
-        public async Task<IActionResult> Update(TestGrade g)
+        public async Task<IActionResult> Update(TestGrade grade)
         {
-            await _service.UpdateAsync(g);
+            await _service.UpdateAsync(grade);
             return Ok("Grade updated successfully");
         }
 
+        // ======================================================
+        // DELETE
+        // ======================================================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

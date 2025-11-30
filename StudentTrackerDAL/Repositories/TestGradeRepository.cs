@@ -18,11 +18,18 @@ namespace StudentTrackerDAL.Repositories
             _connectionString = connectionString;
         }
 
+        // =====================================================
+        // GET ALL
+        // =====================================================
         public async Task<IEnumerable<TestGrade>> GetAllAsync()
         {
             using var con = new SqlConnection(_connectionString);
             return await con.QueryAsync<TestGrade>("SELECT * FROM TestGrades");
         }
+
+        // =====================================================
+        // CHECK IF EXISTS
+        // =====================================================
         public async Task<bool> ExistsAsync(int testId, int studentId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -33,6 +40,9 @@ namespace StudentTrackerDAL.Repositories
             return count > 0;
         }
 
+        // =====================================================
+        // GET BY ID
+        // =====================================================
         public async Task<TestGrade?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
@@ -40,28 +50,59 @@ namespace StudentTrackerDAL.Repositories
                 "SELECT * FROM TestGrades WHERE TestGradeID = @TestGradeID",
                 new { TestGradeID = id });
         }
-        public async Task<IEnumerable<TestGrade>> GetByTestAsync(int testId, int courseId)
+
+        // =====================================================
+        // GET BY TEST + COURSE (WITH STUDENT NAME)
+        // Used by MVC & API
+        // =====================================================
+        public async Task<IEnumerable<TestGrade>> GetByTestWithStudentAsync(int testId, int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
-            return await con.QueryAsync<TestGrade>(
-                "sp_GetTestGradesByCourse",
-                new { CourseID = courseId, TestID = testId },
-                commandType: CommandType.StoredProcedure
-            );
+            string sql = @"
+                SELECT 
+                    tg.TestGradeID,
+                    tg.TestID,
+                    tg.StudentID,
+                    u.FullName AS StudentName,
+                    tg.Score,
+                    tg.IsValidated,
+                    t.CourseID
+                FROM TestGrades tg
+                JOIN Users u ON u.UserID = tg.StudentID
+                JOIN Tests t ON t.TestID = tg.TestID
+                WHERE tg.TestID = @TestID AND t.CourseID = @CourseID";
+
+            return await con.QueryAsync<TestGrade>(sql, new { TestID = testId, CourseID = courseId });
         }
 
+        // =====================================================
+        // GET BY COURSE
+        // =====================================================
         public async Task<IEnumerable<TestGrade>> GetByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
 
-            return await con.QueryAsync<TestGrade>(
-                "sp_GetTestGradesByCourse",
-                new { CourseID = courseId },
-                commandType: CommandType.StoredProcedure
-            );
+            string sql = @"
+                SELECT 
+                    tg.TestGradeID,
+                    tg.TestID,
+                    tg.StudentID,
+                    u.FullName AS StudentName,
+                    tg.Score,
+                    tg.IsValidated,
+                    t.CourseID
+                FROM TestGrades tg
+                JOIN Users u ON u.UserID = tg.StudentID
+                JOIN Tests t ON t.TestID = tg.TestID
+                WHERE t.CourseID = @CourseID";
+
+            return await con.QueryAsync<TestGrade>(sql, new { CourseID = courseId });
         }
 
+        // =====================================================
+        // CREATE
+        // =====================================================
         public async Task<int> CreateAsync(TestGrade grade)
         {
             using var con = new SqlConnection(_connectionString);
@@ -77,13 +118,16 @@ namespace StudentTrackerDAL.Repositories
             return await con.ExecuteScalarAsync<int>(
                 "sp_CreateTestGrade",
                 parameters,
-                commandType: CommandType.StoredProcedure
-            );
+                commandType: CommandType.StoredProcedure);
         }
 
+        // =====================================================
+        // UPDATE
+        // =====================================================
         public async Task<int> UpdateAsync(TestGrade grade)
         {
             using var con = new SqlConnection(_connectionString);
+
             return await con.ExecuteAsync(@"
                 UPDATE TestGrades
                 SET Score = @Score,
@@ -92,14 +136,22 @@ namespace StudentTrackerDAL.Repositories
                 grade);
         }
 
+        // =====================================================
+        // DELETE — USING STORED PROCEDURE
+        // =====================================================
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
+
             return await con.ExecuteAsync(
-                "DELETE FROM TestGrades WHERE TestGradeID = @TestGradeID",
-                new { TestGradeID = id });
+                "sp_DeleteTestGrade",
+                new { TestGradeID = id },
+                commandType: CommandType.StoredProcedure);
         }
 
+        // =====================================================
+        // ADMIN PENDING VALIDATION
+        // =====================================================
         public async Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync()
         {
             using var con = new SqlConnection(_connectionString);
@@ -116,9 +168,13 @@ namespace StudentTrackerDAL.Repositories
                 WHERE tg.IsValidated = 0 AND tg.IsRejected = 0");
         }
 
+        // =====================================================
+        // VALIDATION
+        // =====================================================
         public async Task<int> MarkGradeAsValidatedAsync(int testGradeId)
         {
             using var con = new SqlConnection(_connectionString);
+
             return await con.ExecuteAsync(@"
                 UPDATE TestGrades
                 SET IsValidated = 1,
@@ -127,17 +183,24 @@ namespace StudentTrackerDAL.Repositories
                 new { TestGradeID = testGradeId });
         }
 
+        // =====================================================
+        // ADMIN REJECT GRADE
+        // =====================================================
         public async Task<int> DeleteGradeAsync(int testGradeId)
         {
             using var con = new SqlConnection(_connectionString);
+
             return await con.ExecuteAsync(@"
-                UPDATE TestGrades
+                UPDATE TestGrades 
                 SET IsRejected = 1,
                     RejectedAt = GETDATE()
                 WHERE TestGradeID = @TestGradeID",
                 new { TestGradeID = testGradeId });
         }
 
+        // =====================================================
+        // AVERAGE GRADE
+        // =====================================================
         public async Task<decimal> GetAverageGradeByCourseAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);

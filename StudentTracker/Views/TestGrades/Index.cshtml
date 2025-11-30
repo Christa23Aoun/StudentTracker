@@ -235,7 +235,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Student ID</th>
+                        <th>Student</th>
                         <th>Score</th>
                         <th>Validated</th>
                         <th>Actions</th>
@@ -248,18 +248,27 @@
                         foreach (var g in Model)
                         {
                             <tr>
-                                <td>@g.StudentID</td>
+                                <td>@g.StudentName</td>
                                 <td>@g.Score</td>
                                 <td>@(g.IsValidated ? "Yes" : "No")</td>
+
                                 <td>
-                                    <a asp-action="Delete"
-                                       asp-route-id="@g.GradeID"
-                                       asp-route-courseId="@courseId"
-                                       asp-route-testId="@selectedTestId"
-                                       class="btn-danger">
-                                        🗑 Delete
-                                    </a>
+                                    @if (!g.IsValidated)
+                                    {
+                                        <a asp-action="Delete"
+                                           asp-route-id="@g.TestGradeID"
+                                           asp-route-courseId="@courseId"
+                                           asp-route-testId="@selectedTestId"
+                                           class="btn-danger">
+                                            🗑 Delete
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#999; font-weight:600;">Validated – cannot delete</span>
+                                    }
                                 </td>
+
                             </tr>
                         }
                     }
@@ -273,6 +282,7 @@
                     }
                 </tbody>
             </table>
+
         </div>
     }
 </div>

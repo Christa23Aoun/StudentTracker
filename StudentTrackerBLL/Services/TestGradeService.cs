@@ -13,10 +13,11 @@ namespace StudentTrackerBLL.Services
         {
             _repository = new TestGradeRepository(connectionString);
         }
-        public Task<IEnumerable<TestGrade>> GetGradesByTestAsync(int testId, int courseId)
+        public async Task<IEnumerable<TestGrade>> GetGradesByTestAsync(int testId, int courseId)
         {
-            return _repository.GetByTestAsync(testId, courseId);
+            return await _repository.GetByTestWithStudentAsync(testId, courseId);
         }
+
         public async Task<bool> ExistsAsync(int testId, int studentId)
         {
             return await _repository.ExistsAsync(testId, studentId);

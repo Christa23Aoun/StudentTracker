@@ -8,6 +8,8 @@ namespace StudentTrackerCOMMON.Models
 {
     public class TestGrade
     {
+        public string StudentName { get; set; }
+
         public int TestGradeID { get; set; }
         public int TestID { get; set; }
         public int StudentID { get; set; }
