@@ -44,13 +44,33 @@
                     <button class="lang">FR</button>
                 </div>
 
-                <div class="connect-dropdown">
-                    <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
-                    <div class="connect-menu" id="connectMenu">
-                        <a href="/Auth/LoginTeacher">👨‍🏫 Teacher</a>
-                        <a href="/Auth/LoginStudent">🎓 Student</a>
+                @* ---------------- FIXED CONNECT/VIEW DASHBOARD SECTION ---------------- *@
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a class="btn primary" asp-controller="Admin" asp-action="Dashboard">View Dashboard</a>
+                    }
+                    else if (User.IsInRole("Teacher"))
+                    {
+                        <a class="btn primary" asp-controller="Teacher" asp-action="Dashboard">View Dashboard</a>
+                    }
+                    else if (User.IsInRole("Student"))
+                    {
+                        <a class="btn primary" asp-controller="StudentDashboard" asp-action="Index">View Dashboard</a>
+                    }
+                }
+                else
+                {
+                    <div class="connect-dropdown">
+                        <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
+                        <div class="connect-menu" id="connectMenu">
+                            <a href="/Auth/LoginTeacher">👨‍🏫 Teacher</a>
+                            <a href="/Auth/LoginStudent">🎓 Student</a>
+                        </div>
                     </div>
-                </div>
+                }
+                @* ---------------- END FIX ---------------- *@
 
                 <button class="menu-toggle" aria-label="Open menu">☰</button>
             </div>
@@ -60,17 +80,16 @@
     <main role="main">
         @RenderBody()
     </main>
+
     <footer class="uni-footer">
         <div class="container footer-grid">
 
-            <!-- Brand -->
             <div class="footer-col brand-col">
                 <h3 class="footer-logo">WTF</h3>
                 <p class="footer-sub">We’re The Future (Inshallah)</p>
                 <p class="footer-tagline">Building Tomorrow, Today</p>
             </div>
 
-            <!-- Quick links -->
             <div class="footer-col">
                 <h4 class="footer-title">Quick Links</h4>
                 <ul class="footer-links">
@@ -83,7 +102,6 @@
                 </ul>
             </div>
 
-            <!-- Contact -->
             <div class="footer-col">
                 <h4 class="footer-title">Contact Us</h4>
                 <ul class="footer-contact">
@@ -139,12 +157,9 @@
         });
     </script>
 
-    <!-- FINAL FIX: force footer to match header -->
     <style>
-        /* ========= NEW FOOTER DESIGN ========= */
-
         .uni-footer {
-            background: #0a3252 !important; /* SAME color as topbar */
+            background: #0a3252 !important;
             padding: 60px 0 30px 0;
             color: #fff !important;
             font-family: 'Inter', sans-serif;
@@ -156,7 +171,6 @@
             gap: 40px;
         }
 
-        /* Brand column */
         .footer-logo {
             font-size: 2.2rem;
             font-weight: 800;
@@ -174,7 +188,6 @@
             opacity: 0.65;
         }
 
-        /* Column titles */
         .footer-title {
             font-size: 1.1rem;
             color: #cfe6ff;
@@ -182,7 +195,6 @@
             font-weight: 700;
         }
 
-        /* Links */
         .footer-links {
             list-style: none;
             padding: 0;
@@ -205,7 +217,6 @@
                     padding-left: 4px;
                 }
 
-        /* Contact list */
         .footer-contact {
             list-style: none;
             padding: 0;
@@ -222,7 +233,6 @@
                 color: #86c8ff;
             }
 
-        /* Social icons */
         .footer-social a {
             margin-right: 10px;
             font-size: 1.1rem;
@@ -235,7 +245,6 @@
                 transform: translateY(-2px);
             }
 
-        /* Bottom bar */
         .footer-bottom {
             text-align: center;
             padding-top: 25px;
@@ -243,8 +252,7 @@
             border-top: 1px solid rgba(255,255,255,0.15);
             font-size: 0.9rem;
             opacity: 0.75;
-            background: #0a3252 !important; /* same color */
-
+            background: #0a3252 !important;
         }
 
         footer.footer {
@@ -265,7 +273,6 @@
         }
 
     </style>
-
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

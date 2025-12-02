@@ -23,6 +23,7 @@
         padding: 45px;
         border: 1px solid #d9e1ec;
         box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
+        position: relative;
     }
 
     .page-header {
@@ -39,7 +40,6 @@
             color: #003c8f;
         }
 
-    /* Role Label */
     .login-role-label {
         background: #f1f4f9;
         border: 1px solid #dde4ee;
@@ -69,10 +69,19 @@
         transition: 0.25s ease;
     }
 
-        .form-control:focus {
-            border-color: #003c8f;
-            outline: none;
-        }
+    .password-wrapper {
+        position: relative;
+    }
+
+    .toggle-eye {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #5b6e80;
+    }
 
     .btn-primary {
         width: 100%;
@@ -86,11 +95,6 @@
         margin-top: 10px;
     }
 
-        .btn-primary:hover {
-            background: #002c6a;
-        }
-
-    /* Error Message */
     .alert {
         border-radius: 6px;
         padding: 10px 12px;
@@ -99,6 +103,16 @@
         border: 1px solid #ffcccc;
         color: #b30000;
         font-size: 14px;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 8px;
+        font-size: 14px;
+        color: #003c8f;
+        font-weight: 600;
     }
 </style>
 
@@ -115,25 +129,45 @@
         </div>
     }
 
-    <form asp-controller="Auth" asp-action="Login" method="post">
+    <form asp-controller="Auth" asp-action="Login" method="post" autocomplete="on">
         @Html.AntiForgeryToken()
 
         <input type="hidden" name="Role" value="@ViewBag.Role" />
 
         <!-- Email -->
         <label>Email</label>
-        <input asp-for="Email" type="email" class="form-control" placeholder="Enter your email" required />
+        <input asp-for="Email"
+               type="email"
+               name="email"
+               class="form-control"
+               placeholder="Enter your email"
+               autocomplete="email"
+               required />
         <span asp-validation-for="Email" class="text-danger"></span>
 
         <!-- Password -->
         <label>Password</label>
-        <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" required />
+        <div class="password-wrapper">
+            <input asp-for="Password"
+                   id="passwordInput"
+                   type="password"
+                   name="password"
+                   class="form-control"
+                   placeholder="Enter your password"
+                   autocomplete="current-password"
+                   required />
+            <span class="toggle-eye" onclick="togglePassword()">👁</span>
+        </div>
         <span asp-validation-for="Password" class="text-danger"></span>
 
-        <!-- Submit -->
+        <!-- Remember Me -->
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe" name="RememberMe" />
+            <label for="rememberMe" style="margin:0;">Remember Me</label>
+        </div>
+
         <button type="submit" class="btn-primary">Login</button>
 
-        <!-- Error message -->
         @if (ViewBag.Error != null)
         {
             <div class="alert">@ViewBag.Error</div>
@@ -143,4 +177,11 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function togglePassword() {
+            let field = document.getElementById("passwordInput");
+            field.type = field.type === "password" ? "text" : "password";
+        }
+    </script>
 }

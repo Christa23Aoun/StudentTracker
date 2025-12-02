@@ -4,7 +4,47 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Sessions
+// ==============================================
+// AUTHENTICATION — FIXED DEFAULT SCHEME
+// ==============================================
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Cookie.Name = "SAPT.Auth";
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/Login";
+
+    options.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = context =>
+        {
+            var path = context.Request.Path.Value?.ToLower();
+
+            if (path != null)
+            {
+                if (path.StartsWith("/admin"))
+                    context.Response.Redirect("/Auth/LoginAdmin");
+                else if (path.StartsWith("/teacher"))
+                    context.Response.Redirect("/Auth/LoginTeacher");
+                else if (path.StartsWith("/student"))
+                    context.Response.Redirect("/Auth/LoginStudent");
+                else
+                    context.Response.Redirect("/Auth/Login");
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+});
+
+// ==============================================
+// SESSION
+// ==============================================
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -13,43 +53,17 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Cookie Auth
-builder.Services.AddAuthentication("CookieAuth")
-    .AddCookie("CookieAuth", options =>
-    {
-        options.LoginPath = "/Auth/LoginAdmin";
-        options.AccessDeniedPath = "/Auth/LoginAdmin";
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnRedirectToLogin = context =>
-            {
-                var path = context.Request.Path.Value?.ToLower();
-
-                // If trying to access ANY admin page -> special admin login
-                if (path != null && path.StartsWith("/admin"))
-                {
-                    context.Response.Redirect("/Auth/LoginAdmin");
-                }
-                else
-                {
-                    // Default login for students & teachers
-                    context.Response.Redirect("/Auth/Login");
-                }
-
-                return Task.CompletedTask;
-            }
-        };
-    });
-
 builder.Services.AddAuthorization();
 
-// API HttpClient
+// ==============================================
+// API CLIENT
+// ==============================================
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7199/api/");
 });
 
-// Bind ApiSettings if needed
+// BIND API SETTINGS
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
@@ -66,11 +80,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// **ORDER IS IMPORTANT**
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 
-// DEFAULT ROUTE → Home/Index
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

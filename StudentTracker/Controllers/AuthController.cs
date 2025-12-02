@@ -21,15 +21,45 @@ namespace StudentTracker.Controllers
                        ?? "https://localhost:7199/api/";
         }
 
+        // ============================================
+        // LOGIN – STUDENT
+        // ============================================
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string? role = null)
+        public IActionResult LoginStudent()
         {
-            ViewBag.Role = role;
-            ViewData["Title"] = role == null ? "Login" : $"Login - {role}";
-            return View();
+            ViewBag.Role = "Student";
+            ViewData["Title"] = "Login - Student";
+            return View("Login");
         }
 
+        // ============================================
+        // LOGIN – TEACHER
+        // ============================================
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult LoginTeacher()
+        {
+            ViewBag.Role = "Teacher";
+            ViewData["Title"] = "Login - Teacher";
+            return View("Login");
+        }
+
+        // ============================================
+        // LOGIN – ADMIN
+        // ============================================
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult LoginAdmin()
+        {
+            ViewBag.Role = "Admin";
+            ViewData["Title"] = "Login - Admin";
+            return View("Login");
+        }
+
+        // ============================================
+        // LOGIN POST (REMEMBER ME ENABLED)
+        // ============================================
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -38,10 +68,11 @@ namespace StudentTracker.Controllers
             ViewBag.Role = model.Role;
 
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Login", model);
 
             try
             {
+                // API LOGIN
                 var payload = JsonConvert.SerializeObject(model);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
                 var res = await _client.PostAsync($"{_apiBase}Auth/login", content);
@@ -49,14 +80,15 @@ namespace StudentTracker.Controllers
                 if (!res.IsSuccessStatusCode)
                 {
                     ViewBag.Error = "Invalid email or password.";
-                    return View(model);
+                    return View("Login", model);
                 }
 
+                // FETCH USER DATA
                 var userRes = await _client.GetAsync($"{_apiBase}Users/email/{model.Email}");
                 if (!userRes.IsSuccessStatusCode)
                 {
                     ViewBag.Error = "Failed to fetch user details.";
-                    return View(model);
+                    return View("Login", model);
                 }
 
                 var json = await userRes.Content.ReadAsStringAsync();
@@ -65,9 +97,10 @@ namespace StudentTracker.Controllers
                 if (user == null)
                 {
                     ViewBag.Error = "User not found.";
-                    return View(model);
+                    return View("Login", model);
                 }
 
+                // Resolve role
                 string roleName = user.RoleID switch
                 {
                     1 => "Admin",
@@ -76,37 +109,37 @@ namespace StudentTracker.Controllers
                     _ => "Unknown"
                 };
 
+                // Block wrong role login
                 if (!string.IsNullOrWhiteSpace(model.Role) &&
                     !string.Equals(roleName, model.Role, StringComparison.OrdinalIgnoreCase))
                 {
                     ViewBag.Error = $"This account belongs to a {roleName}. You cannot log in as a {model.Role}.";
-                    return View(model);
+                    return View("Login", model);
                 }
 
+                // Save session
                 HttpContext.Session.SetString("UserName", user.FullName);
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserRole", roleName);
                 HttpContext.Session.SetInt32("UserID", user.UserID);
                 HttpContext.Session.SetInt32("RoleID", user.RoleID);
 
-
                 if (roleName == "Student")
-                {
                     HttpContext.Session.SetInt32("StudentId", user.UserID);
-                }
 
                 if (roleName == "Teacher")
                 {
-                    var teacherRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{user.Email}");
-                    if (teacherRes.IsSuccessStatusCode)
+                    var tRes = await _client.GetAsync($"{_apiBase}TeacherDashboard/byEmail/{user.Email}");
+                    if (tRes.IsSuccessStatusCode)
                     {
-                        var teacherJson = await teacherRes.Content.ReadAsStringAsync();
-                        var teacher = JsonConvert.DeserializeObject<TeacherView>(teacherJson);
+                        var tJson = await tRes.Content.ReadAsStringAsync();
+                        var teacher = JsonConvert.DeserializeObject<TeacherView>(tJson);
                         if (teacher != null)
                             HttpContext.Session.SetInt32("TeacherID", teacher.TeacherID);
                     }
                 }
 
+                // AUTH cookie
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.FullName),
@@ -114,51 +147,39 @@ namespace StudentTracker.Controllers
                     new Claim(ClaimTypes.Role, roleName)
                 };
 
-                var identity = new ClaimsIdentity(claims, "CookieAuth");
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync("CookieAuth", principal);
 
-                TempData["LoginMsg"] = $"You are logging in as {roleName}.";
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,                          // browser will save credentials
+                    ExpiresUtc = DateTime.UtcNow.AddDays(14)
+                };
 
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    authProperties);
+
+                // Redirect
                 return roleName switch
                 {
                     "Admin" => RedirectToAction("Dashboard", "Admin"),
                     "Teacher" => RedirectToAction("Dashboard", "Teacher"),
                     "Student" => RedirectToAction("Index", "StudentDashboard"),
-                    _ => RedirectToAction("Login")
+                    _ => RedirectToAction("LoginStudent")
                 };
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "Server connection error: " + ex.Message;
-                return View(model);
+                ViewBag.Error = "Server error: " + ex.Message;
+                return View("Login", model);
             }
         }
 
-        [HttpGet, AllowAnonymous]
-        public IActionResult LoginStudent()
-        {
-            ViewBag.Role = "Student";
-            ViewData["Title"] = "Login - Student";
-            return View("Login");
-        }
-
-        [HttpGet, AllowAnonymous]
-        public IActionResult LoginTeacher()
-        {
-            ViewBag.Role = "Teacher";
-            ViewData["Title"] = "Login - Teacher";
-            return View("Login");
-        }
-
-        [HttpGet, AllowAnonymous]
-        public IActionResult LoginAdmin()
-        {
-            ViewBag.Role = "Admin";
-            ViewData["Title"] = "Login - Admin";
-            return View("Login");
-        }
-
+        // ============================================
+        // REGISTER
+        // ============================================
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register() => View();
@@ -171,34 +192,33 @@ namespace StudentTracker.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            try
-            {
-                var payload = JsonConvert.SerializeObject(model);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
-                var res = await _client.PostAsync($"{_apiBase}Auth/register", content);
+            var payload = JsonConvert.SerializeObject(model);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var res = await _client.PostAsync($"{_apiBase}Auth/register", content);
 
-                if (res.IsSuccessStatusCode)
-                {
-                    TempData["Msg"] = "Registration successful! Please log in.";
-                    return RedirectToAction("Login");
-                }
-
-                ViewBag.Error = "Registration failed. Please try again.";
-            }
-            catch (Exception ex)
+            if (res.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Server error: " + ex.Message;
+                TempData["Msg"] = "Registration successful!";
+                return RedirectToAction("LoginStudent");
             }
 
+            ViewBag.Error = "Registration failed.";
             return View(model);
         }
 
+        // ============================================
+        // LOGOUT
+        // ============================================
         [Authorize]
         public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Clear();
-            await HttpContext.SignOutAsync("CookieAuth");
+
+            // FIXED: Use the default cookie scheme ("Cookies")
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             return RedirectToAction("Index", "Home");
         }
+
     }
 }

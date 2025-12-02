@@ -126,12 +126,12 @@
 
         <div class="info-card">
             <div class="info-card-title">Average Grade</div>
-            <div class="info-card-value">@Model.AverageGrade %</div>
+            <div class="info-card-value">@Model.AverageGrade.ToString("0.0") %</div>
         </div>
 
         <div class="info-card">
             <div class="info-card-title">Attendance Rate</div>
-            <div class="info-card-value">@Model.AttendanceRate %</div>
+            <div class="info-card-value">@Model.AttendanceRate.ToString("0.0") %</div>
         </div>
 
         <a class="info-link"

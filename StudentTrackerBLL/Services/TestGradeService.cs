@@ -39,7 +39,17 @@ namespace StudentTrackerBLL.Services
         }
 
         public async Task<int> UpdateAsync(TestGrade grade)
-            => await _repository.UpdateAsync(grade);
+        {
+            var existing = await _repository.GetByIdAsync(grade.TestGradeID);
+            if (existing == null)
+                return -1;
+
+            // Do not allow editing validated grades
+            if (existing.IsValidated)
+                return -2;
+
+            return await _repository.UpdateAsync(grade);
+        }
 
         public async Task<int> DeleteAsync(int id)
             => await _repository.DeleteAsync(id);

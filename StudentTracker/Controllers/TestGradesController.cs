@@ -17,10 +17,81 @@ namespace StudentTracker.Controllers
             _client = factory.CreateClient();
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}TestGrades/{id}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction("Index");
 
-        // ============================================
-        // SMALL HELPER FOR CREATE VIEW DROPDOWNS
-        // ============================================
+            var json = await res.Content.ReadAsStringAsync();
+            var grade = JsonConvert.DeserializeObject<TestGradeView>(json);
+
+            if (grade == null)
+                return RedirectToAction("Index");
+
+            // Load student name
+            var studentRes = await _client.GetAsync($"{_apiBase}Users/{grade.StudentID}");
+            if (studentRes.IsSuccessStatusCode)
+            {
+                var sJson = await studentRes.Content.ReadAsStringAsync();
+                var stu = JsonConvert.DeserializeObject<UserView>(sJson);
+                grade.StudentName = stu?.FullName;
+            }
+
+            // Load test name + course
+            var testRes = await _client.GetAsync($"{_apiBase}Tests/{grade.TestID}");
+            if (testRes.IsSuccessStatusCode)
+            {
+                var tJson = await testRes.Content.ReadAsStringAsync();
+                var test = JsonConvert.DeserializeObject<TestView>(tJson);
+                grade.TestName = test?.TestName;
+                grade.CourseID = test?.CourseID ?? 0;
+            }
+
+            return View(grade);
+        }
+
+
+        // ======================================================
+        // EDIT (POST) — FIXED SAVE & REDIRECT
+        // ======================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(TestGradeView model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // Build payload exactly as API expects
+            var payload = new
+            {
+                TestGradeID = model.TestGradeID,
+                TestID = model.TestID,
+                StudentID = model.StudentID,
+                Score = model.Score,
+                IsValidated = false
+            };
+
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Send PUT to API
+            var res = await _client.PutAsync($"{_apiBase}TestGrades", content);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                var err = await res.Content.ReadAsStringAsync();
+                ViewBag.Error = $"Failed to update grade: {err}";
+                return View(model);
+            }
+
+            TempData["Msg"] = "Grade updated successfully.";
+
+            return RedirectToAction("Index",
+                new { courseId = model.CourseID, testId = model.TestID });
+        }
+
         private async Task LoadCreateDropdowns(int courseId)
         {
             ViewBag.CourseID = courseId;
@@ -44,9 +115,7 @@ namespace StudentTracker.Controllers
                 : new List<StudentCourseView>();
         }
 
-        // ============================================
-        // INDEX
-        // ============================================
+        
         public async Task<IActionResult> Index(int? courseId, int? testId)
         {
             if (courseId == null)
@@ -100,9 +169,7 @@ namespace StudentTracker.Controllers
             return View(grades);
         }
 
-        // ============================================
-        // DELETE (GET)
-        // ============================================
+        
         [HttpGet]
         public async Task<IActionResult> Delete(int id, int courseId, int testId)
         {

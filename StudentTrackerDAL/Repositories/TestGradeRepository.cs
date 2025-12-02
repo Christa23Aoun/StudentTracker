@@ -106,11 +106,20 @@ namespace StudentTrackerDAL.Repositories
         {
             using var con = new SqlConnection(_connectionString);
 
+            // Prevent updating validated grades
+            var isValidated = await con.ExecuteScalarAsync<bool>(
+                "SELECT IsValidated FROM TestGrades WHERE TestGradeID = @id",
+                new { id = grade.TestGradeID }
+            );
+
+            if (isValidated)
+                return -1;
+
             return await con.ExecuteAsync(@"
-                UPDATE TestGrades
-                SET Score = @Score,
-                    UpdatedAt = GETDATE()
-                WHERE TestGradeID = @TestGradeID",
+        UPDATE TestGrades
+        SET Score = @Score,
+            UpdatedAt = GETDATE()
+        WHERE TestGradeID = @TestGradeID AND IsValidated = 0",
                 grade);
         }
 

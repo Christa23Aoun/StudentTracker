@@ -43,7 +43,6 @@
         margin-bottom: 30px;
     }
 
-    /* TEST GRID */
     .tests-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -85,7 +84,6 @@
         line-height: 1.5;
     }
 
-    /* BUTTONS */
     .button-row {
         display: flex;
         justify-content: center;
@@ -121,7 +119,6 @@
             background: #002a6a;
         }
 
-    /* TABLE */
     .table-container {
         background: #ffffff;
         border: 1px solid #d9e1ec;
@@ -159,7 +156,6 @@
         background: #f6f9ff;
     }
 
-    /* DELETE BUTTON */
     .btn-danger {
         background: #c62828;
         color: white;
@@ -169,12 +165,29 @@
         font-weight: 700;
         transition: 0.25s ease;
         display: inline-block;
+        margin-left: 6px;
     }
 
         .btn-danger:hover {
             background: #9e1f1f;
         }
 
+    .btn-blue {
+        background: #ffffff;
+        border: 1px solid #003c8f;
+        color: #003c8f;
+        padding: 7px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 700;
+        margin-right: 6px;
+        transition: 0.25s ease;
+    }
+
+        .btn-blue:hover {
+            background: #003c8f;
+            color: white;
+        }
 </style>
 
 <div class="wrapper">
@@ -187,7 +200,6 @@
         Select a test to view or manage its grades.
     </div>
 
-    <!-- TEST CARDS -->
     <div class="tests-grid">
         @if (tests.Any())
         {
@@ -212,7 +224,6 @@
         }
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="button-row">
         <a asp-controller="Teacher"
            asp-action="CourseDetails"
@@ -224,7 +235,6 @@
            class="btn-primary">➕ Add Grade</a>
     </div>
 
-    <!-- GRADES TABLE -->
     @if (selectedTestId > 0)
     {
         <h1 style="font-size:24px; font-weight:800; margin-bottom:18px; color:#003c8f;">
@@ -255,6 +265,14 @@
                                 <td>
                                     @if (!g.IsValidated)
                                     {
+                                        <a asp-action="Edit"
+                                           asp-route-id="@g.TestGradeID"
+                                           asp-route-courseId="@courseId"
+                                           asp-route-testId="@selectedTestId"
+                                           class="btn-blue">
+                                            ✏ Edit
+                                        </a>
+
                                         <a asp-action="Delete"
                                            asp-route-id="@g.TestGradeID"
                                            asp-route-courseId="@courseId"
@@ -265,7 +283,7 @@
                                     }
                                     else
                                     {
-                                        <span style="color:#999; font-weight:600;">Validated – cannot delete</span>
+                                        <span style="color:#999; font-weight:600;">Validated – cannot edit/delete</span>
                                     }
                                 </td>
 

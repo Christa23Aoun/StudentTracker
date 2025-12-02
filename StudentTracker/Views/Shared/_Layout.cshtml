@@ -1,4 +1,4 @@
-﻿@* <!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -24,10 +24,33 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav align-items-center">
 
-                        <!-- Always visible -->
+                        <!-- Always show HOME -->
                         <li class="nav-item mx-2">
                             <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
+                        <!-- Dashboard when authenticated -->
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link text-white" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Teacher"))
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link text-white" asp-controller="Teacher" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Student"))
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link text-white" asp-controller="StudentDashboard" asp-action="Index">Dashboard</a>
+                                </li>
+                            }
+                        }
 
                         <!-- Admin-only navigation -->
                         @if (User.IsInRole("Admin"))
@@ -49,13 +72,13 @@
                                     <button type="submit"
                                             class="btn"
                                             style="background: linear-gradient(135deg, #ff1744, #d50000);
-                                                       border: none;
-                                                       border-radius: 10px;
-                                                       color: white;
-                                                       padding: 8px 18px;
-                                                       font-weight: 600;
-                                                       cursor: pointer;
-                                                       transition: all 0.3s ease;">
+                                                   border: none;
+                                                   border-radius: 10px;
+                                                   color: white;
+                                                   padding: 8px 18px;
+                                                   font-weight: 600;
+                                                   cursor: pointer;
+                                                   transition: all 0.3s ease;">
                                         Logout
                                     </button>
                                 </form>
@@ -63,106 +86,26 @@
                         }
                         else
                         {
-                            <li class="nav-item mx-2">
-                                <a class="btn btn-primary fw-semibold" asp-controller="Auth" asp-action="Login">
-                                    Login
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+                            var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                            var action = ViewContext.RouteData.Values["action"]?.ToString();
 
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
+                            bool isLoginPage =
+                            controller == "Auth" &&
+                            (action == "Login" ||
+                            action == "LoginTeacher" ||
+                            action == "LoginStudent" ||
+                            action == "LoginAdmin");   // <-- ADMIN FIX
 
-    <footer class="footer text-center text-white py-3 mt-auto"
-            style="background: linear-gradient(135deg, #001a33, #003c8f);">
-        <div class="container">
-            © 2025 WTF University – All Rights Reserved.
-        </div>
-    </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
- *@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WTF University</title>
-
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #001a33, #003c8f);">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-white" asp-controller="Home" asp-action="Index">
-                    WTF University
-                </a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav align-items-center">
-                        <!-- Always visible -->
-                        <li class="nav-item mx-2">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-
-                        <!-- Admin-only navigation -->
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item mx-2">
-                                <a class="nav-link text-white" asp-controller="Departments" asp-action="Index">Departments</a>
-                            </li>
-                            <li class="nav-item mx-2">
-                                <a class="nav-link text-white" asp-controller="Courses" asp-action="Index">Courses</a>
-                            </li>
+                            if (!isLoginPage)
+                            {
+                                <li class="nav-item mx-2">
+                                    <a class="btn btn-primary fw-semibold" asp-controller="Auth" asp-action="Login">
+                                        Login
+                                    </a>
+                                </li>
+                            }
                         }
 
-                        <!-- Authenticated: Logout -->
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit"
-                                            class="btn"
-                                            style="background: linear-gradient(135deg, #ff1744, #d50000);
-                                                           border: none;
-                                                           border-radius: 10px;
-                                                           color: white;
-                                                           padding: 8px 18px;
-                                                           font-weight: 600;
-                                                           cursor: pointer;
-                                                           transition: all 0.3s ease;">
-                                        Logout
-                                    </button>
-                                </form>
-                            </li>
-                        }
-                   @*      else
-                        {
-                            <li class="nav-item mx-2">
-                                <a class="btn btn-primary fw-semibold" asp-controller="Auth" asp-action="Login">
-                                    Login
-                                </a>
-                            </li>
-                        } *@
                     </ul>
                 </div>
             </div>

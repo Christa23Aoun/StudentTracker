@@ -28,7 +28,6 @@ namespace StudentTrackerDAL.Repositories
                     att.CourseID,
                     att.AttendanceDate,
                     att.IsPresent
-                    // ❌ Removed IsValidated
                 },
                 commandType: CommandType.StoredProcedure);
         }
@@ -72,8 +71,6 @@ namespace StudentTrackerDAL.Repositories
             return await con.QueryAsync<Attendance>(sql, new { CourseID = courseId });
         }
 
-
-
         public async Task<int> UpdateAsync(Attendance att)
         {
             using var con = new SqlConnection(_connectionString);
@@ -83,7 +80,6 @@ namespace StudentTrackerDAL.Repositories
                 {
                     att.AttendanceID,
                     att.IsPresent
-                    // ❌ Removed IsValidated
                 },
                 commandType: CommandType.StoredProcedure);
         }
@@ -101,7 +97,7 @@ namespace StudentTrackerDAL.Repositories
         {
             using var con = new SqlConnection(_connectionString);
             var result = await con.ExecuteScalarAsync<decimal?>(
-                "SELECT AVG(CAST(IsPresent AS DECIMAL(5,2))) FROM Attendance WHERE CourseID = @CourseID",
+                "SELECT AVG(CAST(IsPresent AS DECIMAL(5,2))) * 100 FROM Attendance WHERE CourseID = @CourseID",
                 new { CourseID = courseId });
 
             return result ?? 0;
