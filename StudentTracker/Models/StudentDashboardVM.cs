@@ -6,6 +6,7 @@ namespace StudentTracker.Models.ViewModels
     public class StudentDashboardVM
     {
         public string StudentName { get; set; } = string.Empty;
+        public string StudentEmail { get; set; } = string.Empty;
         public string CurrentSemester { get; set; } = string.Empty;
         public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
@@ -30,8 +31,6 @@ namespace StudentTracker.Models.ViewModels
         public string TeacherName { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public double AttendanceRate { get; set; }
-
-        // ⭐ FIXED — now nullable so Razor can use HasValue / Value
         public double? CurrentAverage { get; set; }
     }
 

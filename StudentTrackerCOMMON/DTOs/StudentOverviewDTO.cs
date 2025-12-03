@@ -2,8 +2,9 @@
 {
     public class StudentOverviewDTO
     {
-        public string StudentName { get; set; } = "";
-        public string CurrentSemester { get; set; } = "";
+        public string StudentName { get; set; } = string.Empty;
+        public string StudentEmail { get; set; } = string.Empty;
+        public string CurrentSemester { get; set; } = string.Empty;
         public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
         public double AttendancePercent { get; set; }

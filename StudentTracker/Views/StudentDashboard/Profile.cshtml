@@ -1,0 +1,220 @@
+﻿@model StudentTracker.Models.ViewModels.StudentDashboardVM
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<style>
+    body {
+        background: #eef2f7;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+        margin: 0;
+        padding: 0;
+    }
+
+    .profile-wrapper {
+        max-width: 1200px;
+        margin: 70px auto;
+        padding: 0 20px 50px 20px;
+    }
+
+    /* HEADER */
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+        .profile-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            color: #0d1b2a;
+        }
+
+    .profile-subtitle {
+        margin-top: 4px;
+        color: #64748b;
+        font-size: 0.98rem;
+    }
+
+    .back-link {
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1e40af;
+        transition: 0.2s;
+    }
+
+        .back-link:hover {
+            color: #0a2a6e;
+            text-decoration: underline;
+        }
+
+    /* PROFILE CARD */
+    .profile-card {
+        background: #ffffff;
+        border-radius: 26px;
+        padding: 40px 40px 45px 40px;
+        display: grid;
+        grid-template-columns: 1.1fr 1.2fr;
+        gap: 50px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(148,163,184,0.25);
+    }
+
+    /* LEFT: INFORMATION */
+    .profile-info-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #0d4b84;
+    }
+
+    .profile-avatar {
+        width: 85px;
+        height: 85px;
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e3a8a;
+        margin-bottom: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+    }
+
+    .profile-line {
+        margin-bottom: 14px;
+        font-size: 1rem;
+    }
+
+        .profile-line .label {
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+    /* RIGHT: COURSES & DEPARTMENTS */
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0d4b84;
+        margin-bottom: 12px;
+        margin-top: 4px;
+    }
+
+    .course-list {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 5px;
+        margin-bottom: 18px;
+    }
+
+        .course-list li {
+            list-style: none;
+            margin-bottom: 8px;
+            font-size: 0.97rem;
+        }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 14px;
+        border-radius: 999px;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+</style>
+
+<div class="profile-wrapper">
+
+    <!-- HEADER -->
+    <div class="profile-header">
+        <div>
+            <h2>My Profile</h2>
+            <div class="profile-subtitle">@Model.StudentName • @Model.CurrentSemester</div>
+        </div>
+
+        <a asp-controller="StudentDashboard" asp-action="Index" class="back-link">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+            <div class="profile-avatar">
+                @Model.StudentName?[0]
+            </div>
+
+            <div class="profile-info-title">Student Information</div>
+
+            <div class="profile-line">
+                <span class="label">Name:</span> @Model.StudentName
+            </div>
+
+            <div class="profile-line">
+                <span class="label">Email:</span> @Model.StudentEmail
+            </div>
+
+            <div class="profile-line">
+                <span class="label">Current Semester:</span> @Model.CurrentSemester
+            </div>
+
+            <div class="profile-line">
+                <span class="label">GPA:</span> @Model.GPA.ToString("0.00")
+            </div>
+
+            <div class="profile-line">
+                <span class="label">Attendance:</span> @Model.AttendancePercent.ToString("0.0")%
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+            <div class="section-title">My Courses</div>
+            <ul class="course-list">
+                @foreach (var c in Model.MyCourses)
+                {
+                    <li>📘 @c.CourseName <span style="color:#64748b;">(@c.Department)</span></li>
+                }
+            </ul>
+
+            <div class="section-title">Departments</div>
+
+            @{
+                var depts = Model.MyCourses
+                .Select(c => c.Department)
+                .Where(d => !string.IsNullOrWhiteSpace(d))
+                .Distinct()
+                .ToList();
+            }
+
+            @if (depts.Any())
+            {
+                foreach (var d in depts)
+                {
+                    <span class="chip">@d</span>
+                }
+            }
+            else
+            {
+                <p style="color:#64748b;">No departments found.</p>
+            }
+        </div>
+    </div>
+</div>

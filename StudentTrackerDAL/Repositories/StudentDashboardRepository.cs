@@ -69,11 +69,15 @@ namespace StudentTrackerDAL.Repositories
                 list.Add(new NotificationDTO
                 {
                     NotificationId = n.NotificationID,
-                    Title = "", // your DB has no Title column
+                    Title = "",
                     Message = n.Message ?? "",
                     Type = n.Type ?? "info",
-                    CreatedAt = n.CreatedAt,
-                    IsRead = n.IsRead ?? false
+
+                    // FIX: safe cast CreatedAt
+                    CreatedAt = n.CreatedAt is DateTime dt ? dt : DateTime.MinValue,
+
+                    // FIX: safe bool conversion
+                    IsRead = n.IsRead is bool b ? b : false
                 });
             }
 

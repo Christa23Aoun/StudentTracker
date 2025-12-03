@@ -1,4 +1,6 @@
-﻿using StudentTrackerCOMMON.DTOs;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 
@@ -21,6 +23,7 @@ namespace StudentTrackerBLL.Services.Dashboard
             if (overview != null)
             {
                 dto.StudentName = overview.StudentName;
+                dto.StudentEmail = overview.StudentEmail;
                 dto.CurrentSemester = overview.CurrentSemester;
                 dto.ActiveCourseCount = overview.ActiveCourseCount;
                 dto.GPA = overview.GPA;
