@@ -30,7 +30,9 @@ namespace StudentTracker.Models.ViewModels
         public string TeacherName { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public double AttendanceRate { get; set; }
-        public double CurrentAverage { get; set; }
+
+        // ⭐ FIXED — now nullable so Razor can use HasValue / Value
+        public double? CurrentAverage { get; set; }
     }
 
     public class NotificationVM
@@ -39,19 +41,19 @@ namespace StudentTracker.Models.ViewModels
         public DateTime CreatedAt { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
-        public string Type { get; set; } = "info"; // info | warning | success | danger
+        public string Type { get; set; } = "info";
         public bool IsRead { get; set; }
     }
 
     public class GradePointVM
     {
-        public string Label { get; set; } = string.Empty; // e.g., "Test 1", "Midterm"
+        public string Label { get; set; } = string.Empty;
         public double Average { get; set; }
     }
 
     public class AttendancePointVM
     {
-        public string WeekLabel { get; set; } = string.Empty; // e.g., "Wk1"
+        public string WeekLabel { get; set; } = string.Empty;
         public double Percent { get; set; }
     }
 }

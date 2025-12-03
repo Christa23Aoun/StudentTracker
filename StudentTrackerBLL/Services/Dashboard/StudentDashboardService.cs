@@ -17,7 +17,6 @@ namespace StudentTrackerBLL.Services.Dashboard
         {
             var dto = new StudentDashboardDTO();
 
-            // 1. Overview
             var overview = await _repo.GetOverviewAsync(studentId);
             if (overview != null)
             {
@@ -26,21 +25,18 @@ namespace StudentTrackerBLL.Services.Dashboard
                 dto.ActiveCourseCount = overview.ActiveCourseCount;
                 dto.GPA = overview.GPA;
                 dto.AttendancePercent = overview.AttendancePercent;
+                dto.AverageGrade = overview.AverageGrade;
             }
 
-            // 2. Courses
             var courses = await _repo.GetCoursesAsync(studentId);
             dto.MyCourses = courses.ToList();
 
-            // 3. Notifications
             var notifs = await _repo.GetNotificationsAsync(studentId);
             dto.Notifications = notifs.ToList();
 
-            // 4. Grade Progress
             var grades = await _repo.GetGradeProgressAsync(studentId);
             dto.GradeProgress = grades.ToList();
 
-            // 5. Attendance Trend
             var attendance = await _repo.GetAttendanceTrendAsync(studentId);
             dto.AttendanceTrend = attendance.ToList();
 

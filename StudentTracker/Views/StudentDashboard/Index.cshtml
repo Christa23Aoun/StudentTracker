@@ -18,7 +18,6 @@
         padding: 0 20px 40px 20px;
     }
 
-    /* HEADER */
     .dashboard-header {
         display: flex;
         justify-content: space-between;
@@ -41,7 +40,6 @@
         font-size: 0.96rem;
     }
 
-    /* STATS GRID */
     .stats-card-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -71,7 +69,6 @@
             text-align: center;
         }
 
-    /* TABLE CARD */
     .table-card {
         background: #ffffff;
         border-radius: 20px;
@@ -150,7 +147,6 @@
             background: #093864;
         }
 
-    /* CHART BOX */
     .chart-card {
         background: #ffffff;
         border-radius: 20px;
@@ -167,15 +163,14 @@
 
     .chart-wrapper {
         width: 100%;
-        max-width: 600px; 
-        height: 260px; 
+        max-width: 600px;
+        height: 260px;
         margin: auto;
     }
 </style>
 
 <div class="dashboard-wrapper">
 
-    <!-- HEADER -->
     <div class="dashboard-header">
         <div class="dashboard-title-block">
             <h2>Student Dashboard</h2>
@@ -183,17 +178,11 @@
         </div>
     </div>
 
-    <!-- STAT CARDS -->
     <div class="stats-card-container">
         <div class="stats-card">
             <h3>@Model.ActiveCourseCount</h3>
             <span>Active Courses</span>
         </div>
-
-       @*  <div class="stats-card">
-            <h3>@Model.GPA.ToString("0.00")</h3>
-            <span>GPA</span>
-        </div> *@
 
         <div class="stats-card">
             <h3>@Model.AttendancePercent.ToString("0.0")%</h3>
@@ -206,7 +195,6 @@
         </div>
     </div>
 
-    <!-- COURSES TABLE -->
     <div class="table-card">
         <table>
             <thead>
@@ -234,7 +222,13 @@
                             <td>@c.TeacherName</td>
                             <td>@c.Department</td>
                             <td><span class="badge @badgeClass">@c.AttendanceRate%</span></td>
-                            <td>@c.CurrentAverage</td>
+
+                            <td>
+                                @(c.CurrentAverage.HasValue
+                                                        ? c.CurrentAverage.Value.ToString("0.##")
+                                                        : "N/A")
+                    </td>
+
                             <td>
                                 <a asp-controller="StudentDashboard"
                                    asp-action="CourseDetails"
@@ -242,10 +236,9 @@
                                    class="btn-action">
                                     📘 Details
                                 </a>
-
                             </td>
                         </tr>
-                    }
+                                }
                 }
                 else
                 {
@@ -255,15 +248,12 @@
         </table>
     </div>
 
-    <!-- ATTENDANCE TREND CHART -->
     <div class="chart-card">
         <h3>📊 Attendance Trend</h3>
-
         <div class="chart-wrapper">
             <canvas id="attendanceChart"></canvas>
         </div>
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

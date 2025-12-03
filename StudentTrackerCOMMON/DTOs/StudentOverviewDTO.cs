@@ -7,5 +7,6 @@
         public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
         public double AttendancePercent { get; set; }
+        public double AverageGrade { get; set; }
     }
 }

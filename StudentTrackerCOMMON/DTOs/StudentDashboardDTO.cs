@@ -10,6 +10,7 @@ namespace StudentTrackerCOMMON.DTOs
         public int ActiveCourseCount { get; set; }
         public double GPA { get; set; }
         public double AttendancePercent { get; set; }
+        public double AverageGrade { get; set; }
         public List<CourseItemDTO> MyCourses { get; set; } = new();
         public List<NotificationDTO> Notifications { get; set; } = new();
         public List<GradePointDTO> GradeProgress { get; set; } = new();
@@ -23,7 +24,7 @@ namespace StudentTrackerCOMMON.DTOs
         public string TeacherName { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public double AttendanceRate { get; set; }
-        public double CurrentAverage { get; set; }
+        public double? CurrentAverage { get; set; }
     }
 
     public class NotificationDTO

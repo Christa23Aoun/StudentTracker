@@ -38,29 +38,50 @@
             </nav>
 
             <div class="nav-actions">
+
                 <div class="lang-switch">
                     <button class="lang active">EN</button>
                     <span>|</span>
                     <button class="lang">FR</button>
                 </div>
 
-                @* ---------------- FIXED CONNECT/VIEW DASHBOARD SECTION ---------------- *@
+                @* ----- Determine if we are currently on a login page ----- *@
+                @{
+                    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+                    bool isLoginPage =
+                    controller == "Auth" &&
+                    (action == "LoginTeacher" ||
+                    action == "LoginStudent" ||
+                    action == "LoginAdmin");
+                }
+
+                @* ----- If user is authenticated → show View Dashboard + Logout ----- *@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("Admin"))
                     {
-                        <a class="btn primary" asp-controller="Admin" asp-action="Dashboard">View Dashboard</a>
+                        <a class="btn primary me-2" asp-controller="Admin" asp-action="Dashboard">View Dashboard</a>
                     }
                     else if (User.IsInRole("Teacher"))
                     {
-                        <a class="btn primary" asp-controller="Teacher" asp-action="Dashboard">View Dashboard</a>
+                        <a class="btn primary me-2" asp-controller="Teacher" asp-action="Dashboard">View Dashboard</a>
                     }
                     else if (User.IsInRole("Student"))
                     {
-                        <a class="btn primary" asp-controller="StudentDashboard" asp-action="Index">View Dashboard</a>
+                        <a class="btn primary me-2" asp-controller="StudentDashboard" asp-action="Index">View Dashboard</a>
                     }
+
+                    <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-light">
+                            Logout
+                        </button>
+                    </form>
                 }
-                else
+                @* ----- If NOT authenticated and NOT on login page → show Connect dropdown ----- *@
+                else if (!isLoginPage)
                 {
                     <div class="connect-dropdown">
                         <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
@@ -70,7 +91,6 @@
                         </div>
                     </div>
                 }
-                @* ---------------- END FIX ---------------- *@
 
                 <button class="menu-toggle" aria-label="Open menu">☰</button>
             </div>
@@ -271,7 +291,6 @@
             background: linear-gradient(135deg, #002b66, #003c8f) !important;
             color: #fff;
         }
-
     </style>
 
     @await RenderSectionAsync("Scripts", required: false)
