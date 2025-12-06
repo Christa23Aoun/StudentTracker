@@ -5,92 +5,137 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f5f7fb;
         font-family: 'Segoe UI', sans-serif;
-        color: #fff;
         margin: 0;
         padding: 0;
+        color: #0b2540;
     }
 
-    .form-container {
-        width: 60%;
-        max-width: 600px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.8);
-        border-radius: 22px;
-        padding: 40px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    .page-wrapper {
+        max-width: 700px;
+        margin: 70px auto;
+        padding: 0 30px 40px;
+    }
+
+    .glass-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 28px 26px 26px;
+        box-shadow: 0 14px 45px rgba(15, 23, 42, 0.14);
+        border: 1px solid rgba(148, 163, 184, 0.3);
     }
 
     h2 {
-        text-align: center;
-        font-weight: 700;
-        margin-bottom: 30px;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #003c8f;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 22px;
     }
 
     label {
         font-weight: 600;
-        display: block;
+        font-size: 0.9rem;
         margin-bottom: 6px;
+        display: block;
+        color: #0b2540;
     }
 
-    input.form-control, textarea.form-control {
+    .form-control {
         width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: none;
-        margin-bottom: 20px;
+        padding: 10px 13px;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        background: #f9fbff;
     }
 
-    textarea.form-control {
-        height: 100px;
-        resize: none;
+    .text-danger {
+        font-size: 0.8rem;
     }
 
-    .btn-submit {
-        background: linear-gradient(135deg, #008cff, #005fc4);
-        color: #fff;
+    .btn-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border-radius: 999px;
+        padding: 10px 22px;
         font-weight: 600;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 10px;
-        transition: all 0.3s ease;
+        font-size: 0.94rem;
+        cursor: pointer;
+        text-decoration: none;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: 0.2s ease;
     }
 
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #005fc4, #008cff);
-            transform: translateY(-2px);
+    .btn-primary {
+        background: linear-gradient(135deg, #0f6ae6, #124f9c);
+        color: #ffffff;
+        box-shadow: 0 12px 32px rgba(15, 118, 210, 0.45);
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #124f9c);
         }
 
-    .btn-back {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 10px;
-        text-decoration: none;
-        margin-top: 10px;
-        display: inline-block;
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #1e293b;
+        border-color: #cbd5e1;
     }
 
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+        .btn-secondary:hover {
+            background: #cbd5e1;
         }
 </style>
 
-<div class="form-container">
-    <h2>➕ Add New Department</h2>
+<div class="page-wrapper">
+    <div class="glass-card">
+        <h2>Create Department</h2>
+        <p class="subtitle">
+            Add a new academic department to the university structure.
+        </p>
 
-    <form asp-action="Create" method="post">
-        <label>Department Name</label>
-        <input asp-for="DepartmentName" class="form-control" placeholder="Enter department name" />
-        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
-       
-       
-        <button type="submit" class="btn-submit">Create</button>
-        <a asp-action="Index" class="btn-back">⬅ Back</a>
-    </form>
+            <div>
+                <label>Department Name</label>
+                <input asp-for="DepartmentName"
+                       class="form-control"
+                       placeholder="e.g. Computer Science, Business Administration" />
+                <span asp-validation-for="DepartmentName" class="text-danger"></span>
+            </div>
+
+            <div class="btn-row">
+                <a asp-action="Index" class="btn btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    Create Department
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

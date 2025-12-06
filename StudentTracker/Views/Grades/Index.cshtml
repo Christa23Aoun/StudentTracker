@@ -191,14 +191,14 @@
                                     <button type="submit" class="btn-sm btn-validate">Validate</button>
                                 </form>
 
-                                <form asp-action="Reject" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@g.TestGradeID" />
-                                    <input type="hidden" name="course" value="@courseFilter" />
-                                    <input type="hidden" name="student" value="@studentFilter" />
-                                    <input type="hidden" name="search" value="@searchTerm" />
-                                    <button type="submit" class="btn-sm btn-reject">Reject</button>
-                                </form>
+                              // <form asp-action="Reject" method="post" class="d-inline">
+                              //      @Html.AntiForgeryToken()
+                              //       <input type="hidden" name="id" value="@g.TestGradeID" />
+                              //        <input type="hidden" name="course" value="@courseFilter" />
+                              //       <input type="hidden" name="student" value="@studentFilter" />
+                              //       <input type="hidden" name="search" value="@searchTerm" />
+                              //       <button type="submit" class="btn-sm btn-reject">Reject</button>
+                              //   </form>
                             </td>
                         </tr>
                     }

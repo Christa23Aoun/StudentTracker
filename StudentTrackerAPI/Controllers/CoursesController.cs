@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -79,16 +81,10 @@ namespace StudentTrackerAPI.Controllers
                 double avgGrade = 0;
                 double attendanceRate = 0;
 
-                try
-                {
-                    avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(c.CourseID));
-                }
+                try { avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(c.CourseID)); }
                 catch { }
 
-                try
-                {
-                    attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(c.CourseID));
-                }
+                try { attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(c.CourseID)); }
                 catch { }
 
                 result.Add(new
@@ -124,16 +120,10 @@ namespace StudentTrackerAPI.Controllers
             double avgGrade = 0;
             double attendanceRate = 0;
 
-            try
-            {
-                avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(courseItem.CourseID));
-            }
+            try { avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(courseItem.CourseID)); }
             catch { }
 
-            try
-            {
-                attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(courseItem.CourseID));
-            }
+            try { attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(courseItem.CourseID)); }
             catch { }
 
             var dto = new

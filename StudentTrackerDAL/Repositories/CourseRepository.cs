@@ -1,5 +1,7 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
@@ -123,8 +125,7 @@ namespace StudentTrackerDAL.Repositories
                     u.FullName AS TeacherName,
                     c.IsActive
                 FROM Courses c
-    
-INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
+                INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
                 INNER JOIN Users u ON u.UserID = c.TeacherID
                 ORDER BY c.CourseName;";
             return await conn.QueryAsync(sql);
@@ -136,6 +137,15 @@ INNER JOIN Departments d ON d.DepartmentID = c.DepartmentID
             return await conn.QueryAsync(
                 "dbo.sp_TeacherDashboard_GetCourseStats",
                 new { TeacherId = teacherId },
+                commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<CourseSchedule>> GetSchedulesAsync(int courseId)
+        {
+            using var conn = _factory.Create();
+            return await conn.QueryAsync<CourseSchedule>(
+                "dbo.CourseSchedule_GetByCourse",
+                new { CourseID = courseId },
                 commandType: CommandType.StoredProcedure);
         }
     }

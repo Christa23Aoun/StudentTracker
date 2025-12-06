@@ -1,0 +1,85 @@
+﻿@model StudentTracker.Models.CourseSessionView
+
+@{
+    ViewData["Title"] = "Edit Session";
+    var courseId = Model.CourseID;
+}
+
+<style>
+    body {
+        background: #f3f5fb;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        max-width: 650px;
+        margin: 70px auto;
+        padding: 0 20px 40px 20px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 32px;
+        border: 1px solid rgba(148,163,184,0.35);
+        box-shadow: 0 16px 40px rgba(15,23,42,0.12);
+    }
+
+    h2 {
+        font-size: 1.9rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: #0b2540;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 26px;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        font-size: 0.95rem;
+        color: #0b2540;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+        background: #ffffff;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        border-radius: 999px;
+        padding: 10px 22px;
+        font-size: 0.94rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0f6ae6, #1d4ed8);
+        color: #ffffff;
+        box-shadow: 0 12p

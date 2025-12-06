@@ -1,0 +1,149 @@
+﻿@model StudentTracker.Models.CourseSessionView
+
+@{
+    ViewData["Title"] = "Delete Session";
+    var courseId = Model.CourseID;
+}
+
+<style>
+    body {
+        background: #f3f5fb;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0b2540;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-wrapper {
+        max-width: 650px;
+        margin: 70px auto;
+        padding: 0 20px 40px 20px;
+    }
+
+    .confirm-card {
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 36px;
+        border: 1px solid rgba(148,163,184,0.35);
+        box-shadow: 0 18px 45px rgba(15,23,42,0.14);
+    }
+
+    h2 {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #b91c1c;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 26px;
+    }
+
+    .details-box {
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 30px;
+    }
+
+    .details-line {
+        font-size: 0.97rem;
+        margin-bottom: 8px;
+    }
+
+    .details-label {
+        font-weight: 700;
+        color: #7f1d1d;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        border-radius: 999px;
+        padding: 10px 22px;
+        font-size: 0.94rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .btn-secondary {
+        background: #e0ecff;
+        color: #1d3b72;
+        border-color: #c4d4ff;
+    }
+
+        .btn-secondary:hover {
+            background: #d4e2ff;
+        }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 12px 28px rgba(185,28,28,0.35);
+    }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+</style>
+
+<div class="page-wrapper">
+
+    <div class="confirm-card">
+
+        <h2>Delete Session</h2>
+        <p class="subtitle">
+            Are you sure you want to delete this session? This action cannot be undone.
+        </p>
+
+        <div class="details-box">
+            <div class="details-line">
+                <span class="details-label">Date:</span>
+                @Model.SessionDate.ToString("yyyy-MM-dd")
+            </div>
+
+            <div class="details-line">
+                <span class="details-label">Start Time:</span>
+                @Model.StartTime.ToString(@"hh\:mm")
+            </div>
+
+            <div class="details-line">
+                <span class="details-label">End Time:</span>
+                @Model.EndTime.ToString(@"hh\:mm")
+            </div>
+        </div>
+
+        <form asp-action="DeleteSession" method="post">
+            <input type="hidden" asp-for="SessionID" />
+            <input type="hidden" asp-for="CourseID" />
+
+            <div class="actions">
+                <a asp-action="Sessions"
+                   asp-route-courseId="@courseId"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn btn-danger">
+                    Delete Session
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>

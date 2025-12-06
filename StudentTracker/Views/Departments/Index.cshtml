@@ -5,23 +5,17 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
+        background: #f5f7fb;
         font-family: 'Segoe UI', sans-serif;
-        color: #fff;
         margin: 0;
         padding: 0;
+        color: #0b2540;
     }
 
-    .departments-container {
-        width: 85%;
+    .page-wrapper {
         max-width: 1200px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 22px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        padding: 50px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        margin: 60px auto;
+        padding: 0 30px;
     }
 
     .header-row {
@@ -30,159 +24,162 @@
         align-items: center;
         margin-bottom: 30px;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 15px;
     }
 
     h1 {
-        font-weight: 700;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #003c8f;
         margin: 0;
     }
 
-    .btn-dashboard {
-        display: inline-block;
-        padding: 10px 22px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #008cff, #005fc4);
+    .btn-main {
+        padding: 11px 26px;
+        background: linear-gradient(135deg, #0f6ae6, #124f9c);
         color: #fff;
-        font-weight: 600;
+        border-radius: 12px;
         text-decoration: none;
-        transition: all 0.3s ease;
+        font-weight: 600;
+        transition: .2s;
     }
 
-        .btn-dashboard:hover {
-            background: linear-gradient(135deg, #005fc4, #008cff);
+        .btn-main:hover {
+            background: linear-gradient(135deg, #2563eb, #124f9c);
             transform: translateY(-2px);
         }
+
+    .glass-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+    }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
-        text-align: center;
-    }
-
-    th, td {
-        padding: 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        margin-top: 10px;
     }
 
     thead {
-        background: rgba(0, 90, 170, 0.5);
+        background: #124f9c;
+        color: #ffffff;
     }
 
-    tr:hover {
-        background: rgba(255, 255, 255, 0.05);
+    th, td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: .95rem;
     }
 
-    .badge {
-        display: inline-block;
-        padding: 6px 12px;
+    tbody tr:hover {
+        background: #eef4ff;
+    }
+
+    .badge-active {
+        background: #e9fdf1;
+        color: #15803d;
+        padding: 5px 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: .85rem;
+    }
+
+    .badge-inactive {
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 5px 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: .85rem;
+    }
+
+    .actions a {
+        margin: 0 5px;
+        padding: 7px 14px;
         border-radius: 8px;
         font-weight: 600;
-    }
-
-    .bg-success {
-        background: rgba(0, 255, 170, 0.15);
-        color: #00e676;
-    }
-
-    .bg-danger {
-        background: rgba(255, 100, 100, 0.15);
-        color: #ff7b7b;
-    }
-
-    .info-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
+        text-decoration: none;
+        font-size: .85rem;
     }
 
     .btn-info {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #007bff, #005fc4);
-        color: #fff;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        background: #e0ecff;
+        color: #003c8f;
     }
 
         .btn-info:hover {
-            background: linear-gradient(135deg, #005fc4, #007bff);
-            transform: translateY(-2px);
+            background: #c7dbff;
         }
 
     .btn-delete {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #ff4d4d, #c62828);
-        color: #fff;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
         .btn-delete:hover {
-            background: linear-gradient(135deg, #c62828, #ff4d4d);
-            transform: translateY(-2px);
+            background: #fcbcbc;
         }
 </style>
 
-<div class="departments-container">
+<div class="page-wrapper">
     <div class="header-row">
-        <h1>🏛 Departments Overview</h1>
+        <h1>Departments</h1>
+
         <div>
-            <a asp-controller="Admin" asp-action="Dashboard" class="btn-dashboard">⬅️ Back to Dashboard</a>
-            <a asp-action="Create" class="btn-dashboard">➕ Add Department</a>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn-main">⬅ Back to Dashboard</a>
+            <a asp-action="Create" class="btn-main">+ Add Department</a>
         </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Department Name</th>
-                <th>Status</th>
-                <th>Course Count</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var d in Model)
+    <div class="glass-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Department Name</th>
+                    <th>Status</th>
+                    <th>Course Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var d in Model)
+                    {
+                        <tr>
+                            <td>@d.DepartmentID</td>
+                            <td>@d.DepartmentName</td>
+                            <td>
+                                @if (d.IsActive)
+                                {
+                                    <span class="badge-active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-inactive">Inactive</span>
+                                }
+                            </td>
+                            <td>@d.CourseCount</td>
+                            <td class="actions">
+                                <a asp-action="Details" asp-route-id="@d.DepartmentID" class="btn-info">Details</a>
+                                <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="btn-delete">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@d.DepartmentID</td>
-                        <td>@d.DepartmentName</td>
-                        <td>
-                            @if (d.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">Inactive</span>
-                            }
-                        </td>
-                        <td>@d.CourseCount</td>
-                        <td>
-                            <div class="info-buttons">
-                                <a asp-action="Details" asp-route-id="@d.DepartmentID" class="btn-info">ℹ️ Info</a>
-                                <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="btn-delete">🗑️ Delete</a>
-                            </div>
-                        </td>
+                        <td colspan="6" style="padding: 30px; color: #64748b;">No departments found.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-muted py-4">No departments found.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

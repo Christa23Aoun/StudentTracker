@@ -42,6 +42,7 @@ builder.Services.AddScoped<ITestGradeRepository>(sp =>
 builder.Services.AddScoped<IAttendanceRepository>(sp =>
     new AttendanceRepository(connectionString));
 builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
+builder.Services.AddScoped<ICourseSessionRepository, CourseSessionRepository>();
 
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
