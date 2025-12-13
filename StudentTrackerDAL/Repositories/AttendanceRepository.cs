@@ -49,28 +49,7 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
-        {
-            using var con = new SqlConnection(_connectionString);
-
-            var sql = @"
-        SELECT 
-            a.AttendanceID,
-            a.StudentID,
-            a.CourseID,
-            a.AttendanceDate,
-            a.IsPresent,
-            u.FullName AS StudentName,
-            c.CourseName
-        FROM Attendance a
-        JOIN Users u ON a.StudentID = u.UserID
-        JOIN Courses c ON a.CourseID = c.CourseID
-        WHERE a.CourseID = @CourseID
-        ORDER BY a.AttendanceDate DESC";
-
-            return await con.QueryAsync<Attendance>(sql, new { CourseID = courseId });
-        }
-
+        
         public async Task<int> UpdateAsync(Attendance att)
         {
             using var con = new SqlConnection(_connectionString);
@@ -102,5 +81,27 @@ namespace StudentTrackerDAL.Repositories
 
             return result ?? 0;
         }
+        public async Task<IEnumerable<Attendance>> GetByCourseIdAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+        SELECT 
+            a.AttendanceID,
+            a.StudentID,
+            u.FullName AS StudentName,
+            a.CourseID,
+            c.CourseName,
+            a.AttendanceDate,
+            a.IsPresent
+        FROM Attendance a
+        JOIN Users u ON a.StudentID = u.UserID
+        JOIN Courses c ON a.CourseID = c.CourseID
+        WHERE a.CourseID = @CourseID
+        ORDER BY a.AttendanceDate DESC";
+
+            return await con.QueryAsync<Attendance>(sql, new { CourseID = courseId });
+        }
+
     }
 }

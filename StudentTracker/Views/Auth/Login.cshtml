@@ -138,11 +138,11 @@
         <label>Email</label>
         <input asp-for="Email"
                type="email"
-               name="email"
                class="form-control"
                placeholder="Enter your email"
-               autocomplete="email"
+               autocomplete="username"
                required />
+
         <span asp-validation-for="Email" class="text-danger"></span>
 
         <!-- Password -->
@@ -151,19 +151,19 @@
             <input asp-for="Password"
                    id="passwordInput"
                    type="password"
-                   name="password"
                    class="form-control"
                    placeholder="Enter your password"
                    autocomplete="current-password"
                    required />
+
             <span class="toggle-eye" onclick="togglePassword()">👁</span>
         </div>
         <span asp-validation-for="Password" class="text-danger"></span>
 
         <!-- Remember Me -->
         <div class="remember-me">
-            <input type="checkbox" id="rememberMe" name="RememberMe" />
-            <label for="rememberMe" style="margin:0;">Remember Me</label>
+            <input asp-for="RememberMe" class="form-check-input" />
+            <label asp-for="RememberMe" style="margin:0;">Remember Me</label>
         </div>
 
         <button type="submit" class="btn-primary">Login</button>

@@ -28,7 +28,7 @@
                 <div class="brand-sub">We’re The Future (Inshallah)</div>
             </div>
 
-            <nav class="main-nav" aria-label="Primary">
+            <nav class="main-nav">
                 <a asp-controller="Home" asp-action="Index">Home</a>
                 <a asp-controller="Site" asp-action="About">About</a>
                 <a asp-controller="Site" asp-action="Faculties">Faculties</a>
@@ -46,17 +46,10 @@
                 </div>
 
                 @{
-                    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-                    var action = ViewContext.RouteData.Values["action"]?.ToString();
-
-                    bool isLoginPage =
-                    controller == "Auth" &&
-                    (action == "LoginTeacher" ||
-                    action == "LoginStudent" ||
-                    action == "LoginAdmin");
+                    var userId = Context.Session.GetInt32("UserID");
                 }
 
-                @if (User.Identity?.IsAuthenticated == true)
+                @if (userId != null)
                 {
                     if (User.IsInRole("Admin"))
                     {
@@ -71,7 +64,6 @@
                         <a class="btn primary me-2" asp-controller="StudentDashboard" asp-action="Index">View Dashboard</a>
                     }
 
-                    <!-- 🔔 NOTIFICATION BELL -->
                     <a asp-controller="Notifications"
                        asp-action="Index"
                        class="me-3"
@@ -86,10 +78,10 @@
                         </button>
                     </form>
                 }
-                else if (!isLoginPage)
+                else
                 {
                     <div class="connect-dropdown">
-                        <button class="btn primary" id="connectBtn" type="button" aria-expanded="false">Connect</button>
+                        <button class="btn primary" id="connectBtn" type="button">Connect</button>
                         <div class="connect-menu" id="connectMenu">
                             <a href="/Auth/LoginTeacher">👨‍🏫 Teacher</a>
                             <a href="/Auth/LoginStudent">🎓 Student</a>
@@ -97,7 +89,7 @@
                     </div>
                 }
 
-                <button class="menu-toggle" aria-label="Open menu">☰</button>
+                <button class="menu-toggle">☰</button>
             </div>
         </div>
     </header>

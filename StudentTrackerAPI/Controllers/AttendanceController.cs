@@ -10,10 +10,9 @@ namespace StudentTrackerAPI.Controllers
     {
         private readonly AttendanceService _service;
 
-        public AttendanceController(IConfiguration config)
+        public AttendanceController(AttendanceService service)
         {
-            string conn = config.GetConnectionString("DefaultConnection");
-            _service = new AttendanceService(conn);
+            _service = service;
         }
 
         [HttpGet]
