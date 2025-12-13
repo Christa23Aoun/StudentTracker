@@ -1,49 +1,49 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerBLL.Services;
-using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Models;
 
 namespace StudentTrackerAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class TestsController : ControllerBase
     {
         private readonly TestService _service;
 
-        public TestsController(IConfiguration config)
+        public TestsController(TestService service)
         {
-            string conn = config.GetConnectionString("DefaultConnection");
-            _service = new TestService(conn);
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() =>
-            Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+            => Ok(await _service.GetAllAsync());
 
         [HttpGet("byCourse/{courseId}")]
-        public async Task<IActionResult> GetByCourse(int courseId) =>
-            Ok(await _service.GetByCourseIdAsync(courseId));
+        public async Task<IActionResult> GetByCourse(int courseId)
+            => Ok(await _service.GetByCourseIdAsync(courseId));
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id) =>
-            Ok(await _service.GetByIdAsync(id));
+        public async Task<IActionResult> GetById(int id)
+        {
+            var test = await _service.GetByIdAsync(id);
+            if (test == null)
+                return NotFound();
+
+            return Ok(test);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(Test t)
         {
             try
             {
-                await _service.CreateAsync(t);
-                return Ok(new { message = "Test created successfully" });
+                var id = await _service.CreateAsync(t);
+                return Ok(new { message = "Test created successfully", testId = id });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Server error");
             }
         }
 
@@ -58,10 +58,6 @@ namespace StudentTrackerAPI.Controllers
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500, "Server error");
             }
         }
 

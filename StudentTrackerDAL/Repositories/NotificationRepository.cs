@@ -66,6 +66,13 @@ namespace StudentTrackerDAL.Repositories
             return notifications;
         }
 
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM Notifications WHERE UserID = @UserID AND IsRead = 0",
+                new { UserID = userId });
+        }
 
         public async Task<bool> MarkAsReadAsync(int notificationId)
         {
@@ -75,5 +82,15 @@ namespace StudentTrackerDAL.Repositories
                 new { Id = notificationId });
             return rows > 0;
         }
+        public async Task<int> MarkAllAsReadAsync(int userId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            return await con.ExecuteAsync(
+                "UPDATE dbo.Notifications SET IsRead = 1 WHERE UserID = @UserID AND IsRead = 0",
+                new { UserID = userId }
+            );
+        }
+
     }
 }

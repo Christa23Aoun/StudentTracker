@@ -1,9 +1,6 @@
-﻿using System;
+﻿using StudentTrackerCOMMON.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using StudentTrackerCOMMON.Models;
 
 namespace StudentTrackerCOMMON.Interfaces.Repositories
 {
@@ -12,5 +9,7 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<int> CreateAsync(Notification notification);
         Task<IEnumerable<Notification>> GetForUserAsync(int userId);
         Task<bool> MarkAsReadAsync(int notificationId);
+        Task<int> GetUnreadCountAsync(int userId);
+        Task<int> MarkAllAsReadAsync(int userId);
     }
 }

@@ -10,15 +10,14 @@ namespace StudentTrackerAPI.Controllers
     {
         private readonly TestGradeService _service;
 
-        public TestGradesController(IConfiguration config)
+        public TestGradesController(TestGradeService service)
         {
-            string conn = config.GetConnectionString("DefaultConnection");
-            _service = new TestGradeService(conn);
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() =>
-            Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+            => Ok(await _service.GetAllAsync());
 
         [HttpGet("ByTest")]
         public async Task<IActionResult> GetByTest(int courseId, int testId)
@@ -44,9 +43,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(result);
         }
 
-        // ======================================================
-        // NEW ENDPOINT: Get AVERAGE for one TEST
-        // ======================================================
         [HttpGet("AverageByTest/{testId}")]
         public async Task<IActionResult> GetAverageByTest(int testId)
         {
@@ -54,9 +50,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(avg);
         }
 
-        // ======================================================
-        // NEW ENDPOINT: Get AVERAGE for course
-        // ======================================================
         [HttpGet("AverageByCourse/{courseId}")]
         public async Task<IActionResult> GetAverageByCourse(int courseId)
         {

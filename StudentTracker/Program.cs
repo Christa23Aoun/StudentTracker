@@ -4,9 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// ==============================================
-// AUTHENTICATION — FIXED DEFAULT SCHEME
-// ==============================================
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -42,9 +40,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// ==============================================
-// SESSION
-// ==============================================
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -55,15 +51,12 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddAuthorization();
 
-// ==============================================
-// API CLIENT
-// ==============================================
+
 builder.Services.AddHttpClient("API", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7199/api/");
 });
 
-// BIND API SETTINGS
 builder.Services.Configure<ApiSettings>(
     builder.Configuration.GetSection("ApiSettings"));
 
@@ -80,7 +73,34 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// **ORDER IS IMPORTANT**
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLower();
+
+    var allowed = new[]
+    {
+        "/",                 
+        "/home",             
+        "/home/index",       
+        "/auth/loginadmin",
+        "/admin/dashboard"
+    };
+
+    bool isDirectRequest =
+        context.Request.Method == "GET" &&
+        !context.Request.Headers.ContainsKey("Referer");
+
+    if (isDirectRequest && !allowed.Contains(path))
+    {
+        context.Response.Redirect("/Auth/LoginAdmin");
+        return;
+    }
+
+    await next();
+});
+
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 
@@ -35,14 +36,21 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
-builder.Services.AddScoped<ICourseScheduleRepository>(provider =>
-    new CourseScheduleRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<ITestGradeRepository>(sp =>
-    new TestGradeRepository(connectionString));
-builder.Services.AddScoped<IAttendanceRepository>(sp =>
-    new AttendanceRepository(connectionString));
 builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
 builder.Services.AddScoped<ICourseSessionRepository, CourseSessionRepository>();
+builder.Services.AddScoped<IStudentCourseDetailsRepository, StudentCourseDetailsRepository>();
+
+builder.Services.AddScoped<ICourseScheduleRepository>(sp =>
+    new CourseScheduleRepository(connectionString));
+
+builder.Services.AddScoped<ITestGradeRepository>(sp =>
+    new TestGradeRepository(connectionString));
+
+builder.Services.AddScoped<ITestRepository>(sp =>
+    new TestRepository(connectionString));
+
+builder.Services.AddScoped<IAttendanceRepository>(sp =>
+    new AttendanceRepository(connectionString));
 
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
@@ -52,8 +60,11 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
 builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
-builder.Services.AddScoped<IStudentCourseDetailsRepository, StudentCourseDetailsRepository>();
 builder.Services.AddScoped<IStudentCourseDetailsService, StudentCourseDetailsService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<TestService>();
+builder.Services.AddScoped<TestGradeService>();
 
 var app = builder.Build();
 

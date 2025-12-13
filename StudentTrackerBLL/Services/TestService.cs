@@ -1,57 +1,92 @@
 ﻿using StudentTrackerCOMMON.Models;
 using StudentTrackerCOMMON.DTOs;
-using StudentTrackerDAL.Repositories;
+using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Interfaces.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-public class TestService
+namespace StudentTrackerBLL.Services
 {
-    private readonly TestRepository _repository;
-
-    public TestService(string connectionString)
+    public class TestService
     {
-        _repository = new TestRepository(connectionString);
-    }
+        private readonly ITestRepository _repository;
+        private readonly INotificationService _notificationService;
 
-    public Task<IEnumerable<TestDto>> GetAllAsync() => _repository.GetAllAsync();
-    public Task<TestDto?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
-    public Task<IEnumerable<TestDto>> GetByCourseIdAsync(int courseId) => _repository.GetByCourseIdAsync(courseId);
+        public TestService(
+            ITestRepository repository,
+            INotificationService notificationService
+        )
+        {
+            _repository = repository;
+            _notificationService = notificationService;
+        }
 
-    public async Task<int> CreateAsync(Test t)
-    {
-        if (string.IsNullOrWhiteSpace(t.TestName))
-            throw new ArgumentException("Test name required.");
+        public Task<IEnumerable<TestDto>> GetAllAsync()
+            => _repository.GetAllAsync();
 
-        if (t.Weight <= 0)
-            throw new ArgumentException("Weight must be positive.");
+        public Task<TestDto?> GetByIdAsync(int id)
+            => _repository.GetByIdAsync(id);
 
-        decimal total = await GetTotalWeightForCourseAsync(t.CourseID);
+        public Task<IEnumerable<TestDto>> GetByCourseIdAsync(int courseId)
+            => _repository.GetByCourseIdAsync(courseId);
 
-        if (total + t.Weight > 100)
-            throw new ArgumentException("Total test weights cannot exceed 100%.");
+        public async Task<int> CreateAsync(Test t)
+        {
+            if (string.IsNullOrWhiteSpace(t.TestName))
+                throw new ArgumentException("Test name required.");
 
-        return await _repository.CreateAsync(t);
-    }
+            if (t.Weight <= 0)
+                throw new ArgumentException("Weight must be positive.");
 
-    public async Task<int> UpdateAsync(Test t)
-    {
-        if (t.Weight <= 0)
-            throw new ArgumentException("Weight must be positive.");
+            decimal total = await GetTotalWeightForCourseAsync(t.CourseID);
 
-        decimal totalExisting = await GetTotalWeightForCourseAsync(t.CourseID);
-        var oldTest = await _repository.GetByIdAsync(t.TestID);
+            if (total + t.Weight > 100)
+                throw new ArgumentException("Total test weights cannot exceed 100%.");
 
-        decimal totalWithoutOld = totalExisting - oldTest.Weight;
+            var id = await _repository.CreateAsync(t);
 
-        if (totalWithoutOld + t.Weight > 100)
-            throw new ArgumentException("Total test weights cannot exceed 100%.");
+            var teacherId = await _repository.GetTeacherIdByCourseAsync(t.CourseID);
 
-        return await _repository.UpdateAsync(t);
-    }
+            if (teacherId > 0)
+            {
+                await _notificationService.CreateAsync(new Notification
+                {
+                    UserID = teacherId,
+                    Message = $"A new test '{t.TestName}' has been added.",
+                    Type = "TEST"
+                });
+            }
 
-    public Task<int> DeleteAsync(int id) => _repository.DeleteAsync(id);
+            return id;
+        }
 
-    private async Task<decimal> GetTotalWeightForCourseAsync(int courseId)
-    {
-        var list = await _repository.GetByCourseIdAsync(courseId);
-        return list.Sum(t => (decimal)t.Weight);
+        public async Task<int> UpdateAsync(Test t)
+        {
+            if (t.Weight <= 0)
+                throw new ArgumentException("Weight must be positive.");
+
+            var oldTest = await _repository.GetByIdAsync(t.TestID);
+            if (oldTest == null)
+                throw new ArgumentException("Test not found.");
+
+            decimal totalExisting = await GetTotalWeightForCourseAsync(t.CourseID);
+            decimal totalWithoutOld = totalExisting - oldTest.Weight;
+
+            if (totalWithoutOld + t.Weight > 100)
+                throw new ArgumentException("Total test weights cannot exceed 100%.");
+
+            return await _repository.UpdateAsync(t);
+        }
+
+        public Task<int> DeleteAsync(int id)
+            => _repository.DeleteAsync(id);
+
+        private async Task<decimal> GetTotalWeightForCourseAsync(int courseId)
+        {
+            var list = await _repository.GetByCourseIdAsync(courseId);
+            return list.Sum(t => (decimal)t.Weight);
+        }
     }
 }

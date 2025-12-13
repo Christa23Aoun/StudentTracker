@@ -6,95 +6,131 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
         margin: 0;
         padding: 0;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
     }
 
-    .notifications-wrapper {
-        max-width: 800px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 20px;
-        padding: 40px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+    .notifications-container {
+        width: 92%;
+        max-width: 1300px;
+        margin: 70px auto;
     }
 
-    h2 {
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 35px;
-        color: #ffffff;
+    /* HEADER */
+    .notifications-header {
+        text-align: left;
+        margin-bottom: 40px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
     }
 
-    ul.list-group {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+        .notifications-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
+        }
+
+        .notifications-header p {
+            font-size: 16px;
+            color: #5b6e80;
+            margin-top: 6px;
+        }
+
+    /* LIST */
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
 
-    .list-group-item {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        padding: 15px 20px;
-        margin-bottom: 12px;
+    /* CARD */
+    .notification-card {
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        padding: 22px 26px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: #fff;
-        transition: all 0.2s ease;
+        transition: 0.25s ease;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.06);
+        position: relative;
     }
 
-        .list-group-item:hover {
-            background: rgba(255, 255, 255, 0.18);
+        .notification-card:hover {
+            border-color: #003c8f;
             transform: translateY(-2px);
+            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.10);
         }
 
-        .list-group-item.unread {
-            font-weight: 600;
-            border-left: 4px solid #00bcd4;
+        /* UNREAD INDICATOR (PRO STYLE) */
+        .notification-card.unread::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 4px;
+            background: #003c8f;
+            border-radius: 6px 0 0 6px;
         }
 
-        .list-group-item.read {
-            opacity: 0.7;
-            font-weight: 400;
-        }
+    .notification-message {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #1a2b4c;
+        max-width: 75%;
+    }
 
-    .timestamp {
-        font-size: 0.9rem;
-        color: #b0c4de;
+    .notification-date {
+        font-size: 14px;
+        color: #5b6e80;
+        white-space: nowrap;
     }
 
     .empty {
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
+        padding: 30px;
         text-align: center;
-        color: #cfd8dc;
-        margin-top: 30px;
+        color: #5b6e80;
         font-style: italic;
     }
 </style>
 
-<div class="notifications-wrapper">
-    <h2>🔔 Notifications</h2>
+<div class="notifications-container">
+
+    <div class="notifications-header">
+        <h1>Notifications</h1>
+        <p>Latest academic updates and system alerts.</p>
+    </div>
 
     @if (Model != null && Model.Any())
     {
-        <ul class="list-group">
+        <div class="notifications-list">
             @foreach (var n in Model)
             {
-                <li class="list-group-item @(n.IsRead ? "read" : "unread")">
-                    <span>@n.Message</span>
-                    <span class="timestamp">@n.CreatedAt.ToLocalTime().ToString("g")</span>
-                </li>
+                <div class="notification-card @(n.IsRead ? "" : "unread")">
+                    <div class="notification-message">
+                        @n.Message
+                    </div>
+                    <div class="notification-date">
+                        @n.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+                    </div>
+                </div>
             }
-        </ul>
+        </div>
     }
     else
     {
-        <div class="empty">No notifications available.</div>
+        <div class="empty">
+            No notifications available.
+        </div>
     }
+
 </div>

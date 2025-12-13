@@ -2,11 +2,14 @@
 using Microsoft.Data.SqlClient;
 using StudentTrackerCOMMON.Models;
 using StudentTrackerCOMMON.DTOs;
+using StudentTrackerCOMMON.Interfaces.Repositories;
 using System.Data;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StudentTrackerDAL.Repositories
 {
-    public class TestRepository
+    public class TestRepository : ITestRepository
     {
         private readonly string _connectionString;
 
@@ -26,7 +29,11 @@ namespace StudentTrackerDAL.Repositories
                 test.Weight,
                 test.MaxScore
             };
-            return await con.ExecuteAsync("sp_CreateTest", parameters, commandType: CommandType.StoredProcedure);
+            return await con.ExecuteScalarAsync<int>(
+                "sp_CreateTest",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<IEnumerable<TestDto>> GetAllAsync()
@@ -38,28 +45,41 @@ namespace StudentTrackerDAL.Repositories
         public async Task<TestDto?> GetByIdAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.QueryFirstOrDefaultAsync<TestDto>("sp_GetTestByID", new { TestID = id }, commandType: CommandType.StoredProcedure);
+            return await con.QueryFirstOrDefaultAsync<TestDto>(
+                "sp_GetTestByID",
+                new { TestID = id },
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<IEnumerable<TestDto>> GetByCourseIdAsync(int courseId)
         {
             using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync<TestDto>(
+                "sp_GetTestsByCourse",
+                new { CourseID = courseId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
 
-            string sql = @"
-                SELECT 
-                    t.TestID,
-                    t.CourseID,
-                    c.CourseName,
-                    t.TestName,
-                    t.TestDate,
-                    t.Weight,
-                    t.MaxScore
-                FROM Tests t
-                INNER JOIN Courses c ON t.CourseID = c.CourseID
-                WHERE t.CourseID = @CourseID
-                ORDER BY t.TestDate DESC";
+        public async Task<Test?> GetModelByIdAsync(int id)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryFirstOrDefaultAsync<Test>(
+                "sp_GetTestByID",
+                new { TestID = id },
+                commandType: CommandType.StoredProcedure
+            );
+        }
 
-            return await con.QueryAsync<TestDto>(sql, new { CourseID = courseId });
+        public async Task<IEnumerable<Test>> GetModelsByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            return await con.QueryAsync<Test>(
+                "sp_GetTestsByCourse",
+                new { CourseID = courseId },
+                commandType: CommandType.StoredProcedure
+            );
         }
 
         public async Task<int> UpdateAsync(Test test)
@@ -79,7 +99,20 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> DeleteAsync(int id)
         {
             using var con = new SqlConnection(_connectionString);
-            return await con.ExecuteAsync("sp_DeleteTest", new { TestID = id }, commandType: CommandType.StoredProcedure);
+            return await con.ExecuteAsync(
+                "sp_DeleteTest",
+                new { TestID = id },
+                commandType: CommandType.StoredProcedure
+            );
         }
+        public async Task<int> GetTeacherIdByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            return await con.ExecuteScalarAsync<int>(
+                "SELECT TeacherID FROM Courses WHERE CourseID = @CourseID",
+                new { CourseID = courseId });
+        }
+
     }
 }

@@ -45,7 +45,6 @@
                     <button class="lang">FR</button>
                 </div>
 
-                @* ----- Determine if we are currently on a login page ----- *@
                 @{
                     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
                     var action = ViewContext.RouteData.Values["action"]?.ToString();
@@ -57,7 +56,6 @@
                     action == "LoginAdmin");
                 }
 
-                @* ----- If user is authenticated → show View Dashboard + Logout ----- *@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     if (User.IsInRole("Admin"))
@@ -73,6 +71,14 @@
                         <a class="btn primary me-2" asp-controller="StudentDashboard" asp-action="Index">View Dashboard</a>
                     }
 
+                    <!-- 🔔 NOTIFICATION BELL -->
+                    <a asp-controller="Notifications"
+                       asp-action="Index"
+                       class="me-3"
+                       style="color:white; font-size:1.3rem;">
+                        <i class="fa-solid fa-bell"></i>
+                    </a>
+
                     <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-light">
@@ -80,7 +86,6 @@
                         </button>
                     </form>
                 }
-                @* ----- If NOT authenticated and NOT on login page → show Connect dropdown ----- *@
                 else if (!isLoginPage)
                 {
                     <div class="connect-dropdown">
@@ -129,7 +134,7 @@
                     <li><i class="fa-solid fa-envelope"></i> info@wtf.edu.lb</li>
                     <li><i class="fa-solid fa-location-dot"></i> Beirut, Lebanon</li>
                 </ul>
-                </br></br>
+                <br /><br />
                 <div class="footer-social">
                     <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -145,6 +150,7 @@
             © 2025 WTF University – All Rights Reserved.
         </div>
     </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,4 +1,6 @@
-﻿using StudentTrackerCOMMON.Models;
+﻿using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,11 +9,21 @@ namespace StudentTrackerBLL.Services
 {
     public class TestGradeService
     {
-        private readonly TestGradeRepository _repository;
+        private readonly ITestGradeRepository _repository;
+        private readonly ITestRepository _testRepository;
+        private readonly ICourseRepository _courseRepository;
+        private readonly INotificationService _notificationService;
 
-        public TestGradeService(string connectionString)
+        public TestGradeService(
+            ITestGradeRepository repository,
+            ITestRepository testRepository,
+            ICourseRepository courseRepository,
+            INotificationService notificationService)
         {
-            _repository = new TestGradeRepository(connectionString);
+            _repository = repository;
+            _testRepository = testRepository;
+            _courseRepository = courseRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<TestGrade>> GetGradesByTestAsync(int testId, int courseId)
@@ -35,6 +47,16 @@ namespace StudentTrackerBLL.Services
                 return false;
 
             await _repository.CreateAsync(grade);
+
+            var test = await _testRepository.GetModelByIdAsync(grade.TestID);
+            var course = await _courseRepository.GetByIdAsync(test.CourseID);
+
+            await _notificationService.NotifyStudentAsync(
+                grade.StudentID,
+                $"A new grade has been added for the test '{test.TestName}' in the course '{course.CourseName}'.",
+                "GRADE"
+            );
+
             return true;
         }
 
@@ -44,7 +66,6 @@ namespace StudentTrackerBLL.Services
             if (existing == null)
                 return -1;
 
-            // Do not allow editing validated grades
             if (existing.IsValidated)
                 return -2;
 
@@ -54,9 +75,6 @@ namespace StudentTrackerBLL.Services
         public async Task<int> DeleteAsync(int id)
             => await _repository.DeleteAsync(id);
 
-        // =====================================================
-        // NEW SERVICE METHODS
-        // =====================================================
         public async Task<decimal> GetAverageByCourseAsync(int courseId)
             => await _repository.GetAverageGradeByCourseAsync(courseId);
 
