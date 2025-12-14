@@ -8,6 +8,6 @@ namespace StudentTrackerCOMMON.Models
         public DateTime SessionDate { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-        public string RepeatType { get; set; } = "OneTime";
+        public string RepeatType { get; set; } = "None";
     }
 }

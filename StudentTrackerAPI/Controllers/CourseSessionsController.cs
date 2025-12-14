@@ -2,6 +2,7 @@
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
@@ -31,35 +32,6 @@ namespace StudentTrackerAPI.Controllers
             return Ok(list);
         }
 
-        [HttpGet("{sessionId}")]
-        public async Task<IActionResult> GetById(int sessionId)
-        {
-            var item = await _sessions.GetByIdAsync(sessionId);
-            return item is null ? NotFound() : Ok(item);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CourseSession session)
-        {
-            var id = await _sessions.CreateAsync(session);
-            return Ok(new { SessionID = id });
-        }
-
-        [HttpPut("{sessionId}")]
-        public async Task<IActionResult> Update(int sessionId, [FromBody] CourseSession session)
-        {
-            session.SessionID = sessionId;
-            await _sessions.UpdateAsync(session);
-            return Ok();
-        }
-
-        [HttpDelete("{sessionId}")]
-        public async Task<IActionResult> Delete(int sessionId)
-        {
-            await _sessions.DeleteAsync(sessionId);
-            return Ok();
-        }
-
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateSessions([FromBody] GenerateSessionsRequest req)
         {
@@ -71,11 +43,27 @@ namespace StudentTrackerAPI.Controllers
             if (semester == null)
                 return NotFound();
 
-            DateTime current = req.SessionDate.Date;
-            DateTime semesterEnd = semester.EndDate.Date;
+            var teacherId = course.TeacherID;
+            var current = req.SessionDate.Date;
+            var semesterEnd = semester.EndDate.Date;
 
-            if (req.RepeatType == "OneTime")
+            while (true)
             {
+                var conflicts = await _sessions.GetTeacherConflictsAsync(
+                    teacherId,
+                    current,
+                    req.StartTime,
+                    req.EndTime
+                );
+
+                var conflict = conflicts.FirstOrDefault();
+                if (conflict != null)
+                {
+                    return BadRequest(
+                        $"Teacher {conflict.TeacherName} already has a session at this time for course {conflict.CourseName}."
+                    );
+                }
+
                 await _sessions.CreateAsync(new CourseSession
                 {
                     CourseID = req.CourseID,
@@ -83,38 +71,32 @@ namespace StudentTrackerAPI.Controllers
                     StartTime = req.StartTime,
                     EndTime = req.EndTime,
                     IsCancelled = false,
-                    RepeatType = "OneTime"
+                    RepeatType = req.RepeatType
                 });
 
+                if (req.RepeatType == "None")
+                    break;
 
-                return Ok();
-            }
-
-            DateTime end = req.RepeatType == "HalfSemester"
-                ? current.AddDays(7 * 7)
-                : semesterEnd;
-
-            if (end > semesterEnd)
-                end = semesterEnd;
-
-            while (current <= end)
-            {
-                await _sessions.CreateAsync(new CourseSession
+                current = req.RepeatType switch
                 {
-                    CourseID = req.CourseID,
-                    SessionDate = current,
-                    StartTime = req.StartTime,
-                    EndTime = req.EndTime,
-                    IsCancelled = false,
-                    RepeatType = "OneTime"
-                });
+                    "Daily" => current.AddDays(1),
+                    "Weekly" => current.AddDays(7),
+                    "Monthly" => current.AddMonths(1),
+                    _ => semesterEnd.AddDays(1)
+                };
 
-
-                current = current.AddDays(7);
+                if (current > semesterEnd)
+                    break;
             }
 
             return Ok();
         }
 
+        [HttpDelete("{sessionId}")]
+        public async Task<IActionResult> Delete(int sessionId)
+        {
+            await _sessions.DeleteAsync(sessionId);
+            return Ok();
+        }
     }
 }

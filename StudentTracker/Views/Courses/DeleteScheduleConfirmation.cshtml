@@ -32,13 +32,13 @@
     .page-wrapper {
         max-width: 700px;
         margin: 100px auto;
-        padding: 0 20px 40px 20px;
+        padding: 0 20px 40px;
     }
 
     .confirm-card {
         background: #ffffff;
         border-radius: 22px;
-        padding: 40px 40px 35px 40px;
+        padding: 40px;
         box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
         border: 1px solid #e6a8a8;
         text-align: center;
@@ -81,7 +81,6 @@
         display: flex;
         justify-content: center;
         gap: 16px;
-        margin-top: 15px;
     }
 
     .btn {
@@ -103,50 +102,4 @@
         border: 1px solid #b91c1c;
     }
 
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-
     .btn-secondary {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-</style>
-
-<div class="page-wrapper">
-    <div class="confirm-card">
-
-        <h2>Delete Schedule?</h2>
-        <p class="subtitle">This action cannot be undone.</p>
-
-        <div class="info-box">
-            <p><span class="info-label">Day:</span> @GetDayName(Model.DayOfWeek)</p>
-            <p><span class="info-label">Start Time:</span> @Model.StartTime</p>
-            <p><span class="info-label">End Time:</span> @Model.EndTime</p>
-            <p><span class="info-label">Schedule ID:</span> @Model.ScheduleID</p>
-        </div>
-
-        <div class="actions">
-            <a asp-action="Schedule"
-               asp-route-courseId="@courseId"
-               class="btn btn-secondary">
-                Cancel
-            </a>
-
-            <form asp-action="DeleteSchedule"
-                  asp-route-id="@Model.ScheduleID"
-                  asp-route-courseId="@courseId"
-                  method="post">
-                <button type="submit" class="btn btn-danger">
-                    Confirm Delete
-                </button>
-            </form>
-        </div>
-
-    </div>
-</div>

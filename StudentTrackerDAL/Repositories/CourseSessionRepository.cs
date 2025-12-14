@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using StudentTrackerCOMMON.Interfaces.Repositories;
@@ -47,6 +47,26 @@ namespace StudentTrackerDAL.Repositories
             return await conn.QueryAsync<CourseSession>(
                 "dbo.CourseSessions_GetByCourse",
                 new { CourseID = courseId },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<IEnumerable<TeacherSessionConflict>> GetTeacherConflictsAsync(
+            int teacherId,
+            DateTime sessionDate,
+            TimeSpan startTime,
+            TimeSpan endTime)
+        {
+            using var conn = _factory.Create();
+            return await conn.QueryAsync<TeacherSessionConflict>(
+                "dbo.CourseSessions_GetTeacherConflicts",
+                new
+                {
+                    TeacherID = teacherId,
+                    SessionDate = sessionDate,
+                    StartTime = startTime,
+                    EndTime = endTime
+                },
                 commandType: CommandType.StoredProcedure
             );
         }

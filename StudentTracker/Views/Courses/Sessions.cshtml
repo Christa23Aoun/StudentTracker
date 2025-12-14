@@ -2,402 +2,323 @@
 
 @{
     ViewData["Title"] = "Manage Sessions";
-    var courseId = Model.CourseID;
-
     var today = DateTime.Today;
-    int offset;
-    if (today.DayOfWeek == DayOfWeek.Sunday)
-    {
-        offset = -6;
-    }
-    else
-    {
-        offset = (int)DayOfWeek.Monday - (int)today.DayOfWeek;
-    }
-
+    int offset = today.DayOfWeek == DayOfWeek.Sunday ? -6 : (int)DayOfWeek.Monday - (int)today.DayOfWeek;
     var weekStart = today.AddDays(offset);
     var nextWeekStart = weekStart.AddDays(7);
+
+    var semesterStart = Model.SemesterStartDate.Date;
+
+    int GetSemesterWeek(DateTime date)
+    {
+        return 1 + (int)((date.Date - semesterStart).TotalDays / 7);
+    }
+
+    var sessionsWithWeek = (Model.Sessions ?? new List<StudentTracker.Models.CourseSessionView>())
+        .Select(s => new
+        {
+            Session = s,
+            SemesterWeek = GetSemesterWeek(s.SessionDate)
+        })
+        .ToList();
+
+    var semesterWeeks = sessionsWithWeek
+        .Select(x => x.SemesterWeek)
+        .Distinct()
+        .OrderBy(x => x)
+        .ToList();
+
+    var distinctDays = sessionsWithWeek
+        .Select(x => x.Session.SessionDate.DayOfWeek.ToString())
+        .Distinct()
+        .OrderBy(x => x)
+        .ToList();
 }
 
 <style>
     body {
         background: #f3f5fb;
-        font-family: 'Segoe UI', sans-serif;
-        color: #0b2540;
-        margin: 0;
-        padding: 0;
+        font-family: 'Segoe UI',sans-serif;
+        color: #0b2540
     }
 
     .page-wrapper {
         max-width: 1100px;
-        margin: 60px auto;
-        padding: 0 20px 40px;
+        margin: 50px auto;
+        padding: 0 20px 40px
     }
 
     .glass-card {
-        background: #ffffff;
+        background: #fff;
         border-radius: 20px;
-        padding: 26px 26px 24px;
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-        border: 1px solid rgba(148, 163, 184, 0.35);
+        padding: 26px;
         margin-bottom: 30px;
+        box-shadow: 0 18px 40px rgba(15,23,42,.12);
+        border: 1px solid rgba(148,163,184,.35)
     }
 
     h2 {
         font-size: 1.8rem;
         font-weight: 800;
-        margin-bottom: 6px;
+        margin-bottom: 6px
     }
 
     h3 {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        margin-bottom: 10px;
-    }
-
-    .subtitle {
-        color: #64748b;
-        font-size: 0.95rem;
-        margin-bottom: 18px;
+        margin-bottom: 14px
     }
 
     label {
         font-weight: 600;
+        font-size: .9rem;
         margin-bottom: 6px;
-        display: block;
-        font-size: 0.9rem;
-        color: #0b2540;
+        display: block
+    }
+
+    .subtitle {
+        font-size: .9rem;
+        color: #64748b;
+        margin-bottom: 18px
     }
 
     .form-control {
         width: 100%;
-        padding: 9px 13px;
+        padding: 10px 14px;
         border-radius: 12px;
         border: 1px solid #cbd5e1;
-        font-size: 0.95rem;
-        margin-bottom: 16px;
-        background: #f9fbff;
-    }
-
-    .btn {
-        border-radius: 999px;
-        padding: 10px 22px;
-        font-weight: 600;
-        font-size: 0.94rem;
-        cursor: pointer;
-        text-decoration: none;
-        border: 1px solid transparent;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition: 0.2s ease;
+        background: #f9fbff
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #0f6ae6, #124f9c);
-        color: #ffffff;
-        box-shadow: 0 12px 30px rgba(15, 118, 210, 0.45);
+        background: linear-gradient(135deg,#0f6ae6,#124f9c);
+        color: #fff;
+        border-radius: 999px;
+        padding: 10px 26px;
+        font-weight: 600;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center
     }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #2563eb, #124f9c);
-        }
-
-    .btn-danger {
-        background: #fee2e2;
-        color: #b91c1c;
-        border-color: #fecaca;
+    .btn-back {
+        background: #e5e7eb;
+        color: #111827;
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-weight: 700;
+        border: 1px solid #d1d5db;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center
     }
 
     .week-grid {
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-columns: repeat(7,1fr);
         gap: 10px;
-        margin-bottom: 12px;
-    }
-
-    @@media (max-width: 900px) {
-        .week-grid
-
-    {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    }
-
-    @@media (max-width: 650px) {
-        .week-grid
-
-    {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    }
-
-    .week-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #64748b;
-        margin-top: 4px;
-        margin-bottom: 6px;
+        margin-bottom: 10px
     }
 
     .day-card {
         background: #f9fbff;
         border-radius: 14px;
-        padding: 10px 8px;
+        padding: 12px;
         border: 1px solid #cbd5e1;
         text-align: center;
-        font-size: 0.9rem;
         cursor: pointer;
-        transition: 0.15s ease;
+        font-size: .85rem
     }
 
-    .day-name {
-        font-weight: 700;
-        color: #124f9c;
-        margin-bottom: 3px;
-        font-size: 0.85rem;
-    }
-
-    .day-date {
-        font-size: 0.8rem;
-        color: #64748b;
-    }
-
-    .day-card:hover {
-        background: #e0ecff;
-        border-color: #94b2ff;
-    }
-
-    .day-card.selected {
-        background: #124f9c;
-        border-color: #0f6ae6;
-        color: #ffffff;
-    }
-
-        .day-card.selected .day-name,
-        .day-card.selected .day-date {
-            color: #e5ecff;
+        .day-card.selected {
+            background: #124f9c;
+            color: #fff;
+            border-color: #0f6ae6
         }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 16px
+    }
+
+    .repeat-options {
+        display: flex;
+        gap: 18px;
+        margin-top: 6px;
+        font-size: .9rem
+    }
 
     .session-table {
         width: 100%;
-        margin-top: 18px;
         border-collapse: collapse;
-        border-radius: 12px;
-        overflow: hidden;
-        background: #ffffff;
+        margin-top: 20px;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden
     }
 
-        .session-table thead {
+        .session-table th {
             background: #124f9c;
-            color: #ffffff;
+            color: #fff;
+            padding: 12px;
+            font-size: .9rem
         }
 
-        .session-table th,
         .session-table td {
-            padding: 10px 12px;
+            padding: 12px;
             text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.9rem;
-        }
-
-        .session-table tbody tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        .session-table tbody tr:hover {
-            background: #edf2ff;
+            font-size: .9rem;
+            border-bottom: 1px solid #e2e8f0
         }
 
     .status-pill {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: 600;
+        font-size: .78rem;
+        font-weight: 600
     }
 
     .status-active {
         background: #ecfdf5;
         color: #15803d;
-        border: 1px solid #bbf7d0;
+        border: 1px solid #bbf7d0
     }
 
-    .status-cancelled {
-        background: #fef2f2;
+    .btn-danger {
+        background: #fee2e2;
         color: #b91c1c;
-        border: 1px solid #fecaca;
-    }
-
-    .actions-row {
-        display: flex;
-        justify-content: flex-start;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-    }
-
-    .field-row {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 14px;
-        margin-top: 4px;
-    }
-
-    @@media (max-width: 900px) {
-        .field-row
-
-    {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    }
-
-    .hint-text {
-        font-size: 0.78rem;
-        color: #94a3b8;
-        margin-top: -4px;
-        margin-bottom: 10px;
+        border-radius: 999px;
+        padding: 6px 16px;
+        border: 1px solid #fecaca
     }
 
     .repeat-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 3px 10px;
-        border-radius: 999px;
         background: #eef2ff;
-        font-size: 0.8rem;
-        font-weight: 600;
         color: #1e3a8a;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: .8rem;
+        font-weight: 600
     }
 
-    .repeat-legend {
-        margin-top: 10px;
+    .filters-row {
         display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        font-size: 0.82rem;
-        color: #64748b;
-    }
-
-    .legend-item {
-        display: inline-flex;
+        gap: 14px;
         align-items: center;
-        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        margin-bottom: 6px
     }
 
-    .legend-icon {
-        font-size: 1rem;
+    .filter-control {
+        min-width: 220px
     }
+
+    .glass-alert {
+        padding: 14px 20px;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        font-size: .9rem;
+        font-weight: 700;
+        box-shadow: 0 12px 28px rgba(15,23,42,.12)
+    }
+
+        .glass-alert.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca
+        }
+
+        .glass-alert.success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #bbf7d0
+        }
 </style>
 
 <div class="page-wrapper">
 
-    <div class="glass-card">
-        <h2>Sessions for @Model.CourseName</h2>
-        @* @if (!string.IsNullOrWhiteSpace(Model.TeacherName))
-        {
-            <p class="subtitle">
-                Instructor: <strong>@Model.TeacherName</strong>
-            </p>
-        @* } *@
-        @* else
-        {
-            <p class="subtitle">
-                Manage recurring and one-time sessions for this course.
-            </p>
-        } *@
-    </div> 
+    @if (TempData["CourseError"] != null)
+    {
+        <div class="glass-alert error">
+            @TempData["CourseError"]
+        </div>
+    }
+
+    @if (TempData["CourseSuccess"] != null)
+    {
+        <div class="glass-alert success">
+            @TempData["CourseSuccess"]
+        </div>
+    }
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <a asp-action="Index" asp-controller="Courses" class="btn-back">← Back to Courses</a>
+    </div>
 
     <div class="glass-card">
-        <h3>Pick a day and time</h3>
-        <p class="subtitle">
-            Choose a day in this week or next week for the first session. Then choose the time and whether it repeats for half or full semester.
+        <h2>Sessions for @Model.CourseName</h2>
+        <p class="subtitle">Create and manage course sessions using a calendar-style recurrence model.</p>
+        <p class="subtitle" style="margin-bottom:0;">
+            Semester: <strong>@Model.SemesterStartDate.ToString("dd MMM yyyy")</strong> → <strong>@Model.SemesterEndDate.ToString("dd MMM yyyy")</strong>
         </p>
+    </div>
+
+    <div class="glass-card">
+        <h3>Add Sessions</h3>
 
         <form asp-action="GenerateSessions" method="post">
             @Html.AntiForgeryToken()
 
             <input type="hidden" name="CourseID" value="@Model.CourseID" />
-            <input type="hidden" id="SessionDate" name="SessionDate" value="" />
+            <input type="hidden" id="SessionDate" name="SessionDate" />
 
             <label>Current week</label>
             <div class="week-grid">
                 @for (int i = 0; i < 7; i++)
                 {
                     var d = weekStart.AddDays(i);
-                    var isoValue = d.ToString("yyyy-MM-dd");
-                    var dayName = d.ToString("ddd");
-                    var dayLabel = d.ToString("dd MMM");
-                    <div class="day-card" data-date="@isoValue">
-                        <div class="day-name">@dayName</div>
-                        <div class="day-date">@dayLabel</div>
-                    </div>
+                    <div class="day-card" data-date="@d.ToString("yyyy-MM-dd")">@d.ToString("ddd dd MMM")</div>
                 }
             </div>
-            <div class="week-label">
-                Week of @weekStart.ToString("dd MMM") – @weekStart.AddDays(6).ToString("dd MMM")
-            </div>
 
-            <label style="margin-top:16px;">Next week</label>
+            <label style="margin-top:14px">Next week</label>
             <div class="week-grid">
                 @for (int i = 0; i < 7; i++)
                 {
                     var d = nextWeekStart.AddDays(i);
-                    var isoValue = d.ToString("yyyy-MM-dd");
-                    var dayName = d.ToString("ddd");
-                    var dayLabel = d.ToString("dd MMM");
-                    <div class="day-card" data-date="@isoValue">
-                        <div class="day-name">@dayName</div>
-                        <div class="day-date">@dayLabel</div>
-                    </div>
+                    <div class="day-card" data-date="@d.ToString("yyyy-MM-dd")">@d.ToString("ddd dd MMM")</div>
                 }
             </div>
-            <div class="week-label">
-                Week of @nextWeekStart.ToString("dd MMM") – @nextWeekStart.AddDays(6).ToString("dd MMM")
-            </div>
 
-            <div class="hint-text">
-                Click one day above. That date will be used as the first session date.
-            </div>
-
-            <div class="field-row">
+            <div class="field-row" style="margin-top:20px">
                 <div>
                     <label>Start Time</label>
-                    <input type="time"
-                           name="StartTime"
-                           class="form-control"
-                           required />
+                    <input type="time" name="StartTime" class="form-control" required />
                 </div>
 
                 <div>
-                    <label>End Time (auto + 1h15)</label>
-                    <input type="time"
-                           name="EndTime"
-                           class="form-control"
-                           readonly />
+                    <label>End Time</label>
+                    <input type="time" name="EndTime" class="form-control" readonly />
                 </div>
 
                 <div>
                     <label>Repeat</label>
-                    <select name="RepeatType" class="form-control">
-                        <option value="OneTime">One session only</option>
-                        <option value="HalfSemester">Every week for half semester</option>
-                        <option value="FullSemester">Every week for full semester</option>
-                    </select>
+                    <div class="repeat-options">
+                        <label><input type="radio" name="RepeatType" value="None" checked /> None</label>
+                        <label><input type="radio" name="RepeatType" value="Daily" /> Daily</label>
+                        <label><input type="radio" name="RepeatType" value="Weekly" /> Weekly</label>
+                        <label><input type="radio" name="RepeatType" value="Monthly" /> Monthly</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="actions-row">
-                <button type="submit" class="btn btn-primary">
-                    Generate Sessions
-                </button>
+            <div style="margin-top:22px">
+                <button type="submit" class="btn-primary">Generate Sessions</button>
             </div>
         </form>
     </div>
@@ -407,82 +328,65 @@
 
         @if (Model.Sessions == null || !Model.Sessions.Any())
         {
-            <p class="subtitle">No sessions created yet for this course.</p>
+            <p class="subtitle">No sessions created yet.</p>
         }
         else
         {
+            <div class="filters-row">
+                <select id="dayFilter" class="form-control filter-control">
+                    <option value="">All Days</option>
+                    @foreach (var d in distinctDays)
+                    {
+                        <option value="@d">@d</option>
+                    }
+                </select>
+
+                <select id="weekFilter" class="form-control filter-control">
+                    <option value="">All Semester Weeks</option>
+                    @foreach (var w in semesterWeeks)
+                    {
+                        var start = Model.SemesterStartDate.Date.AddDays((w - 1) * 7);
+                        var end = start.AddDays(6);
+                        <option value="@w">Week @w · @start.ToString("dd MMM") – @end.ToString("dd MMM")</option>
+                    }
+                </select>
+
+                <a href="#" id="clearFilters" class="btn-back" style="padding:10px 18px;">Clear</a>
+            </div>
+
             <table class="session-table">
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Time</th>
+                        <th>Semester Week</th>
                         <th>Repeat</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var s in Model.Sessions)
+                <tbody id="sessionsBody">
+                    @foreach (var x in sessionsWithWeek.OrderBy(x => x.Session.SessionDate))
                     {
-                        var repeatIcon = "🟢";
-                        var repeatLabel = "One-time session";
-                        if (s.RepeatType == "HalfSemester")
-                        {
-                            repeatIcon = "🟡";
-                            repeatLabel = "Half semester";
-                        }
-                        else if (s.RepeatType == "FullSemester")
-                        {
-                            repeatIcon = "🔵";
-                            repeatLabel = "Full semester";
-                        }
-
-                        <tr>
+                        var s = x.Session;
+                        <tr data-day="@s.SessionDate.DayOfWeek.ToString()" data-week="@x.SemesterWeek">
                             <td>@s.SessionDate.ToString("ddd dd/MM/yyyy")</td>
                             <td>@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm")</td>
-                            <td>
-                                <span class="repeat-pill">
-                                    <span>@repeatIcon</span>
-                                    <span class="repeat-label">@repeatLabel</span>
-                                </span>
-                            </td>
-                            <td>
-                                @if (s.IsCancelled)
-                                {
-                                    <span class="status-pill status-cancelled">Cancelled</span>
-                                }
-                                else
-                                {
-                                    <span class="status-pill status-active">Active</span>
-                                }
-                            </td>
+                            <td><span class="repeat-pill">Week @x.SemesterWeek</span></td>
+                            <td><span class="repeat-pill">@s.RepeatType</span></td>
+                            <td><span class="status-pill status-active">Active</span></td>
                             <td>
                                 <form asp-action="DeleteSession" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="sessionId" value="@s.SessionID" />
                                     <input type="hidden" name="courseId" value="@Model.CourseID" />
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn-danger">Delete</button>
                                 </form>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-
-            <div class="repeat-legend">
-                <span class="legend-item">
-                    <span class="legend-icon">🟢</span>
-                    <span>One-time session</span>
-                </span>
-                <span class="legend-item">
-                    <span class="legend-icon">🟡</span>
-                    <span>Weekly, half semester</span>
-                </span>
-                <span class="legend-item">
-                    <span class="legend-icon">🔵</span>
-                    <span>Weekly, full semester</span>
-                </span>
-            </div>
         }
     </div>
 
@@ -490,51 +394,60 @@
 
 <script>
     (function () {
-        var cards = document.querySelectorAll(".day-card");
-        var hiddenDate = document.getElementById("SessionDate");
-        var startInput = document.querySelector('input[name="StartTime"]');
-        var endInput = document.querySelector('input[name="EndTime"]');
+        const cards = document.querySelectorAll(".day-card");
+        const dateInput = document.getElementById("SessionDate");
+        const start = document.querySelector('input[name="StartTime"]');
+        const end = document.querySelector('input[name="EndTime"]');
 
-        if (cards && hiddenDate) {
-            cards.forEach(function (card) {
-                card.addEventListener("click", function () {
-                    cards.forEach(function (c) { c.classList.remove("selected"); });
-                    card.classList.add("selected");
-
-                    var date = card.getAttribute("data-date");
-                    hiddenDate.value = date + "T00:00:00";
-                });
+        if (cards && dateInput) {
+            cards.forEach(c => {
+                c.onclick = () => {
+                    cards.forEach(x => x.classList.remove("selected"));
+                    c.classList.add("selected");
+                    dateInput.value = c.dataset.date + "T00:00:00";
+                };
             });
         }
 
-        function updateEndTime() {
-            if (!startInput || !endInput) return;
-            var value = startInput.value;
-            if (!value) return;
-
-            var parts = value.split(":");
-            if (parts.length < 2) return;
-
-            var h = parseInt(parts[0], 10);
-            var m = parseInt(parts[1], 10);
-
-            if (isNaN(h) || isNaN(m)) return;
-
-            var totalMinutes = h * 60 + m + 75;
-            var eh = Math.floor(totalMinutes / 60);
-            var em = totalMinutes % 60;
-
-            if (eh >= 24) eh = eh % 24;
-
-            var hStr = eh.toString().padStart(2, "0");
-            var mStr = em.toString().padStart(2, "0");
-
-            endInput.value = hStr + ":" + mStr;
+        if (start && end) {
+            start.oninput = () => {
+                if (!start.value) return;
+                const parts = start.value.split(":");
+                if (parts.length < 2) return;
+                const h = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10);
+                if (isNaN(h) || isNaN(m)) return;
+                const total = h * 60 + m + 75;
+                end.value = String(Math.floor(total / 60) % 24).padStart(2, "0") + ":" + String(total % 60).padStart(2, "0");
+            };
         }
 
-        if (startInput && endInput) {
-            startInput.addEventListener("change", updateEndTime);
-            startInput.addEventListener("input", updateEndTime);
+        const dayFilter = document.getElementById("dayFilter");
+        const weekFilter = document.getElementById("weekFilter");
+        const rows = document.querySelectorAll("#sessionsBody tr");
+        const clearBtn = document.getElementById("clearFilters");
+
+        function applyFilters() {
+            const d = dayFilter ? dayFilter.value : "";
+            const w = weekFilter ? weekFilter.value : "";
+
+            rows.forEach(r => {
+                const matchDay = !d || r.dataset.day === d;
+                const matchWeek = !w || r.dataset.week === w;
+                r.style.display = (matchDay && matchWeek) ? "" : "none";
+            });
+        }
+
+        if (dayFilter) dayFilter.addEventListener("change", applyFilters);
+        if (weekFilter) weekFilter.addEventListener("change", applyFilters);
+
+        if (clearBtn) {
+            clearBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (dayFilter) dayFilter.value = "";
+                if (weekFilter) weekFilter.value = "";
+                applyFilters();
+            });
         }
     })();
 </script>
