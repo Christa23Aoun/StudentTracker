@@ -68,6 +68,7 @@ namespace StudentTracker.Controllers
             return View(attendance);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Create(int courseId, int? sessionId)
         {
@@ -88,9 +89,20 @@ namespace StudentTracker.Controllers
                 .ThenByDescending(s => s.StartTime)
                 .ToList();
 
-            ViewBag.Sessions = sessions;
+            var usedSessionIds = await GetSessionIdsWithAttendanceByCourse(courseId, semStart, semEnd);
+
+            var availableSessions = sessions
+                .Where(s => !usedSessionIds.Contains(s.SessionID))
+                .OrderByDescending(s => s.SessionDate)
+                .ThenByDescending(s => s.StartTime)
+                .ToList();
+
+            ViewBag.Sessions = availableSessions;
 
             if (sessionId == null)
+                return View(new List<AttendanceView>());
+
+            if (!availableSessions.Any(x => x.SessionID == sessionId.Value))
                 return View(new List<AttendanceView>());
 
             var enrolled = await GetEnrolledStudentsByCourse(courseId);
@@ -107,6 +119,9 @@ namespace StudentTracker.Controllers
 
             return View(rows);
         }
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

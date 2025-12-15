@@ -7,13 +7,13 @@
     var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
 }
 
-
 <style>
     .att-page {
         background: #f5f7fa;
         padding: 70px 0;
         color: #1a2b4c;
         font-family: 'Inter',sans-serif;
+        min-height: calc(100vh - 200px);
     }
 
     .att-container {
@@ -22,80 +22,156 @@
         margin: 0 auto;
         background: #fff;
         border: 1px solid #d9e1ec;
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 35px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
 
     .page-header {
         text-align: left;
-        margin-bottom: 25px;
+        margin-bottom: 18px;
         border-left: 5px solid #003c8f;
         padding-left: 18px;
     }
 
         .page-header h1 {
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 30px;
+            font-weight: 900;
             margin: 0;
             color: #003c8f;
+            line-height: 1.2;
+        }
+
+        .page-header .sub {
+            margin-top: 6px;
+            color: #5b6e80;
+            font-weight: 650;
+            font-size: 14px;
         }
 
     .top-actions {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 22px;
+        margin-bottom: 18px;
         flex-wrap: wrap;
         gap: 10px;
+        align-items: center;
     }
 
     .btn-secondary {
         background: #5b6e80;
         color: #fff;
-        padding: 12px 22px;
-        border-radius: 6px;
-        font-weight: 600;
+        padding: 11px 18px;
+        border-radius: 8px;
+        font-weight: 750;
         text-decoration: none;
-        transition: .25s ease;
-        display: inline-block;
+        transition: .2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-secondary:hover {
             background: #445664;
             color: #fff;
             text-decoration: none;
+            transform: translateY(-1px);
         }
+
+    .card {
+        border: 1px solid #d9e1ec;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        padding: 16px;
+        margin-top: 10px;
+    }
+
+    .card-title {
+        font-weight: 850;
+        color: #003c8f;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 
     .rowx {
         display: flex;
         gap: 14px;
         flex-wrap: wrap;
         align-items: end;
-        margin-bottom: 18px;
         justify-content: space-between;
     }
 
     label {
-        font-weight: 700;
+        font-weight: 800;
         color: #1a2b4c;
     }
 
     select {
-        padding: 10px 12px;
-        border-radius: 6px;
+        padding: 11px 12px;
+        border-radius: 8px;
         border: 1px solid #d9e1ec;
         background: #fff;
         color: #1a2b4c;
         min-width: 320px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+        select:focus {
+            border-color: #003c8f;
+            box-shadow: 0 0 0 4px rgba(0,60,143,0.12);
+        }
+
+    .btn-primaryy {
+        background: #003c8f;
+        border: none;
+        padding: 11px 18px;
+        color: #fff;
+        font-weight: 900;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-primaryy:hover {
+            background: #002a6a;
+            transform: translateY(-1px);
+        }
+
+    .hint {
+        color: #5b6e80;
+        font-weight: 650;
+        padding: 10px 2px 0;
+        font-size: 14px;
+    }
+
+    .hint-warn {
+        background: #fff2f2;
+        border: 1px solid #f3c0c0;
+        color: #8a2d2d;
+        font-weight: 850;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-top: 10px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
         border: 1px solid #d9e1ec;
-        border-radius: 6px;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        background: #fff;
     }
 
     thead {
@@ -105,55 +181,64 @@
 
     th {
         padding: 14px;
-        font-size: 15px;
-        font-weight: 700;
-        text-align: center;
+        font-size: 14px;
+        font-weight: 900;
+        text-align: left;
+        letter-spacing: .2px;
     }
 
     td {
         padding: 14px;
-        text-align: center;
+        text-align: left;
         border-bottom: 1px solid #edf2f7;
         color: #1a2b4c;
+        font-weight: 650;
+        vertical-align: middle;
     }
 
     tr:hover {
         background: #f0f6ff;
     }
 
-    .btn-primaryy {
-        background: #003c8f;
-        border: none;
-        padding: 12px 25px;
-        color: #fff;
-        font-weight: 800;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: .25s ease;
-        white-space: nowrap;
+    .table-wrap {
+        margin-top: 12px;
+        border-radius: 10px;
+        overflow: hidden;
     }
 
-        .btn-primaryy:hover {
-            background: #002a6a;
+    .actions-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .dt-container .dt-search input {
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 8px 10px;
+        outline: none;
+    }
+
+        .dt-container .dt-search input:focus {
+            border-color: #003c8f;
+            box-shadow: 0 0 0 4px rgba(0,60,143,0.12);
         }
 
-    .hint {
-        color: #5b6e80;
-        font-weight: 700;
-        padding: 14px 0;
+    thead tr:hover {
+        background: #003c8f;
     }
 
-    .hint-warn {
-        color: #8a2d2d;
-        font-weight: 800;
-        padding: 14px 0;
-    }
 </style>
 
 <div class="att-page">
     <div class="att-container">
+        @{
+            var courseName = ViewBag.CourseName as string ?? "";
+        }
+
         <div class="page-header">
-            <h1>Add Attendance</h1>
+            <h1>Add Attendance to course:  <span style="font-weight:600;color:#003c8f;">@courseName</span></h1>
         </div>
 
         <div class="top-actions">
@@ -162,6 +247,7 @@
                asp-action="CourseDetails"
                asp-route-id="@courseId">⬅ Back to Course</a>
         </div>
+
         @if (TempData["AttendanceErrors"] != null)
         {
             <div class="hint-warn">@TempData["AttendanceErrors"]</div>
@@ -173,95 +259,106 @@
         }
         else
         {
-            <form asp-action="Create" method="get" class="rowx">
-                <input type="hidden" name="courseId" value="@courseId" />
+            <div class="card">
+                <div class="card-title">
+                    <span>Select Session</span>
+                </div>
 
-                <div>
-                    <label>Session</label><br />
-                    <select name="sessionId" required>
-                        <option value="">Select session</option>
-                        @foreach (var s in sessions.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartTime))
+                <form asp-action="Create" method="get" class="rowx">
+                    <input type="hidden" name="courseId" value="@courseId" />
+
+                    <div>
+                        <label>Session</label><br />
+                        <select name="sessionId" required>
+                            <option value="">Select session</option>
+                            @foreach (var s in sessions.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartTime))
+                            {
+                                <option value="@s.SessionID" selected="@(selectedSessionId == s.SessionID ? "selected" : null)">
+                                    @s.SessionDate.ToString("dd/MM/yyyy") (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                                </option>
+                            }
+                        </select>
+                        @if (!selectedSessionId.HasValue)
                         {
-                            if (selectedSessionId.HasValue && selectedSessionId.Value == s.SessionID)
-                            {
-                                <option value="@s.SessionID" selected="selected">
-                                    @s.SessionDate.ToString("dd/MM/yyyy") (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
-                                </option>
-                            }
-                            else
-                            {
-                                <option value="@s.SessionID">
-                                    @s.SessionDate.ToString("dd/MM/yyyy") (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
-                                </option>
-                            }
+                            <div class="hint">Pick a session and click “Load Students”.</div>
                         }
-                    </select>
-                </div>
+                    </div>
 
-                <div>
-                    <button type="submit" class="btn-primaryy">📋 Load Students</button>
-                </div>
-            </form>
+                    <div>
+                        <button type="submit" class="btn-primaryy">📋 Load Students</button>
+                    </div>
+                </form>
+            </div>
 
-            @if (!selectedSessionId.HasValue)
-            {
-                <div class="hint">Select a session first to load enrolled students.</div>
-            }
-            else if (selectedSessionId.HasValue && !Model.Any())
+            @if (selectedSessionId.HasValue && !Model.Any())
             {
                 <div class="hint-warn">No enrolled students found for this course.</div>
             }
             else if (Model.Any())
             {
-                <form asp-action="Create" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="courseId" value="@courseId" />
-                    <input type="hidden" name="sessionId" value="@selectedSessionId.Value" />
-
-                    <div class="rowx" style="margin-top: 10px;">
-                        <div class="hint">Mark each student as Present/Absent, then save.</div>
-                        <div>
-                            <button type="submit" class="btn-primaryy">💾 Save Attendance</button>
-                        </div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>Students</span>
                     </div>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.Count; i++)
-                            {
-                                <tr>
-                                    <td>
-                                        @Model[i].StudentName
-                                        <input type="hidden" name="attendanceList[@i].StudentID" value="@Model[i].StudentID" />
-                                        <input type="hidden" name="attendanceList[@i].StudentName" value="@Model[i].StudentName" />
-                                    </td>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="courseId" value="@courseId" />
+                        <input type="hidden" name="sessionId" value="@selectedSessionId!.Value" />
 
-                                    <td>
-                                        <select name="attendanceList[@i].Status">
-                                            @if (Model[i].Status == "Absent")
-                                            {
-                                                <option value="Present">Present</option>
-                                                <option value="Absent" selected="selected">Absent</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="Present" selected="selected">Present</option>
-                                                <option value="Absent">Absent</option>
-                                            }
-                                        </select>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </form>
+                        <div class="actions-bar">
+                            <button type="submit" class="btn-primaryy">💾 Save Attendance</button>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table id="attendanceTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th style="width:220px;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Model[i].StudentName
+                                                <input type="hidden" name="attendanceList[@i].StudentID" value="@Model[i].StudentID" />
+                                                <input type="hidden" name="attendanceList[@i].StudentName" value="@Model[i].StudentName" />
+                                            </td>
+                                            <td>
+                                                <select name="attendanceList[@i].Status" style="min-width: 0; width: 100%;">
+                                                    <option value="Present" selected="@(Model[i].Status != "Absent" ? "selected" : null)">Present</option>
+                                                    <option value="Absent" selected="@(Model[i].Status == "Absent" ? "selected" : null)">Absent</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
             }
         }
     </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+    <script>
+        $(function () {
+            if (document.getElementById('attendanceTable')) {
+                new DataTable('#attendanceTable', {
+                    paging: false,
+                    info: false,
+                    ordering: true,
+                    searching: true
+                });
+            }
+        });
+    </script>
+}
