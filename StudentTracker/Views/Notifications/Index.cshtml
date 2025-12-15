@@ -19,7 +19,6 @@
         margin: 70px auto;
     }
 
-    /* HEADER */
     .notifications-header {
         text-align: left;
         margin-bottom: 40px;
@@ -40,14 +39,12 @@
             margin-top: 6px;
         }
 
-    /* LIST */
     .notifications-list {
         display: flex;
         flex-direction: column;
         gap: 16px;
     }
 
-    /* CARD */
     .notification-card {
         background: #ffffff;
         border: 1px solid #d9e1ec;
@@ -67,7 +64,6 @@
             box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.10);
         }
 
-        /* UNREAD INDICATOR (PRO STYLE) */
         .notification-card.unread::before {
             content: "";
             position: absolute;
@@ -79,18 +75,36 @@
             border-radius: 6px 0 0 6px;
         }
 
+    .notification-left {
+        max-width: 70%;
+    }
+
     .notification-message {
         font-size: 15px;
         line-height: 1.5;
         color: #1a2b4c;
-        max-width: 75%;
+        margin-bottom: 6px;
     }
 
     .notification-date {
         font-size: 14px;
         color: #5b6e80;
-        white-space: nowrap;
     }
+
+    .notification-actions a {
+        background: #003c8f;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s ease;
+    }
+
+        .notification-actions a:hover {
+            background: #002a6a;
+        }
 
     .empty {
         background: #ffffff;
@@ -116,12 +130,19 @@
             @foreach (var n in Model)
             {
                 <div class="notification-card @(n.IsRead ? "" : "unread")">
-                    <div class="notification-message">
-                        @n.Message
+                    <div class="notification-left">
+                        <div class="notification-message">@n.Message</div>
+                        <div class="notification-date">
+                            @n.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+                        </div>
                     </div>
-                    <div class="notification-date">
-                        @n.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
-                    </div>
+
+                    @if (!string.IsNullOrEmpty(n.TargetUrl))
+                    {
+                        <div class="notification-actions">
+                            <a href="@n.TargetUrl">View</a>
+                        </div>
+                    }
                 </div>
             }
         </div>

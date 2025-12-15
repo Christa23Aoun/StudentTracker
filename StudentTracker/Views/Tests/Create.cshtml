@@ -134,6 +134,7 @@
     }
 
     <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()   
         <input type="hidden" asp-for="CourseID" />
 
         <!-- Test Name -->

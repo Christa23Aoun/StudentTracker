@@ -1,9 +1,9 @@
-﻿using StudentTrackerCOMMON.Models;
-using StudentTrackerCOMMON.Interfaces.Services;
-using StudentTrackerCOMMON.Interfaces.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Interfaces.Repositories;
 
 namespace StudentTrackerBLL.Services
 {
@@ -28,7 +28,10 @@ namespace StudentTrackerBLL.Services
             return _repository.GetBySessionIdAsync(sessionId);
         }
 
-        public Task<IEnumerable<int>> GetSessionIdsWithAttendanceByCourseAsync(int courseId, DateTime startDate, DateTime endDate)
+        public Task<IEnumerable<int>> GetSessionIdsWithAttendanceByCourseAsync(
+            int courseId,
+            DateTime startDate,
+            DateTime endDate)
         {
             if (courseId <= 0)
                 throw new InvalidOperationException("Invalid CourseID.");
@@ -36,7 +39,10 @@ namespace StudentTrackerBLL.Services
             if (startDate.Date > endDate.Date)
                 throw new InvalidOperationException("Invalid date range.");
 
-            return _repository.GetSessionIdsWithAttendanceByCourseAsync(courseId, startDate, endDate);
+            return _repository.GetSessionIdsWithAttendanceByCourseAsync(
+                courseId,
+                startDate,
+                endDate);
         }
 
         public async Task<int> CreateAsync(Attendance attendance)
@@ -44,22 +50,17 @@ namespace StudentTrackerBLL.Services
             if (attendance == null)
                 throw new InvalidOperationException("Attendance payload is missing.");
 
-            if (attendance.StudentID <= 0)
-                throw new InvalidOperationException("Invalid StudentID.");
-
-            if (attendance.SessionID <= 0)
-                throw new InvalidOperationException("Invalid SessionID.");
-
             var exists = await _repository.ExistsAsync(attendance.StudentID, attendance.SessionID);
             if (exists)
-                throw new InvalidOperationException("Attendance already exists for this student and session.");
+                throw new InvalidOperationException("Attendance already exists.");
 
             var result = await _repository.CreateAsync(attendance);
 
             await _notificationService.NotifyStudentAsync(
                 attendance.StudentID,
                 "Attendance has been recorded for one of your sessions.",
-                "INFO"
+                "ATTENDANCE",
+                "/Attendance"
             );
 
             return result;
@@ -67,21 +68,13 @@ namespace StudentTrackerBLL.Services
 
         public async Task<int> UpdateAsync(Attendance attendance)
         {
-            if (attendance == null)
-                throw new InvalidOperationException("Attendance payload is missing.");
-
-            if (attendance.AttendanceID <= 0)
-                throw new InvalidOperationException("Invalid AttendanceID.");
-
-            if (attendance.StudentID <= 0)
-                throw new InvalidOperationException("Invalid StudentID.");
-
             var result = await _repository.UpdateAsync(attendance);
 
             await _notificationService.NotifyStudentAsync(
                 attendance.StudentID,
                 "Your attendance record has been updated.",
-                "INFO"
+                "ATTENDANCE",
+                "/Attendance"
             );
 
             return result;
@@ -89,9 +82,6 @@ namespace StudentTrackerBLL.Services
 
         public Task<int> DeleteAsync(int attendanceId)
         {
-            if (attendanceId <= 0)
-                throw new InvalidOperationException("Invalid AttendanceID.");
-
             return _repository.DeleteAsync(attendanceId);
         }
     }

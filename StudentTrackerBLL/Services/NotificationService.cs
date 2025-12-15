@@ -28,39 +28,57 @@ namespace StudentTrackerBLL.Services
             return _repo.MarkAsReadAsync(notificationId);
         }
 
-        public async Task NotifyStudentAsync(int studentId, string message, string type)
+        public async Task NotifyStudentAsync(
+            int studentId,
+            string message,
+            string type,
+            string targetUrl)
         {
             await _repo.CreateAsync(new Notification
             {
                 UserID = studentId,
                 Message = message,
                 Type = type,
+                TargetUrl = targetUrl,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow
             });
         }
 
-        public async Task NotifyStudentsAsync(IEnumerable<int> studentIds, string message, string type)
+        public async Task NotifyStudentsAsync(
+            IEnumerable<int> studentIds,
+            string message,
+            string type,
+            string targetUrl)
         {
             foreach (var id in studentIds.Distinct())
             {
-                await NotifyStudentAsync(id, message, type);
+                await NotifyStudentAsync(id, message, type, targetUrl);
             }
         }
 
-        public async Task NotifyTeacherAsync(int teacherId, string message, string type)
+        public async Task NotifyTeacherAsync(
+            int teacherId,
+            string message,
+            string type,
+            string targetUrl)
         {
             await _repo.CreateAsync(new Notification
             {
                 UserID = teacherId,
                 Message = message,
                 Type = type,
+                TargetUrl = targetUrl,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow
             });
         }
 
-        public async Task NotifyUsersAsync(IEnumerable<int> userIds, string message, string type)
+        public async Task NotifyUsersAsync(
+            IEnumerable<int> userIds,
+            string message,
+            string type,
+            string targetUrl)
         {
             foreach (var id in userIds.Distinct())
             {
@@ -69,20 +87,21 @@ namespace StudentTrackerBLL.Services
                     UserID = id,
                     Message = message,
                     Type = type,
+                    TargetUrl = targetUrl,
                     IsRead = false,
                     CreatedAt = DateTime.UtcNow
                 });
             }
         }
-        public async Task<int> GetUnreadCountAsync(int userId)
+
+        public Task<int> GetUnreadCountAsync(int userId)
         {
-            return await _repo.GetUnreadCountAsync(userId);
+            return _repo.GetUnreadCountAsync(userId);
         }
+
         public Task<int> MarkAllAsReadAsync(int userId)
         {
             return _repo.MarkAllAsReadAsync(userId);
         }
-
-
     }
 }

@@ -18,18 +18,25 @@ namespace StudentTracker.Controllers
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
-        // ================================================================
-        // INDEX — NOW WITH AVERAGE GRADE PER TEST
-        // ================================================================
+        private string ApiUrl(string relative)
+        {
+            var b = (_apiBase ?? "").Trim().TrimEnd('/');
+            var r = (relative ?? "").Trim().TrimStart('/');
+
+            if (b.EndsWith("/api", StringComparison.OrdinalIgnoreCase))
+                return $"{b}/{r}";
+
+            return $"{b}/api/{r}";
+        }
+
         public async Task<IActionResult> Index(int? courseId)
         {
             ViewBag.CourseID = courseId;
             var list = new List<TestView>();
 
-            // Load course name
             if (courseId.HasValue)
             {
-                var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+                var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
                 if (courseRes.IsSuccessStatusCode)
                 {
                     var jsonCourse = await courseRes.Content.ReadAsStringAsync();
@@ -38,10 +45,9 @@ namespace StudentTracker.Controllers
                 }
             }
 
-            // Fetch tests
-            string endpoint = courseId.HasValue
-                ? $"{_apiBase}Tests/byCourse/{courseId}"
-                : $"{_apiBase}Tests";
+            var endpoint = courseId.HasValue
+                ? ApiUrl($"Tests/byCourse/{courseId}")
+                : ApiUrl("Tests");
 
             var response = await _client.GetAsync(endpoint);
 
@@ -51,18 +57,13 @@ namespace StudentTracker.Controllers
                 list = JsonConvert.DeserializeObject<List<TestView>>(json) ?? new();
             }
 
-            // ========================================================
-            // LOAD AVERAGE FOR EACH TEST
-            // ========================================================
             foreach (var t in list)
             {
-                var avgRes = await _client.GetAsync($"{_apiBase}TestGrades/AverageByTest/{t.TestID}");
-
+                var avgRes = await _client.GetAsync(ApiUrl($"TestGrades/AverageByTest/{t.TestID}"));
                 if (avgRes.IsSuccessStatusCode)
                 {
                     var avgJson = await avgRes.Content.ReadAsStringAsync();
-                    decimal avg = JsonConvert.DeserializeObject<decimal>(avgJson);
-                    t.AverageScore = avg;
+                    t.AverageScore = JsonConvert.DeserializeObject<decimal>(avgJson);
                 }
                 else
                 {
@@ -73,32 +74,25 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // ================================================================
-        // CREATE (GET)
-        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Create(int courseId)
         {
             ViewBag.CourseID = courseId;
 
-            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
-            string courseName = "";
-
+            var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
             if (courseRes.IsSuccessStatusCode)
             {
                 var json = await courseRes.Content.ReadAsStringAsync();
                 var course = JsonConvert.DeserializeObject<CourseView>(json);
-                courseName = course?.CourseName ?? "";
+                ViewBag.CourseName = course?.CourseName ?? "";
             }
-
-            ViewBag.CourseName = courseName;
 
             return View(new TestView { CourseID = courseId });
         }
 
         private async Task LoadCourseName(int courseId)
         {
-            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
+            var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
             if (courseRes.IsSuccessStatusCode)
             {
                 var json = await courseRes.Content.ReadAsStringAsync();
@@ -109,9 +103,6 @@ namespace StudentTracker.Controllers
             ViewBag.CourseID = courseId;
         }
 
-        // ================================================================
-        // CREATE (POST)
-        // ================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
@@ -133,7 +124,7 @@ namespace StudentTracker.Controllers
 
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var res = await _client.PostAsync($"{_apiBase}Tests", content);
+            var res = await _client.PostAsync(ApiUrl("Tests"), content);
 
             if (res.IsSuccessStatusCode)
             {
@@ -146,13 +137,10 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ================================================================
-        // EDIT (GET)
-        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var res = await _client.GetAsync($"{_apiBase}Tests/{id}");
+            var res = await _client.GetAsync(ApiUrl($"Tests/{id}"));
             if (!res.IsSuccessStatusCode)
                 return RedirectToAction("Index");
 
@@ -162,9 +150,6 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ================================================================
-        // EDIT (POST)
-        // ================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TestView model)
@@ -185,7 +170,7 @@ namespace StudentTracker.Controllers
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var res = await _client.PutAsync($"{_apiBase}Tests", content);
+            var res = await _client.PutAsync(ApiUrl("Tests"), content);
 
             if (res.IsSuccessStatusCode)
                 return RedirectToAction("Index", new { courseId = model.CourseID });
@@ -194,13 +179,10 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // ================================================================
-        // DELETE (GET)
-        // ================================================================
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var testRes = await _client.GetAsync($"{_apiBase}Tests/{id}");
+            var testRes = await _client.GetAsync(ApiUrl($"Tests/{id}"));
             if (!testRes.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index));
 
@@ -210,10 +192,7 @@ namespace StudentTracker.Controllers
             if (test == null)
                 return RedirectToAction(nameof(Index));
 
-            // Check validated grades
-            var gradeRes = await _client.GetAsync(
-                $"{_apiBase}TestGrades/ByTest?courseId={test.CourseID}&testId={test.TestID}"
-            );
+            var gradeRes = await _client.GetAsync(ApiUrl($"TestGrades/ByTest?courseId={test.CourseID}&testId={test.TestID}"));
 
             if (gradeRes.IsSuccessStatusCode)
             {
@@ -230,17 +209,11 @@ namespace StudentTracker.Controllers
             return View(test);
         }
 
-        // ================================================================
-        // DELETE (POST)
-        // ================================================================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int TestID, int CourseID)
         {
-            // Re-check for validated grades
-            var gradeRes = await _client.GetAsync(
-                $"{_apiBase}TestGrades/ByTest?courseId={CourseID}&testId={TestID}"
-            );
+            var gradeRes = await _client.GetAsync(ApiUrl($"TestGrades/ByTest?courseId={CourseID}&testId={TestID}"));
 
             if (gradeRes.IsSuccessStatusCode)
             {
@@ -254,8 +227,7 @@ namespace StudentTracker.Controllers
                 }
             }
 
-            // Delete
-            await _client.DeleteAsync($"{_apiBase}Tests/{TestID}");
+            await _client.DeleteAsync(ApiUrl($"Tests/{TestID}"));
             TempData["Msg"] = "Test deleted successfully.";
 
             return RedirectToAction(nameof(Index), new { courseId = CourseID });

@@ -22,14 +22,14 @@ namespace StudentTrackerDAL.Repositories
             using var con = new SqlConnection(_connectionString);
             await con.OpenAsync();
 
-         
             var id = await con.ExecuteScalarAsync<int>(
                 "dbo.sp_Notification_Create",
                 new
                 {
                     notification.UserID,
                     notification.Message,
-                    notification.Type
+                    notification.Type,
+                    notification.TargetUrl
                 },
                 commandType: CommandType.StoredProcedure);
 
@@ -49,16 +49,15 @@ namespace StudentTrackerDAL.Repositories
             return id;
         }
 
-
         public async Task<IEnumerable<Notification>> GetForUserAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
+
             var notifications = await con.QueryAsync<Notification>(
                 "dbo.sp_Notification_GetForUser",
                 new { UserID = userId },
                 commandType: CommandType.StoredProcedure);
 
-            // mark all as read
             await con.ExecuteAsync(
                 "UPDATE dbo.Notifications SET IsRead = 1 WHERE UserID = @UserID AND IsRead = 0",
                 new { UserID = userId });
@@ -82,6 +81,7 @@ namespace StudentTrackerDAL.Repositories
                 new { Id = notificationId });
             return rows > 0;
         }
+
         public async Task<int> MarkAllAsReadAsync(int userId)
         {
             using var con = new SqlConnection(_connectionString);
@@ -91,6 +91,5 @@ namespace StudentTrackerDAL.Repositories
                 new { UserID = userId }
             );
         }
-
     }
 }

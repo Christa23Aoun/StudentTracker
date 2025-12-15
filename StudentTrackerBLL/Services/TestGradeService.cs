@@ -1,7 +1,6 @@
 ﻿using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 using StudentTrackerCOMMON.Models;
-using StudentTrackerDAL.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -51,10 +50,14 @@ namespace StudentTrackerBLL.Services
             var test = await _testRepository.GetModelByIdAsync(grade.TestID);
             var course = await _courseRepository.GetByIdAsync(test.CourseID);
 
+            var courseName = course?.CourseName ?? "the course";
+            var testName = test?.TestName ?? "a test";
+
             await _notificationService.NotifyStudentAsync(
                 grade.StudentID,
-                $"A new grade has been added for the test '{test.TestName}' in the course '{course.CourseName}'.",
-                "GRADE"
+                $"A new grade has been posted for {testName} in {courseName}.",
+                "GRADE",
+                $"/TestGrades?courseId={test.CourseID}"
             );
 
             return true;

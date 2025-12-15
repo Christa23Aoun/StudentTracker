@@ -1,66 +1,70 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
+﻿using StudentTrackerCOMMON.Interfaces.Services;
+using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
-using StudentTrackerDAL.Repositories;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StudentTrackerBLL.Services
 {
-    public class StudentCourseService
+    public class StudentCourseService : IStudentCourseService
     {
-        private readonly StudentCourseRepository _repo;
-        private readonly string _connectionString;
+        private readonly IEnrollmentRepository _enrollmentRepository;
 
-        public StudentCourseService(string connectionString)
+        public StudentCourseService(IEnrollmentRepository enrollmentRepository)
         {
-            _connectionString = connectionString;
-            _repo = new StudentCourseRepository(connectionString);
+            _enrollmentRepository = enrollmentRepository;
         }
 
-        public async Task<IEnumerable<StudentCourse>> GetAllAsync() => await _repo.GetAllAsync();
-
-        public async Task<StudentCourse?> GetByIdAsync(int id) => await _repo.GetByIdAsync(id);
-
-        public async Task<int> CreateAsync(StudentCourse entity) => await _repo.CreateStudentCourseAsync(entity);
-
-        public async Task<int> UpdateAsync(StudentCourse entity) => await _repo.UpdateAsync(entity);
-
-        public async Task<int> DeleteAsync(int id) => await _repo.DeleteAsync(id);
-
-        public async Task<IEnumerable<dynamic>> GetByCourseAsync(int courseId)
+        public Task<IEnumerable<StudentCourse>> GetAllAsync()
         {
-            return await _repo.GetByCourseAsync(courseId);
+            throw new NotSupportedException();
         }
 
-        public async Task<int> CountByCourseAsync(int courseId)
+        public Task<StudentCourse?> GetByIdAsync(int id)
         {
-            using var con = new SqlConnection(_connectionString);
-            var sql = "SELECT COUNT(*) FROM StudentCourses WHERE CourseID = @CourseID;";
-            return await con.ExecuteScalarAsync<int>(sql, new { CourseID = courseId });
+            throw new NotSupportedException();
         }
 
-        public async Task<int> CountByTeacherAsync(int teacherId)
+        public Task<int> CreateAsync(StudentCourse model)
         {
-            using var con = new SqlConnection(_connectionString);
-            var sql = @"
-                SELECT COUNT(*) 
-                FROM StudentCourses sc
-                WHERE sc.CourseID IN (
-                    SELECT CourseID FROM Courses WHERE TeacherID = @TeacherID
-                );";
-            return await con.ExecuteScalarAsync<int>(sql, new { TeacherID = teacherId });
+            return _enrollmentRepository.EnrollAsync(model.StudentID, model.CourseID);
         }
 
-        public async Task<bool> EnrollAsync(int studentId, int courseId)
+        public Task<int> UpdateAsync(StudentCourse model)
         {
-            using var con = new SqlConnection(_connectionString);
-            var sql = @"
-                IF NOT EXISTS (SELECT 1 FROM StudentCourses WHERE StudentID = @StudentID AND CourseID = @CourseID)
-                BEGIN
-                    INSERT INTO StudentCourses (StudentID, CourseID, EnrollmentDate)
-                    VALUES (@StudentID, @CourseID, GETDATE());
-                END";
+            throw new NotSupportedException();
+        }
 
-            var rows = await con.ExecuteAsync(sql, new { StudentID = studentId, CourseID = courseId });
+        public Task<int> DeleteAsync(int id)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<IEnumerable<StudentCourse>> GetCoursesByStudentAsync(int userId)
+        {
+            return _enrollmentRepository.GetCoursesByStudentAsync(userId);
+        }
+
+        public async Task<IEnumerable<StudentCourse>> GetByCourseAsync(int courseId)
+        {
+            var students = await _enrollmentRepository.GetStudentsByCourseAsync(courseId);
+            var result = new List<StudentCourse>();
+
+            foreach (var s in students)
+            {
+                result.Add(new StudentCourse
+                {
+                    StudentID = s.UserID,
+                    CourseID = courseId
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<bool> EnrollAsync(int userId, int courseId)
+        {
+            var rows = await _enrollmentRepository.EnrollAsync(userId, courseId);
             return rows > 0;
         }
     }
