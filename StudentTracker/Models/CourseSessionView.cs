@@ -6,6 +6,7 @@ namespace StudentTracker.Models
     {
         public int SessionID { get; set; }
         public int CourseID { get; set; }
+        public string CourseName { get; set; } = string.Empty;
         public DateTime SessionDate { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }

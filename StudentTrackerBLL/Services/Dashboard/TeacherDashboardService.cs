@@ -1,11 +1,8 @@
 ﻿using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
-using StudentTrackerCOMMON.Models;
-using StudentTrackerDAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace StudentTrackerBLL.Services.Dashboard
@@ -13,16 +10,13 @@ namespace StudentTrackerBLL.Services.Dashboard
     public class TeacherDashboardService
     {
         private readonly ICourseRepository _courses;
-        private readonly IAttendanceRepository _attendance;
         private readonly ITestGradeRepository _grades;
 
         public TeacherDashboardService(
             ICourseRepository courses,
-            IAttendanceRepository attendance,
             ITestGradeRepository grades)
         {
             _courses = courses;
-            _attendance = attendance;
             _grades = grades;
         }
 
@@ -45,17 +39,17 @@ namespace StudentTrackerBLL.Services.Dashboard
                 foreach (var c in myCourses)
                 {
                     var students = await _courses.GetEnrolledStudentsAsync(c.CourseID);
-                    var attendanceRate = await _attendance.GetAverageAttendanceByCourseAsync(c.CourseID);
                     var avgGrade = await _grades.GetAverageGradeByCourseAsync(c.CourseID);
 
                     dto.StudentCount += students.Count;
+
                     courseRows.Add(new TeacherCourseRowDto
                     {
                         CourseID = c.CourseID,
                         CourseName = c.CourseName,
                         SemesterName = $"Semester {c.SemesterID}",
                         StudentCount = students.Count,
-                        AttendanceRate = attendanceRate,
+                        AttendanceRate = 0,
                         AverageGrade = avgGrade
                     });
                 }
@@ -65,7 +59,7 @@ namespace StudentTrackerBLL.Services.Dashboard
                 if (courseRows.Count > 0)
                 {
                     dto.AverageGrade = Math.Round(courseRows.Average(x => x.AverageGrade), 1);
-                    dto.AttendanceRate = Math.Round(courseRows.Average(x => x.AttendanceRate), 1);
+                    dto.AttendanceRate = 0;
                 }
             }
 

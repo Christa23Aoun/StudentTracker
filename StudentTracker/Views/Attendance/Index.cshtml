@@ -1,23 +1,27 @@
-﻿@model List<StudentTracker.Models.AttendanceView>
+﻿@* @model List<StudentTracker.Models.AttendanceView>
 
 @{
-    ViewData["Title"] = "Attendance Records";
-    var courseId = ViewBag.CourseID;
+    ViewData["Title"] = "Attendance";
+
+    int courseId = (int)(ViewBag.CourseID ?? 0);
+    int? selectedSessionId = ViewBag.SelectedSessionId as int?;
+    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
 }
 
 <style>
-    body {
+
+    .attendance-page {
         background: #f5f7fa;
-        margin: 0;
-        padding: 0;
         font-family: 'Inter', sans-serif;
         color: #1a2b4c;
+        padding: 70px 0;
+        min-height: calc(100vh - 200px);
     }
 
     .attendance-container {
         width: 92%;
         max-width: 1300px;
-        margin: 70px auto;
+        margin: 0 auto;
         background: #ffffff;
         border: 1px solid #d9e1ec;
         border-radius: 8px;
@@ -27,7 +31,7 @@
 
     .page-header {
         text-align: left;
-        margin-bottom: 35px;
+        margin-bottom: 25px;
         border-left: 5px solid #003c8f;
         padding-left: 18px;
     }
@@ -39,11 +43,10 @@
             color: #003c8f;
         }
 
-    /* ACTION BUTTONS */
     .top-actions {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 25px;
+        margin-bottom: 22px;
         flex-wrap: wrap;
         gap: 10px;
     }
@@ -56,6 +59,7 @@
         font-weight: 600;
         text-decoration: none;
         transition: 0.25s ease;
+        display: inline-block;
     }
 
         .btn-primary:hover {
@@ -70,37 +74,84 @@
         font-weight: 600;
         text-decoration: none;
         transition: 0.25s ease;
+        display: inline-block;
     }
 
         .btn-secondary:hover {
             background: #445664;
         }
 
-    /* FILTERS */
-    .filters {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
+    .layout {
+        display: grid;
+        grid-template-columns: 330px 1fr;
+        gap: 22px;
+        margin-top: 10px;
     }
 
-        .filters input {
-            padding: 9px 12px;
-            border-radius: 6px;
-            border: 1px solid #d9e1ec;
-            background: #ffffff;
-            color: #1a2b4c;
-            width: 200px;
+    .sessions {
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+    }
+
+    .sessions-header {
+        background: #003c8f;
+        color: #ffffff;
+        padding: 14px;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .sessions a {
+        display: block;
+        padding: 14px;
+        border-bottom: 1px solid #edf2f7;
+        text-decoration: none;
+        color: #1a2b4c;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+        .sessions a:hover {
+            background: #f0f6ff;
         }
 
-    /* TABLE */
+        .sessions a.active {
+            background: #e6f0ff;
+            color: #003c8f;
+        }
+
+    .panel {
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+    }
+
+    .panel-header {
+        padding: 14px 16px;
+        font-weight: 800;
+        color: #003c8f;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .panel-sub {
+        color: #5b6e80;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
-        border: 1px solid #d9e1ec;
-        border-radius: 6px;
-        overflow: hidden;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
     thead {
@@ -111,7 +162,7 @@
     th {
         padding: 14px;
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 700;
         text-align: center;
     }
 
@@ -126,111 +177,471 @@
         background: #f0f6ff;
     }
 
-    /* DELETE BUTTON */
+    .present {
+        font-weight: 700;
+        color: #0a7d2c;
+    }
+
+    .absent {
+        font-weight: 700;
+        color: #b30000;
+    }
+
     .btn-danger {
         background: #c62828;
         padding: 7px 16px;
         border-radius: 6px;
-        font-weight: 600;
+        font-weight: 700;
         color: white;
         text-decoration: none;
         transition: 0.25s ease;
+        display: inline-block;
     }
 
         .btn-danger:hover {
             background: #a71f1f;
         }
+
+    .hint {
+        padding: 18px;
+        color: #5b6e80;
+        font-weight: 600;
+    }
 </style>
 
-<div class="attendance-container">
+<div class="attendance-page">
+    <div class="attendance-container">
 
-    <div class="page-header">
-        <h1>Attendance Records</h1>
-    </div>
+        <div class="page-header">
+            <h1>Attendance</h1>
+        </div>
 
-    <div class="top-actions">
-        <a class="btn-primary"
-           asp-action="Create"
-           asp-route-courseId="@courseId">
-            Mark Attendance
-        </a>
+        <div class="top-actions">
+            <a class="btn-primary"
+               asp-action="Create"
+               asp-route-courseId="@courseId">
+                Add Attendance
+            </a>
 
-        <a class="btn-secondary"
-           asp-controller="Teacher"
-           asp-action="CourseDetails"
-           asp-route-id="@courseId">
-            ⬅ Back to Course
-        </a>
-    </div>
+            <a class="btn-secondary"
+               asp-controller="Teacher"
+               asp-action="CourseDetails"
+               asp-route-id="@courseId">
+                ⬅ Back to Course
+            </a>
+        </div>
 
-    <!-- FILTERS -->
-    <div class="filters">
-        <input type="date" id="filterDate" />
-        <input type="text" id="filterName" placeholder="Search student name..." />
-    </div>
+        <div class="layout">
 
-    <table id="attendanceTable">
-        <thead>
-            <tr>
-                <th>Student</th>
-                <th>Course</th>
-                <th>Date & Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+            <div class="sessions">
+                <div class="sessions-header">Sessions</div>
 
-        <tbody>
-            @if (Model.Any())
-            {
-                foreach (var item in Model)
+                @if (!sessions.Any())
                 {
-                    <tr>
-                        <td class="student-name">@item.StudentName</td>
-                        <td>@item.CourseName</td>
-                        <td class="date-cell">@item.AttendanceDate.ToString("yyyy-MM-dd HH:mm")</td>
-
-                        <td style="font-weight:600; color:@(item.IsPresent ? "#0a7d2c" : "#b30000")">
-                            @(item.IsPresent ? "Present ✔" : "Absent ✘")
-                        </td>
-
-                        <td>
-                            <a class="btn-danger"
-                               href="/Attendance/Delete?id=@item.AttendanceID&courseId=@courseId">
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
+                    <div class="hint">No sessions found for this course.</div>
                 }
+                else
+                {
+                    foreach (var s in sessions.OrderByDescending(x => x.SessionDate))
+                    {
+                        <a asp-action="Index"
+                           asp-route-courseId="@courseId"
+                           asp-route-sessionId="@s.SessionID"
+                           class="@(selectedSessionId == s.SessionID ? "active" : "")">
+                            @s.SessionDate.ToString("dd/MM/yyyy")
+                            (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                        </a>
+                    }
+                }
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        Attendance List
+                        <div class="panel-sub">
+                            @(selectedSessionId == null ? "Select a session to view attendance." : $"Session ID: {selectedSessionId}")
+                        </div>
+                    </div>
+                </div>
+
+                @if (selectedSessionId == null)
+                {
+                    <div class="hint">Click a session on the left to display students attendance.</div>
+                }
+                else if (!Model.Any())
+                {
+                    <div class="hint">No attendance recorded for this session.</div>
+                }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.StudentName</td>
+                                    <td class="@(item.IsPresent ? "present" : "absent")">
+                                        @(item.IsPresent ? "Present ✔" : "Absent ✘")
+                                    </td>
+                                    <td>
+                                        <a class="btn-danger"
+                                           asp-action="Delete"
+                                           asp-route-id="@item.AttendanceID"
+                                           asp-route-courseId="@courseId"
+                                           asp-route-sessionId="@selectedSessionId"
+                                           onclick="return confirm('Delete this attendance record?');">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+ *@
+@model List<StudentTracker.Models.AttendanceView>
+@{
+    ViewData["Title"] = "Attendance";
+
+    int courseId = (int)(ViewBag.CourseID ?? 0);
+    int? selectedSessionId = ViewBag.SelectedSessionId as int?;
+    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
+
+    var courseName = (string?)ViewBag.CourseName;
+    if (string.IsNullOrWhiteSpace(courseName))
+    {
+        courseName = "";
+    }
+}
+<style>
+    .attendance-page {
+        background: #f5f7fa;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
+        padding: 70px 0;
+        min-height: calc(100vh - 200px);
+    }
+
+    .attendance-container {
+        width: 92%;
+        max-width: 1300px;
+        margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        padding: 35px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .page-header {
+        text-align: left;
+        margin-bottom: 25px;
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
+    }
+
+        .page-header h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
+            line-height: 1.2;
+        }
+
+        .page-header .sub {
+            margin-top: 6px;
+            color: #5b6e80;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+    .top-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background: #003c8f;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.25s ease;
+        display: inline-block;
+    }
+
+        .btn-primary:hover {
+            background: #002a6a;
+        }
+
+    .btn-secondary {
+        background: #5b6e80;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.25s ease;
+        display: inline-block;
+    }
+
+        .btn-secondary:hover {
+            background: #445664;
+        }
+
+    .layout {
+        display: grid;
+        grid-template-columns: 330px 1fr;
+        gap: 22px;
+        margin-top: 10px;
+    }
+
+    .sessions {
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        height: fit-content;
+    }
+
+    .sessions-header {
+        background: #003c8f;
+        color: #ffffff;
+        padding: 14px;
+        font-weight: 800;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .sessions-count {
+        font-weight: 700;
+        opacity: .9;
+        font-size: 13px;
+    }
+
+    .sessions a {
+        display: block;
+        padding: 14px;
+        border-bottom: 1px solid #edf2f7;
+        text-decoration: none;
+        color: #1a2b4c;
+        font-weight: 650;
+        transition: 0.2s ease;
+    }
+
+        .sessions a:hover {
+            background: #f0f6ff;
+        }
+
+        .sessions a.active {
+            background: #e6f0ff;
+            color: #003c8f;
+            border-left: 4px solid #003c8f;
+            padding-left: 10px;
+        }
+
+    .panel {
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        min-height: 240px;
+    }
+
+    .panel-empty {
+        padding: 28px;
+        color: #5b6e80;
+        font-weight: 650;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #003c8f;
+        color: white;
+    }
+
+    th {
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    td {
+        padding: 14px;
+        text-align: center;
+        border-bottom: 1px solid #edf2f7;
+        color: #1a2b4c;
+        font-weight: 600;
+    }
+
+    tr:hover {
+        background: #f0f6ff;
+    }
+
+    .present {
+        font-weight: 800;
+        color: #0a7d2c;
+    }
+
+    .absent {
+        font-weight: 800;
+        color: #b30000;
+    }
+
+    .btn-danger {
+        background: #c62828;
+        padding: 7px 16px;
+        border-radius: 6px;
+        font-weight: 800;
+        color: white;
+        text-decoration: none;
+        transition: 0.25s ease;
+        display: inline-block;
+    }
+
+        .btn-danger:hover {
+            background: #a71f1f;
+        }
+
+    .hint {
+        padding: 18px;
+        color: #5b6e80;
+        font-weight: 650;
+    }
+</style>
+
+<div class="attendance-page">
+    <div class="attendance-container">
+
+        <div class="page-header">
+            @if (!string.IsNullOrWhiteSpace(courseName))
+            {
+                <h1>Attendance for @courseName</h1>
             }
             else
             {
-                <tr><td colspan="6" style="padding:20px; color:#5b6e80;">No attendance records found.</td></tr>
+                <h1>Attendance</h1>
             }
-        </tbody>
-    </table>
+            <div class="sub">Choose a session to view recorded attendance.</div>
+        </div>
+
+        <div class="top-actions">
+            <a class="btn-primary"
+               asp-action="Create"
+               asp-route-courseId="@courseId">
+                Add Attendance
+            </a>
+
+            <a class="btn-secondary"
+               asp-controller="Teacher"
+               asp-action="CourseDetails"
+               asp-route-id="@courseId">
+                ⬅ Back to Course
+            </a>
+        </div>
+
+        <div class="layout">
+
+            <div class="sessions">
+                <div class="sessions-header">
+                    <span>Sessions</span>
+                    <span class="sessions-count">@sessions.Count</span>
+                </div>
+
+                @if (!sessions.Any())
+                {
+                    <div class="hint">No sessions with recorded attendance yet.</div>
+                }
+                else
+                {
+                    foreach (var s in sessions.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartTime))
+                    {
+                        <a asp-action="Index"
+                           asp-route-courseId="@courseId"
+                           asp-route-sessionId="@s.SessionID"
+                           class="@(selectedSessionId == s.SessionID ? "active" : "")">
+                            @s.SessionDate.ToString("dd/MM/yyyy")
+                            (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                        </a>
+                    }
+                }
+            </div>
+
+            <div class="panel">
+                @if (selectedSessionId == null)
+                {
+                    <div class="panel-empty">Select a session </div>
+                }
+                else if (!Model.Any())
+                {
+                    <div class="panel-empty">No attendance found for the selected session.</div>
+                }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.StudentName</td>
+                                    <td class="@(item.IsPresent ? "present" : "absent")">
+                                        @(item.IsPresent ? "Present" : "Absent")
+                                    </td>
+                                    <td>
+                                        <a class="btn-danger"
+                                           asp-action="Delete"
+                                           asp-route-id="@item.AttendanceID"
+                                           asp-route-courseId="@courseId"
+                                           asp-route-sessionId="@selectedSessionId"
+                                           onclick="return confirm('Delete this attendance record?');">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+        </div>
+
+    </div>
 </div>
-
-<script>
-    const filterDate = document.getElementById("filterDate");
-    const filterName = document.getElementById("filterName");
-    const rows = document.querySelectorAll("#attendanceTable tbody tr");
-
-    function applyFilters() {
-        const dateValue = filterDate.value;
-        const nameValue = filterName.value.toLowerCase();
-
-        rows.forEach(row => {
-            const dateText = row.querySelector(".date-cell").textContent.substring(0,10);
-            const studentName = row.querySelector(".student-name").textContent.toLowerCase();
-
-            let matchDate = !dateValue || dateText === dateValue;
-            let matchName = !nameValue || studentName.includes(nameValue);
-
-            row.style.display = (matchDate && matchName) ? "" : "none";
-        });
-    }
-
-    filterDate.addEventListener("change", applyFilters);
-    filterName.addEventListener("keyup", applyFilters);
-</script>

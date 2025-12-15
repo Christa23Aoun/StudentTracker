@@ -61,18 +61,12 @@ builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<ICourseScheduleService, CourseScheduleService>();
 builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
 builder.Services.AddScoped<IStudentCourseDetailsService, StudentCourseDetailsService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddScoped<TestService>();
 builder.Services.AddScoped<TestGradeService>();
-
-// ✅ FIX: AttendanceService WITH NotificationService injected
-builder.Services.AddScoped<AttendanceService>(sp =>
-    new AttendanceService(
-        connectionString,
-        sp.GetRequiredService<INotificationService>()
-    ));
 
 var app = builder.Build();
 

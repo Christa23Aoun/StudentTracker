@@ -11,16 +11,13 @@ namespace StudentTrackerAPI.Controllers
     public class CoursesController : ControllerBase
     {
         private readonly ICourseRepository _courses;
-        private readonly IAttendanceRepository _attendance;
         private readonly ITestGradeRepository _grades;
 
         public CoursesController(
             ICourseRepository courses,
-            IAttendanceRepository attendance,
             ITestGradeRepository grades)
         {
             _courses = courses;
-            _attendance = attendance;
             _grades = grades;
         }
 
@@ -79,12 +76,8 @@ namespace StudentTrackerAPI.Controllers
                 var studentCount = students.Count;
 
                 double avgGrade = 0;
-                double attendanceRate = 0;
 
                 try { avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(c.CourseID)); }
-                catch { }
-
-                try { attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(c.CourseID)); }
                 catch { }
 
                 result.Add(new
@@ -100,7 +93,7 @@ namespace StudentTrackerAPI.Controllers
                     c.UpdatedAt,
                     StudentCount = studentCount,
                     AverageGrade = avgGrade,
-                    AttendanceRate = attendanceRate
+                    AttendanceRate = 0
                 });
             }
 
@@ -118,12 +111,8 @@ namespace StudentTrackerAPI.Controllers
             var studentCount = students.Count;
 
             double avgGrade = 0;
-            double attendanceRate = 0;
 
             try { avgGrade = (double)(await _grades.GetAverageGradeByCourseAsync(courseItem.CourseID)); }
-            catch { }
-
-            try { attendanceRate = (double)(await _attendance.GetAverageAttendanceByCourseAsync(courseItem.CourseID)); }
             catch { }
 
             var dto = new
@@ -139,7 +128,7 @@ namespace StudentTrackerAPI.Controllers
                 courseItem.SemesterName,
                 StudentCount = studentCount,
                 AverageGrade = avgGrade,
-                AttendanceRate = attendanceRate
+                AttendanceRate = 0
             };
 
             return Ok(dto);

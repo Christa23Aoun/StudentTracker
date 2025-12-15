@@ -1,94 +1,112 @@
 ﻿@model List<StudentTracker.Models.AttendanceView>
 
 @{
-    ViewData["Title"] = "Mark Attendance";
-    var courseId = ViewBag.CourseID;
-    var courseName = Model.FirstOrDefault()?.CourseName ?? "Unknown Course";
+    ViewData["Title"] = "Add Attendance";
+    int courseId = (int)(ViewBag.CourseID ?? 0);
+    int? selectedSessionId = ViewBag.SelectedSessionId as int?;
+    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
 }
 
+
 <style>
-    body {
+    .att-page {
         background: #f5f7fa;
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', sans-serif;
+        padding: 70px 0;
         color: #1a2b4c;
+        font-family: 'Inter',sans-serif;
     }
 
-    .attendance-container {
+    .att-container {
         width: 92%;
-        max-width: 1000px;
-        margin: 70px auto;
-        background: #ffffff;
+        max-width: 1100px;
+        margin: 0 auto;
+        background: #fff;
         border: 1px solid #d9e1ec;
         border-radius: 8px;
-        padding: 40px 45px;
-        box-shadow: 0px 5px 15px rgba(0,0,0,0.07);
+        padding: 35px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
-    /* PAGE HEADER */
     .page-header {
         text-align: left;
         margin-bottom: 25px;
         border-left: 5px solid #003c8f;
-        padding-left: 14px;
+        padding-left: 18px;
     }
 
         .page-header h1 {
-            margin: 0;
             font-size: 32px;
             font-weight: 800;
+            margin: 0;
             color: #003c8f;
         }
 
-    .course-title {
-        font-size: 16px;
-        color: #5b6e80;
-        margin-top: 4px;
-    }
-
-    /* DATE + TIME INPUTS */
-    .session-inputs {
+    .top-actions {
         display: flex;
-        gap: 20px;
+        justify-content: space-between;
+        margin-bottom: 22px;
         flex-wrap: wrap;
-        margin: 30px 0 25px 0;
+        gap: 10px;
     }
 
-        .session-inputs label {
-            font-weight: 600;
-            color: #1a2b4c;
+    .btn-secondary {
+        background: #5b6e80;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: .25s ease;
+        display: inline-block;
+    }
+
+        .btn-secondary:hover {
+            background: #445664;
+            color: #fff;
+            text-decoration: none;
         }
 
-        .session-inputs input {
-            padding: 9px 12px;
-            border-radius: 6px;
-            border: 1px solid #d9e1ec;
-            background: #ffffff;
-            color: #1a2b4c;
-            width: 210px;
-        }
+    .rowx {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: end;
+        margin-bottom: 18px;
+        justify-content: space-between;
+    }
 
-    /* TABLE */
+    label {
+        font-weight: 700;
+        color: #1a2b4c;
+    }
+
+    select {
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid #d9e1ec;
+        background: #fff;
+        color: #1a2b4c;
+        min-width: 320px;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
         border: 1px solid #d9e1ec;
         border-radius: 6px;
         overflow: hidden;
-        margin-top: 10px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
 
     thead {
         background: #003c8f;
-        color: white;
+        color: #fff;
     }
 
     th {
         padding: 14px;
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 700;
         text-align: center;
     }
 
@@ -103,114 +121,147 @@
         background: #f0f6ff;
     }
 
-    select {
-        padding: 9px 12px;
-        border-radius: 6px;
-        border: 1px solid #d9e1ec;
-        background: #ffffff;
-        color: #1a2b4c;
-        cursor: pointer;
-        width: 130px;
-    }
-
-    /* BUTTONS */
-    .btn-save {
+    .btn-primaryy {
         background: #003c8f;
         border: none;
         padding: 12px 25px;
-        color: white;
-        font-weight: 700;
+        color: #fff;
+        font-weight: 800;
         border-radius: 6px;
-        display: block;
-        margin: 35px auto 10px auto;
         cursor: pointer;
-        transition: 0.25s ease;
-        width: 220px;
-        text-align: center;
+        transition: .25s ease;
+        white-space: nowrap;
     }
 
-        .btn-save:hover {
+        .btn-primaryy:hover {
             background: #002a6a;
         }
 
-    .btn-cancel {
-        background: #5b6e80;
-        color: white;
-        padding: 12px 25px;
-        border-radius: 6px;
-        display: block;
-        width: 220px;
-        margin: 10px auto;
-        text-align: center;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.25s ease;
+    .hint {
+        color: #5b6e80;
+        font-weight: 700;
+        padding: 14px 0;
     }
 
-        .btn-cancel:hover {
-            background: #445664;
-        }
+    .hint-warn {
+        color: #8a2d2d;
+        font-weight: 800;
+        padding: 14px 0;
+    }
 </style>
 
-<div class="attendance-container">
-
-    <div class="page-header">
-        <h1>Mark Attendance</h1>
-        <p class="course-title">@courseName</p>
-    </div>
-
-    <form asp-action="Create" method="post">
-        <input type="hidden" name="courseId" value="@courseId" />
-
-        <div class="session-inputs">
-            <div>
-                <label>Date:</label><br />
-                <input type="date" name="AttendanceDate" required />
-            </div>
-
-            <div>
-                <label>Time:</label><br />
-                <input type="time" name="SessionTime" required />
-            </div>
+<div class="att-page">
+    <div class="att-container">
+        <div class="page-header">
+            <h1>Add Attendance</h1>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Student</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+        <div class="top-actions">
+            <a class="btn-secondary"
+               asp-controller="Teacher"
+               asp-action="CourseDetails"
+               asp-route-id="@courseId">⬅ Back to Course</a>
+        </div>
+        @if (TempData["AttendanceErrors"] != null)
+        {
+            <div class="hint-warn">@TempData["AttendanceErrors"]</div>
+        }
 
-            <tbody>
-                @for (int i = 0; i < Model.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            @Model[i].StudentName
+        @if (!sessions.Any())
+        {
+            <div class="hint-warn">No sessions found for this course in the current semester.</div>
+        }
+        else
+        {
+            <form asp-action="Create" method="get" class="rowx">
+                <input type="hidden" name="courseId" value="@courseId" />
 
-                            <input type="hidden" name="attendanceList[@i].StudentID" value="@Model[i].StudentID" />
-                            <input type="hidden" name="attendanceList[@i].CourseID" value="@Model[i].CourseID" />
-                            <input type="hidden" name="attendanceList[@i].StudentName" value="@Model[i].StudentName" />
-                            <input type="hidden" name="attendanceList[@i].CourseName" value="@Model[i].CourseName" />
-                        </td>
+                <div>
+                    <label>Session</label><br />
+                    <select name="sessionId" required>
+                        <option value="">Select session</option>
+                        @foreach (var s in sessions.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartTime))
+                        {
+                            if (selectedSessionId.HasValue && selectedSessionId.Value == s.SessionID)
+                            {
+                                <option value="@s.SessionID" selected="selected">
+                                    @s.SessionDate.ToString("dd/MM/yyyy") (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@s.SessionID">
+                                    @s.SessionDate.ToString("dd/MM/yyyy") (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
 
-                        <td>
-                            <select name="attendanceList[@i].Status">
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                            </select>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                <div>
+                    <button type="submit" class="btn-primaryy">📋 Load Students</button>
+                </div>
+            </form>
 
-        <button type="submit" class="btn-save">💾 Save Attendance</button>
+            @if (!selectedSessionId.HasValue)
+            {
+                <div class="hint">Select a session first to load enrolled students.</div>
+            }
+            else if (selectedSessionId.HasValue && !Model.Any())
+            {
+                <div class="hint-warn">No enrolled students found for this course.</div>
+            }
+            else if (Model.Any())
+            {
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@courseId" />
+                    <input type="hidden" name="sessionId" value="@selectedSessionId.Value" />
 
-        <a asp-action="Index" asp-route-courseId="@courseId" class="btn-cancel">
-            ✖ Cancel
-        </a>
-    </form>
+                    <div class="rowx" style="margin-top: 10px;">
+                        <div class="hint">Mark each student as Present/Absent, then save.</div>
+                        <div>
+                            <button type="submit" class="btn-primaryy">💾 Save Attendance</button>
+                        </div>
+                    </div>
 
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model[i].StudentName
+                                        <input type="hidden" name="attendanceList[@i].StudentID" value="@Model[i].StudentID" />
+                                        <input type="hidden" name="attendanceList[@i].StudentName" value="@Model[i].StudentName" />
+                                    </td>
+
+                                    <td>
+                                        <select name="attendanceList[@i].Status">
+                                            @if (Model[i].Status == "Absent")
+                                            {
+                                                <option value="Present">Present</option>
+                                                <option value="Absent" selected="selected">Absent</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Present" selected="selected">Present</option>
+                                                <option value="Absent">Absent</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </form>
+            }
+        }
+    </div>
 </div>
