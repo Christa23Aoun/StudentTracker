@@ -11,13 +11,19 @@ namespace StudentTrackerBLL.Services
     {
         private readonly IAttendanceRepository _repository;
         private readonly INotificationService _notificationService;
+        private readonly ICourseRepository _courseRepository;
+        private readonly ICourseSessionRepository _sessionRepository;
 
         public AttendanceService(
             IAttendanceRepository repository,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            ICourseRepository courseRepository,
+            ICourseSessionRepository sessionRepository)
         {
             _repository = repository;
             _notificationService = notificationService;
+            _courseRepository = courseRepository;
+            _sessionRepository = sessionRepository;
         }
 
         public Task<IEnumerable<Attendance>> GetBySessionIdAsync(int sessionId)
@@ -33,34 +39,28 @@ namespace StudentTrackerBLL.Services
             DateTime startDate,
             DateTime endDate)
         {
-            if (courseId <= 0)
-                throw new InvalidOperationException("Invalid CourseID.");
-
-            if (startDate.Date > endDate.Date)
-                throw new InvalidOperationException("Invalid date range.");
-
-            return _repository.GetSessionIdsWithAttendanceByCourseAsync(
-                courseId,
-                startDate,
-                endDate);
+            return _repository.GetSessionIdsWithAttendanceByCourseAsync(courseId, startDate, endDate);
         }
 
         public async Task<int> CreateAsync(Attendance attendance)
         {
-            if (attendance == null)
-                throw new InvalidOperationException("Attendance payload is missing.");
-
             var exists = await _repository.ExistsAsync(attendance.StudentID, attendance.SessionID);
             if (exists)
                 throw new InvalidOperationException("Attendance already exists.");
 
             var result = await _repository.CreateAsync(attendance);
 
+            var session = await _sessionRepository.GetByIdAsync(attendance.SessionID);
+            var course = await _courseRepository.GetByIdAsync(attendance.CourseID);
+
+            var courseName = course?.CourseName ?? "your course";
+            var sessionDate = session?.SessionDate.ToString("dd/MM/yyyy") ?? "a session";
+
             await _notificationService.NotifyStudentAsync(
                 attendance.StudentID,
-                "Attendance has been recorded for one of your sessions.",
+                $"Attendance recorded for {courseName} on {sessionDate}.",
                 "ATTENDANCE",
-                "/Attendance"
+                $"/StudentDashboard/CourseDetails?courseId={attendance.CourseID}"
             );
 
             return result;
@@ -70,19 +70,21 @@ namespace StudentTrackerBLL.Services
         {
             var result = await _repository.UpdateAsync(attendance);
 
+            var course = await _courseRepository.GetByIdAsync(attendance.CourseID);
+
+            var courseName = course?.CourseName ?? "your course";
+
             await _notificationService.NotifyStudentAsync(
                 attendance.StudentID,
-                "Your attendance record has been updated.",
+                $"Your attendance record has been updated for {courseName}.",
                 "ATTENDANCE",
-                "/Attendance"
+                $"/StudentDashboard/CourseDetails?courseId={attendance.CourseID}"
             );
 
             return result;
         }
 
         public Task<int> DeleteAsync(int attendanceId)
-        {
-            return _repository.DeleteAsync(attendanceId);
-        }
+            => _repository.DeleteAsync(attendanceId);
     }
 }

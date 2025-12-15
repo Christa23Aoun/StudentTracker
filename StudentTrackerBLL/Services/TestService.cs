@@ -74,7 +74,7 @@ namespace StudentTrackerBLL.Services
                     studentIds,
                     message,
                     "TEST",
-                    $"/Tests?courseId={t.CourseID}"
+                    $"/StudentDashboard/CourseDetails?courseId={t.CourseID}"
                 );
 
             if (teacherId > 0)

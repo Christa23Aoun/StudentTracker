@@ -50,14 +50,14 @@ namespace StudentTrackerBLL.Services
             var test = await _testRepository.GetModelByIdAsync(grade.TestID);
             var course = await _courseRepository.GetByIdAsync(test.CourseID);
 
-            var courseName = course?.CourseName ?? "the course";
+            var courseName = course?.CourseName ?? "your course";
             var testName = test?.TestName ?? "a test";
 
             await _notificationService.NotifyStudentAsync(
                 grade.StudentID,
                 $"A new grade has been posted for {testName} in {courseName}.",
                 "GRADE",
-                $"/TestGrades?courseId={test.CourseID}"
+                $"/StudentDashboard/CourseDetails?courseId={test.CourseID}"
             );
 
             return true;

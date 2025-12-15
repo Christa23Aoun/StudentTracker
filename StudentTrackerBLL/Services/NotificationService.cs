@@ -28,11 +28,7 @@ namespace StudentTrackerBLL.Services
             return _repo.MarkAsReadAsync(notificationId);
         }
 
-        public async Task NotifyStudentAsync(
-            int studentId,
-            string message,
-            string type,
-            string targetUrl)
+        public async Task NotifyStudentAsync(int studentId, string message, string type, string targetUrl)
         {
             await _repo.CreateAsync(new Notification
             {
@@ -45,23 +41,13 @@ namespace StudentTrackerBLL.Services
             });
         }
 
-        public async Task NotifyStudentsAsync(
-            IEnumerable<int> studentIds,
-            string message,
-            string type,
-            string targetUrl)
+        public async Task NotifyStudentsAsync(IEnumerable<int> studentIds, string message, string type, string targetUrl)
         {
             foreach (var id in studentIds.Distinct())
-            {
                 await NotifyStudentAsync(id, message, type, targetUrl);
-            }
         }
 
-        public async Task NotifyTeacherAsync(
-            int teacherId,
-            string message,
-            string type,
-            string targetUrl)
+        public async Task NotifyTeacherAsync(int teacherId, string message, string type, string targetUrl)
         {
             await _repo.CreateAsync(new Notification
             {
@@ -74,11 +60,7 @@ namespace StudentTrackerBLL.Services
             });
         }
 
-        public async Task NotifyUsersAsync(
-            IEnumerable<int> userIds,
-            string message,
-            string type,
-            string targetUrl)
+        public async Task NotifyUsersAsync(IEnumerable<int> userIds, string message, string type, string targetUrl)
         {
             foreach (var id in userIds.Distinct())
             {
@@ -95,13 +77,9 @@ namespace StudentTrackerBLL.Services
         }
 
         public Task<int> GetUnreadCountAsync(int userId)
-        {
-            return _repo.GetUnreadCountAsync(userId);
-        }
+            => _repo.GetUnreadCountAsync(userId);
 
         public Task<int> MarkAllAsReadAsync(int userId)
-        {
-            return _repo.MarkAllAsReadAsync(userId);
-        }
+            => _repo.MarkAllAsReadAsync(userId);
     }
 }

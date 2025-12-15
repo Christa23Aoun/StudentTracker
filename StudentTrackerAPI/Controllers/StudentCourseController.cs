@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerCOMMON.Models;
 using StudentTrackerCOMMON.Interfaces.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -9,10 +12,41 @@ namespace StudentTrackerAPI.Controllers
     public class StudentCoursesController : ControllerBase
     {
         private readonly IStudentCourseService _studentCourseService;
+        private readonly IUserService _userService;
 
-        public StudentCoursesController(IStudentCourseService studentCourseService)
+        public StudentCoursesController(
+            IStudentCourseService studentCourseService,
+            IUserService userService)
         {
             _studentCourseService = studentCourseService;
+            _userService = userService;
+        }
+
+        [HttpGet("byCourse/{courseId}")]
+        public async Task<IActionResult> GetByCourse(int courseId)
+        {
+            if (courseId <= 0)
+                return BadRequest();
+
+            var enrollments = await _studentCourseService.GetByCourseAsync(courseId);
+            if (enrollments == null || !enrollments.Any())
+                return Ok(new List<object>());
+
+            var result = new List<object>();
+
+            foreach (var e in enrollments)
+            {
+                var user = await _userService.GetByIdAsync(e.StudentID);
+                if (user == null) continue;
+
+                result.Add(new
+                {
+                    StudentID = user.UserID,
+                    StudentName = user.FullName
+                });
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]
