@@ -11,124 +11,147 @@
 
 <style>
     body {
-        background: linear-gradient(135deg, #001a33, #003c8f);
-        font-family: 'Segoe UI', sans-serif;
-        color: #fff;
+        background: #f5f7fa;
+        font-family: 'Inter', sans-serif;
+        color: #1a2b4c;
         margin: 0;
         padding: 0;
     }
 
     .page-wrapper {
-        width: 90%;
+        width: 92%;
         max-width: 1300px;
-        margin: 80px auto;
-        background: rgba(0, 45, 90, 0.75);
-        border-radius: 22px;
-        padding: 40px 35px;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        margin: 70px auto;
     }
 
-    h1 {
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .subtitle {
-        text-align: center;
+    .page-header {
+        border-left: 5px solid #003c8f;
+        padding-left: 18px;
         margin-bottom: 30px;
-        color: #cfdcff;
-        font-size: 0.95rem;
     }
+
+        .page-header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0;
+            color: #003c8f;
+        }
+
+        .page-header p {
+            color: #5b6e80;
+            margin-top: 6px;
+            font-size: 15px;
+        }
 
     .filters-row {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        justify-content: center;
         margin-bottom: 25px;
+        align-items: center;
     }
 
         .filters-row select,
         .filters-row input[type="text"] {
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            background: rgba(0, 40, 85, 0.7);
-            color: #ffffff;
-            min-width: 180px;
+            padding: 9px 12px;
+            border-radius: 6px;
+            border: 1px solid #d9e1ec;
+            background: #ffffff;
+            font-size: 14px;
+            min-width: 190px;
         }
 
         .filters-row button {
-            padding: 8px 20px;
-            border-radius: 10px;
+            padding: 9px 22px;
+            border-radius: 6px;
             border: none;
-            background: linear-gradient(135deg, #008cff, #005fc4);
+            background: #003c8f;
             color: #fff;
             font-weight: 600;
+            cursor: pointer;
         }
 
+    .bulk-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
     .table-container {
+        background: #ffffff;
+        border: 1px solid #d9e1ec;
+        border-radius: 6px;
         overflow-x: auto;
-        margin-top: 15px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
-    }
-
-    th, td {
-        padding: 12px 14px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        font-size: 0.95rem;
     }
 
     thead {
-        background: rgba(0, 90, 170, 0.5);
+        background: #003c8f;
+        color: #ffffff;
+    }
+
+    th, td {
+        padding: 13px 14px;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background: #f1f5f9;
     }
 
     .score-cell {
         font-weight: 700;
+        color: #003c8f;
     }
 
     .btn-sm {
-        padding: 4px 10px;
-        border-radius: 8px;
+        padding: 6px 12px;
+        border-radius: 6px;
         border: none;
-        font-size: 0.85rem;
+        font-size: 13px;
         font-weight: 600;
         cursor: pointer;
-        margin: 0 2px;
     }
 
     .btn-validate {
-        background: rgba(0, 200, 83, 0.2);
-        color: #00e676;
-        border: 1px solid rgba(0, 230, 118, 0.5);
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
     }
 
     .btn-reject {
-        background: rgba(255, 82, 82, 0.2);
-        color: #ff8a80;
-        border: 1px solid rgba(255, 138, 128, 0.5);
+        background: #fdecea;
+        color: #c62828;
+        border: 1px solid #f5c6cb;
+    }
+
+    .row-actions {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
     }
 
     .no-data {
         text-align: center;
-        padding: 20px 0;
-        color: #dde7ff;
+        padding: 30px;
+        color: #64748b;
         font-style: italic;
     }
 </style>
 
 <div class="page-wrapper">
-    <h1>🧾 Pending Grades</h1>
-    <p class="subtitle">Review, validate, or reject grades submitted by teachers.</p>
+
+    <div class="page-header">
+        <h1>Pending Grades</h1>
+        <p>Review, validate, or reject grades submitted by teachers.</p>
+    </div>
 
     <form method="get" asp-action="Index" class="filters-row">
         <select name="course">
@@ -152,6 +175,18 @@
         <button type="submit">Filter</button>
     </form>
 
+    @if (Model.Any())
+    {
+        <div class="bulk-actions">
+            <form asp-action="ValidateAll" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-sm btn-validate">
+                    Validate All
+                </button>
+            </form>
+        </div>
+    }
+
     <div class="table-container">
         @if (!Model.Any())
         {
@@ -169,7 +204,7 @@
                         <th>Student</th>
                         <th>Score</th>
                         <th>Created At</th>
-                        <th>Actions</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,23 +217,14 @@
                             <td class="score-cell">@g.Score</td>
                             <td>@g.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                             <td>
-                                <form asp-action="Validate" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@g.TestGradeID" />
-                                    <input type="hidden" name="course" value="@courseFilter" />
-                                    <input type="hidden" name="student" value="@studentFilter" />
-                                    <input type="hidden" name="search" value="@searchTerm" />
-                                    <button type="submit" class="btn-sm btn-validate">Validate</button>
-                                </form>
+                                <div class="row-actions">
+                                    <form asp-action="Validate" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@g.TestGradeID" />
+                                        <button type="submit" class="btn-sm btn-validate">Validate</button>
+                                    </form>
 
-                              // <form asp-action="Reject" method="post" class="d-inline">
-                              //      @Html.AntiForgeryToken()
-                              //       <input type="hidden" name="id" value="@g.TestGradeID" />
-                              //        <input type="hidden" name="course" value="@courseFilter" />
-                              //       <input type="hidden" name="student" value="@studentFilter" />
-                              //       <input type="hidden" name="search" value="@searchTerm" />
-                              //       <button type="submit" class="btn-sm btn-reject">Reject</button>
-                              //   </form>
+                                    
                             </td>
                         </tr>
                     }
@@ -206,4 +232,5 @@
             </table>
         }
     </div>
+
 </div>

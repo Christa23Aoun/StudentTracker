@@ -6,9 +6,12 @@ namespace StudentTracker.Models
     public class GenerateSessionsPageView
     {
         public int CourseID { get; set; }
-        public string CourseName { get; set; } = "";
+        public string CourseName { get; set; } = string.Empty;
+        public string TeacherName { get; set; } = string.Empty;
+
         public DateTime SemesterStartDate { get; set; }
         public DateTime SemesterEndDate { get; set; }
+
         public List<CourseSessionView> Sessions { get; set; } = new();
     }
 }

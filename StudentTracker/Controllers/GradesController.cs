@@ -106,5 +106,54 @@ namespace StudentTracker.Controllers
             await _client.PostAsync($"{_apiBase}Dashboard/RejectGrade/{id}", null);
             return RedirectToAction("Index", new { course, student, search });
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ValidateAll()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminGrades/pending");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Failed to load pending grades.";
+                return RedirectToAction("Index");
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var grades = JsonConvert.DeserializeObject<List<AdminPendingGradeView>>(json) ?? new();
+
+            foreach (var g in grades)
+            {
+                await _client.PostAsync($"{_apiBase}AdminGrades/validate/{g.TestGradeID}", null);
+            }
+
+            TempData["Success"] = "All grades validated.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectAll()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminGrades/pending");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Failed to load pending grades.";
+                return RedirectToAction("Index");
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var grades = JsonConvert.DeserializeObject<List<AdminPendingGradeView>>(json) ?? new();
+
+            foreach (var g in grades)
+            {
+                await _client.DeleteAsync($"{_apiBase}AdminGrades/reject/{g.TestGradeID}");
+            }
+
+            TempData["Success"] = "All grades rejected.";
+            return RedirectToAction("Index");
+        }
+
+
+
     }
 }

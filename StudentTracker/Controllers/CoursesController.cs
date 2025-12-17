@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace StudentTracker.Controllers
 {
@@ -15,10 +13,13 @@ namespace StudentTracker.Controllers
 
         public CoursesController(IHttpClientFactory factory, IConfiguration config)
         {
-            _client = factory.CreateClient();
+            _client = factory.CreateClient("API");
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
+        // =========================
+        // INDEX
+        // =========================
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -31,36 +32,182 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
+        // =========================
+        // LOOKUPS
+        // =========================
+        private async Task PopulateLookupsAsync(CourseView model)
+        {
+            var depRes = await _client.GetAsync($"{_apiBase}Lookups/departments");
+            model.Departments = depRes.IsSuccessStatusCode
+                ? JsonConvert.DeserializeObject<List<LookupItem>>(await depRes.Content.ReadAsStringAsync()) ?? new()
+                : new();
+
+            var semRes = await _client.GetAsync($"{_apiBase}Lookups/semesters");
+            model.Semesters = semRes.IsSuccessStatusCode
+                ? JsonConvert.DeserializeObject<List<LookupItem>>(await semRes.Content.ReadAsStringAsync()) ?? new()
+                : new();
+
+            var teacherRes = await _client.GetAsync($"{_apiBase}Lookups/teachers");
+            model.Teachers = teacherRes.IsSuccessStatusCode
+                ? JsonConvert.DeserializeObject<List<LookupItem>>(await teacherRes.Content.ReadAsStringAsync()) ?? new()
+                : new();
+        }
+
+        // =========================
+        // CREATE (GET)
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var model = new CourseView { IsActive = true };
+            await PopulateLookupsAsync(model);
+            return View(model);
+        }
+
+        // =========================
+        // CREATE (POST)
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CourseView model)
+        {
+            if (!ModelState.IsValid)
+            {
+                await PopulateLookupsAsync(model);
+                return View(model);
+            }
+
+            var payload = JsonConvert.SerializeObject(model);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var res = await _client.PostAsync($"{_apiBase}Courses", content);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["CourseError"] = "Failed to create course.";
+                await PopulateLookupsAsync(model);
+                return View(model);
+            }
+
+            TempData["CourseSuccess"] = "Course created successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // EDIT (GET)  ✅ FIXED
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Courses/{id}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction(nameof(Index));
+
+            var json = await res.Content.ReadAsStringAsync();
+            var model = JsonConvert.DeserializeObject<CourseView>(json);
+
+            if (model == null)
+                return RedirectToAction(nameof(Index));
+
+            await PopulateLookupsAsync(model);
+            return View(model);
+        }
+
+        // =========================
+        // EDIT (POST)  ✅ FIXED
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CourseView model)
+        {
+            if (!ModelState.IsValid)
+            {
+                await PopulateLookupsAsync(model);
+                return View(model);
+            }
+
+            var payload = JsonConvert.SerializeObject(model);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var res = await _client.PutAsync($"{_apiBase}Courses/{id}", content);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["CourseError"] = "Failed to update course.";
+                await PopulateLookupsAsync(model);
+                return View(model);
+            }
+
+            TempData["CourseSuccess"] = "Course updated successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // DEACTIVATE CONFIRMATION
+        // =========================
+        [HttpGet]
+        public async Task<IActionResult> DeactivateCourseConfirmation(int id)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Courses/{id}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction(nameof(Index));
+
+            var json = await res.Content.ReadAsStringAsync();
+            var course = JsonConvert.DeserializeObject<CourseView>(json);
+
+            if (course == null)
+                return RedirectToAction(nameof(Index));
+
+            return View(course);
+        }
+
+        // =========================
+        // DEACTIVATE (POST) ✅ FIXED
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeactivateCourse(int courseId)
+        {
+            var res = await _client.PutAsync($"{_apiBase}Courses/deactivate/{courseId}", null);
+
+            TempData["CourseSuccess"] = res.IsSuccessStatusCode
+                ? "Course deactivated successfully."
+                : "Failed to deactivate course.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =========================
+        // SESSIONS
+        // =========================
         [HttpGet]
         public async Task<IActionResult> Sessions(int courseId)
         {
-            var vm = new GenerateSessionsPageView
-            {
-                CourseID = courseId
-            };
+            var vm = new GenerateSessionsPageView { CourseID = courseId };
 
             var courseRes = await _client.GetAsync($"{_apiBase}Courses/{courseId}");
             if (!courseRes.IsSuccessStatusCode)
-                return View(vm);
+                return View("Sessions", vm);
 
             var courseJson = await courseRes.Content.ReadAsStringAsync();
             var course = JsonConvert.DeserializeObject<CourseView>(courseJson);
             if (course == null)
-                return View(vm);
+                return View("Sessions", vm);
 
             vm.CourseName = course.CourseName;
+            vm.TeacherName = course.TeacherName ?? "";
 
             var semesterRes = await _client.GetAsync($"{_apiBase}Semesters/{course.SemesterID}");
-            if (!semesterRes.IsSuccessStatusCode)
-                return View(vm);
-
-            var semesterJson = await semesterRes.Content.ReadAsStringAsync();
-            var semester = JsonConvert.DeserializeObject<SemesterView>(semesterJson);
-            if (semester == null)
-                return View(vm);
-
-            vm.SemesterStartDate = semester.StartDate.Date;
-            vm.SemesterEndDate = semester.EndDate.Date;
+            if (semesterRes.IsSuccessStatusCode)
+            {
+                var semesterJson = await semesterRes.Content.ReadAsStringAsync();
+                var semester = JsonConvert.DeserializeObject<SemesterView>(semesterJson);
+                if (semester != null)
+                {
+                    vm.SemesterStartDate = semester.StartDate.Date;
+                    vm.SemesterEndDate = semester.EndDate.Date;
+                }
+            }
 
             var sessionsRes = await _client.GetAsync($"{_apiBase}CourseSessions/course/{courseId}");
             if (sessionsRes.IsSuccessStatusCode)
@@ -72,7 +219,9 @@ namespace StudentTracker.Controllers
             return View("Sessions", vm);
         }
 
-
+        // =========================
+        // GENERATE SESSIONS
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateSessions(GenerateSessionsRequest req)
@@ -82,31 +231,27 @@ namespace StudentTracker.Controllers
 
             var res = await _client.PostAsync($"{_apiBase}CourseSessions/generate", content);
 
-            if (!res.IsSuccessStatusCode)
-            {
-                var msg = await res.Content.ReadAsStringAsync();
-                TempData["CourseError"] = msg;
-            }
-            else
-            {
-                TempData["CourseSuccess"] = "Sessions generated successfully.";
-            }
+            TempData["CourseSuccess"] = res.IsSuccessStatusCode
+                ? "Sessions generated successfully."
+                : await res.Content.ReadAsStringAsync();
 
-            return RedirectToAction("Sessions", new { courseId = req.CourseID });
+            return RedirectToAction(nameof(Sessions), new { courseId = req.CourseID });
         }
 
+        // =========================
+        // DELETE SESSION
+        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteSession(int sessionId, int courseId)
         {
             var res = await _client.DeleteAsync($"{_apiBase}CourseSessions/{sessionId}");
 
-            if (!res.IsSuccessStatusCode)
-                TempData["CourseError"] = "Failed to delete session.";
-            else
-                TempData["CourseSuccess"] = "Session deleted successfully.";
+            TempData["CourseSuccess"] = res.IsSuccessStatusCode
+                ? "Session deleted successfully."
+                : "Failed to delete session.";
 
-            return RedirectToAction("Sessions", new { courseId });
+            return RedirectToAction(nameof(Sessions), new { courseId });
         }
     }
 }

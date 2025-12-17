@@ -28,5 +28,10 @@ namespace StudentTrackerBLL.Services
         {
             return _repo.RejectGradeAsync(testGradeId);
         }
+        public async Task ValidateAllPendingAsync()
+        {
+            await _repo.ValidateAllPendingAsync();
+        }
+
     }
 }
