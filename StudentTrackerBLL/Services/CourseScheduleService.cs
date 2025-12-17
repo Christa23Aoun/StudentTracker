@@ -44,6 +44,10 @@ namespace StudentTrackerBLL.Services
 
         public async Task<bool> UpdateScheduleAsync(CourseSchedule schedule)
         {
+            var oldSchedule = await _repo.GetByIdAsync(schedule.ScheduleID);
+            if (oldSchedule == null)
+                return false;
+
             var hasTeacherConflict = await _repo.CheckTeacherConflictAsync(
                 schedule.CourseID,
                 schedule.DayOfWeek,
@@ -55,19 +59,31 @@ namespace StudentTrackerBLL.Services
             if (hasTeacherConflict)
                 return false;
 
-            var updated = await _repo.UpdateAsync(schedule) > 0;
-            if (!updated)
-                return false;
+            await _repo.UpdateAsync(schedule);
 
-            var students = await _enrollmentRepository.GetStudentsByCourseAsync(schedule.CourseID);
+            var changes = new List<string>();
+
+            if (oldSchedule.DayOfWeek != schedule.DayOfWeek)
+                changes.Add($"day from {((DayOfWeek)oldSchedule.DayOfWeek)} to {((DayOfWeek)schedule.DayOfWeek)}");
+
+            if (oldSchedule.StartTime != schedule.StartTime || oldSchedule.EndTime != schedule.EndTime)
+                changes.Add($"time from {oldSchedule.StartTime:hh\\:mm}-{oldSchedule.EndTime:hh\\:mm} to {schedule.StartTime:hh\\:mm}-{schedule.EndTime:hh\\:mm}");
+
+            if (changes.Count == 0)
+                changes.Add("details were reviewed");
+
             var course = await _courseRepository.GetByIdAsync(schedule.CourseID);
             var courseName = course?.CourseName ?? "your course";
+
+            var message = $"Schedule updated ({string.Join(" and ", changes)}) for {courseName}.";
+
+            var students = await _enrollmentRepository.GetStudentsByCourseAsync(schedule.CourseID);
 
             foreach (var student in students)
             {
                 await _notificationService.NotifyStudentAsync(
                     student.UserID,
-                    $"The schedule for {courseName} has been updated.",
+                    message,
                     "ADMIN",
                     $"/StudentDashboard/CourseDetails?courseId={schedule.CourseID}"
                 );
