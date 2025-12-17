@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerBLL.Services;
+using StudentTrackerBLL.Services.Dashboard;
+
 
 namespace StudentTrackerAPI.Controllers
 {
@@ -37,5 +39,14 @@ namespace StudentTrackerAPI.Controllers
             var success = await _service.RejectGradeAsync(id);
             return success ? Ok("Rejected") : BadRequest("Failed");
         }
+        [HttpPost("validate-all")]
+        public async Task<IActionResult> ValidateAll()
+        {
+            await _service.ValidateAllPendingAsync();
+            return Ok("All grades validated");
+        }
+
+
+
     }
 }

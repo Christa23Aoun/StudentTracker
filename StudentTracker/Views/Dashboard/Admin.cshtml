@@ -6,8 +6,6 @@
 <style>
     body {
         background: #f5f7fa;
-        margin: 0;
-        padding: 0;
         font-family: 'Inter', sans-serif;
         color: #1a2b4c;
     }
@@ -18,50 +16,47 @@
         margin: 70px auto;
     }
 
-    /* HEADER TITLE */
     .dashboard-header {
-        text-align: left;
-        margin-bottom: 40px;
         border-left: 5px solid #003c8f;
         padding-left: 18px;
+        margin-bottom: 40px;
     }
 
         .dashboard-header h1 {
             font-size: 36px;
             font-weight: 800;
-            margin: 0;
             color: #003c8f;
+            margin: 0;
         }
 
         .dashboard-header p {
-            font-size: 16px;
             color: #5b6e80;
             margin-top: 6px;
         }
 
-    /* GRID */
     .dashboard-cards {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 30px;
     }
 
-    /* PROFESSIONAL ADMIN CARD */
     .card {
-        background: #ffffff;
+        background: white;
         border: 1px solid #d9e1ec;
         border-radius: 6px;
         padding: 28px;
         text-decoration: none;
-        display: block;
-        transition: 0.25s ease;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.06);
+        color: inherit;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        transition: .25s;
     }
 
-        .card:hover {
-            border-color: #003c8f;
-            transform: translateY(-4px);
-            box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.10);
+        .card::before {
+            content: "";
+            display: block;
+            height: 4px;
+            background: #003c8f;
+            margin-bottom: 18px;
         }
 
     .card-title {
@@ -69,8 +64,6 @@
         text-transform: uppercase;
         font-weight: 600;
         color: #5e6a78;
-        letter-spacing: 0.5px;
-        margin-bottom: 6px;
     }
 
     .card-value {
@@ -79,30 +72,37 @@
         color: #003c8f;
     }
 
-    /* Subtle top line instead of playful colors */
-    .card::before {
-        content: "";
-        display: block;
-        height: 4px;
-        width: 100%;
-        background: #003c8f;
-        border-radius: 2px 2px 0 0;
-        margin-bottom: 18px;
+    .bulk-actions {
+        margin-top: 40px;
+        display: flex;
+        gap: 15px;
     }
 
-    /* FOOTER TEXT */
+    .btn-primary {
+        background: #003c8f;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-danger {
+        background: #c62828;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+    }
+
     .academic-info {
         margin-top: 50px;
-        text-align: left;
-        font-size: 14px;
-        color: #5b6e80;
-        border-top: 1px solid #d9e1ec;
         padding-top: 15px;
+        border-top: 1px solid #d9e1ec;
+        color: #5b6e80;
+        font-size: 14px;
     }
-
-        .academic-info strong {
-            color: #003c8f;
-        }
 </style>
 
 <div class="dashboard-container">
@@ -112,42 +112,45 @@
         <p>Overview of academic operations and university performance indicators.</p>
     </div>
 
-    <div class="dashboard-cards">
+    @if (TempData["GradeMessage"] != null)
+    {
+        <div style="margin-bottom:20px; padding:12px 18px; background:#e3f2fd; border-left:4px solid #003c8f;">
+            @TempData["GradeMessage"]
+        </div>
+    }
 
-        <!-- Students -->
+    <div class="dashboard-cards">
         <a asp-controller="Users" asp-action="Index" asp-route-role="Student" class="card">
             <div class="card-title">Total Registered Students</div>
             <div class="card-value">@Model.Summary.TotalStudents</div>
         </a>
 
-        <!-- Teachers -->
         <a asp-controller="Users" asp-action="Index" asp-route-role="Teacher" class="card">
             <div class="card-title">Total Active Teachers</div>
             <div class="card-value">@Model.Summary.TotalTeachers</div>
         </a>
 
-        <!-- Courses -->
         <a asp-controller="Courses" asp-action="Index" class="card">
             <div class="card-title">Active Courses This Semester</div>
             <div class="card-value">@Model.Summary.ActiveCourses</div>
         </a>
 
-        <!-- Departments -->
         <a asp-controller="Departments" asp-action="Index" class="card">
             <div class="card-title">Academic Departments</div>
             <div class="card-value">@Model.Summary.Departments</div>
         </a>
 
-        <!-- Grades -->
         <a asp-controller="Grades" asp-action="Index" class="card">
             <div class="card-title">Pending Grade Reviews</div>
             <div class="card-value">@Model.PendingGrades.Count</div>
         </a>
-
     </div>
+
+   
 
     <div class="academic-info">
-        Academic Year: <strong>@Model.Summary.CurrentAcademicYear</strong> &nbsp; | &nbsp;
+        Academic Year: <strong>@Model.Summary.CurrentAcademicYear</strong> |
         Semester: <strong>@Model.Summary.CurrentSemester</strong>
     </div>
+
 </div>

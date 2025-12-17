@@ -60,7 +60,10 @@ namespace StudentTrackerAPI.Controllers
         [HttpPut("deactivate/{id}")]
         public async Task<IActionResult> Deactivate(int id)
         {
-            await _courses.DeactivateAsync(id);
+            var affected = await _courses.DeactivateAsync(id);
+            if (affected <= 0)
+                return NotFound(new { message = "Course not found or already deactivated" });
+
             return Ok(new { message = "Course deactivated successfully" });
         }
 

@@ -87,8 +87,10 @@ app.Use(async (context, next) =>
     };
 
     bool isDirectRequest =
-        context.Request.Method == "GET" &&
-        !context.Request.Headers.ContainsKey("Referer");
+    context.Request.Method == "GET" &&
+    !context.Request.Headers.ContainsKey("Referer") &&
+    !context.Request.Path.StartsWithSegments("/Grades");
+
 
     if (isDirectRequest && !allowed.Contains(path))
     {

@@ -109,7 +109,9 @@
         <div class="actions">
             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
-            <form asp-action="DeactivateCourse" method="post" asp-route-id="@Model.CourseID">
+            <form asp-action="DeactivateCourse" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@Model.CourseID" />
                 <button type="submit" class="btn btn-danger">Confirm Deactivate</button>
             </form>
         </div>

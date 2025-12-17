@@ -3,6 +3,7 @@ using StudentTrackerCOMMON.DTOs.AdminDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerDAL.Infrastructure;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace StudentTrackerDAL.Repositories
@@ -57,5 +58,14 @@ namespace StudentTrackerDAL.Repositories
 
             return await con.ExecuteAsync(sql, new { id = testGradeId }) > 0;
         }
+        public async Task ValidateAllPendingAsync()
+        {
+            using var con = _factory.Create();
+
+            await con.ExecuteAsync(
+                "dbo.TestGrades_ValidateAllPending",
+                commandType: CommandType.StoredProcedure);
+        }
+
     }
 }

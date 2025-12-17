@@ -9,5 +9,6 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<IEnumerable<AdminPendingGradeItemDto>> GetPendingGradesAsync();
         Task<bool> ValidateGradeAsync(int testGradeId);
         Task<bool> RejectGradeAsync(int testGradeId);
+        Task ValidateAllPendingAsync();
     }
 }
