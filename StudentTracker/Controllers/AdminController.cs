@@ -37,6 +37,9 @@ namespace StudentTracker.Controllers
                     model.Summary.TotalStudents = data.totalStudents;
                     model.Summary.TotalTeachers = data.totalActiveTeachers;
                     model.Summary.ActiveCourses = data.activeCoursesThisSemester;
+                    model.Summary.CurrentAcademicYear = "2024-2025";
+                    model.Summary.CurrentSemester = "Fall";
+
                 }
 
                 var deptRes = await _client.GetAsync($"{_apiBase}Departments");
@@ -54,7 +57,10 @@ namespace StudentTracker.Controllers
                     var pendingJson = await pendingRes.Content.ReadAsStringAsync();
                     model.PendingGrades =
                         JsonConvert.DeserializeObject<List<AdminPendingGradeView>>(pendingJson) ?? new();
+
+                    model.Summary.PendingGrades = model.PendingGrades.Count;
                 }
+
             }
             catch (Exception ex)
             {

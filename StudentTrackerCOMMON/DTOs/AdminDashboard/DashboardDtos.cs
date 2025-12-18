@@ -17,6 +17,8 @@
         public int Departments { get; set; }
         public string CurrentAcademicYear { get; set; } = "";
         public string CurrentSemester { get; set; } = "";
+        public int PendingGrades { get; set; }
+
     }
 
     public class DepartmentDashboardDto

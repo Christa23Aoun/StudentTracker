@@ -10,5 +10,7 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<bool> ValidateGradeAsync(int testGradeId);
         Task<bool> RejectGradeAsync(int testGradeId);
         Task ValidateAllPendingAsync();
+        Task<int> CountPendingGradesAsync();
+
     }
 }
