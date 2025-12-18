@@ -13,37 +13,29 @@ namespace StudentTracker.Controllers
 
         public TeacherController(IHttpClientFactory factory, IConfiguration config)
         {
-            // FIXED: use the correct API client
             _client = factory.CreateClient("API");
             _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
         }
 
         public async Task<IActionResult> Dashboard()
         {
-            var teacherId = HttpContext.Session.GetInt32("UserID");
-            var teacherName = HttpContext.Session.GetString("UserName");
-            var teacherEmail = HttpContext.Session.GetString("UserEmail");
+            var userId = HttpContext.Session.GetInt32("UserID");
+            var name = HttpContext.Session.GetString("UserName");
+            var email = HttpContext.Session.GetString("UserEmail");
 
-            if (teacherId == null)
+            if (userId == null)
                 return RedirectToAction("LoginTeacher", "Auth");
 
-            var courseRes = await _client.GetAsync($"{_apiBase}Courses/byTeacher/{teacherId}");
-            var courseList = new List<CourseView>();
+            var res = await _client.GetAsync($"{_apiBase}TeacherDashboard/User/{userId}");
 
-            if (courseRes.IsSuccessStatusCode)
-            {
-                var json = await courseRes.Content.ReadAsStringAsync();
-                courseList = JsonConvert.DeserializeObject<List<CourseView>>(json) ?? new();
-            }
+            if (!res.IsSuccessStatusCode)
+                return View(new TeacherDashboardView());
 
-            var vm = new TeacherDashboardView
-            {
-                TeacherID = teacherId.Value,
-                TeacherName = teacherName ?? "",
-                TeacherEmail = teacherEmail ?? "",
-                TotalCourses = courseList.Count,
-                Courses = courseList
-            };
+            var json = await res.Content.ReadAsStringAsync();
+            var vm = JsonConvert.DeserializeObject<TeacherDashboardView>(json) ?? new();
+
+            vm.TeacherName = name ?? "";
+            vm.TeacherEmail = email ?? "";
 
             return View("~/Views/Teacher/Dashboard.cshtml", vm);
         }
@@ -51,13 +43,23 @@ namespace StudentTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
-            var res = await _client.GetAsync($"{_apiBase}Courses/details/{id}");
-
-            if (!res.IsSuccessStatusCode)
+            var courseRes = await _client.GetAsync($"{_apiBase}Courses/{id}");
+            if (!courseRes.IsSuccessStatusCode)
                 return NotFound();
 
-            var json = await res.Content.ReadAsStringAsync();
-            var course = JsonConvert.DeserializeObject<CourseView>(json);
+            var courseJson = await courseRes.Content.ReadAsStringAsync();
+            var course = JsonConvert.DeserializeObject<CourseDetailsView>(courseJson);
+
+            var statsRes = await _client.GetAsync($"{_apiBase}Courses/{id}/stats");
+            if (statsRes.IsSuccessStatusCode)
+            {
+                var statsJson = await statsRes.Content.ReadAsStringAsync();
+                var stats = JsonConvert.DeserializeObject<CourseStatsView>(statsJson);
+
+                course.StudentCount = stats.StudentCount;
+                course.AverageGrade = stats.AverageGrade;
+                course.AttendanceRate = stats.AttendanceRate;
+            }
 
             return View("~/Views/Teacher/CourseDetails.cshtml", course);
         }
@@ -73,7 +75,6 @@ namespace StudentTracker.Controllers
             var students = JsonConvert.DeserializeObject<List<StudentCourseView>>(json) ?? new();
 
             ViewBag.CourseID = courseId;
-
             return View("~/Views/Teacher/StudentsInCourse.cshtml", students);
         }
     }

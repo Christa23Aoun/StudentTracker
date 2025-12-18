@@ -113,15 +113,22 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // =========================
-        // EDIT (POST)  ✅ FIXED
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CourseView model)
         {
+            if (id <= 0)
+            {
+                TempData["CourseError"] = "Invalid course id.";
+                await PopulateLookupsAsync(model);
+                return View(model);
+            }
+
+            model.CourseID = id;
+
             if (!ModelState.IsValid)
             {
+                TempData["CourseError"] = "Please fix the validation errors and try again.";
                 await PopulateLookupsAsync(model);
                 return View(model);
             }
@@ -133,7 +140,8 @@ namespace StudentTracker.Controllers
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["CourseError"] = "Failed to update course.";
+                var apiMsg = await res.Content.ReadAsStringAsync();
+                TempData["CourseError"] = string.IsNullOrWhiteSpace(apiMsg) ? "Failed to update course." : apiMsg;
                 await PopulateLookupsAsync(model);
                 return View(model);
             }
@@ -142,9 +150,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // DEACTIVATE CONFIRMATION
-        // =========================
         [HttpGet]
         public async Task<IActionResult> DeactivateCourseConfirmation(int id)
         {

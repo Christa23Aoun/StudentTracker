@@ -1,4 +1,4 @@
-﻿@model StudentTracker.Models.CourseView
+﻿@model StudentTracker.Models.CourseDetailsView
 @{
     ViewData["Title"] = $"{Model.CourseName} Details";
 }
@@ -53,7 +53,6 @@
         text-align: left;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.06);
         transition: 0.25s ease;
-        cursor: default;
     }
 
         .info-card:hover {
@@ -119,7 +118,7 @@
 
     <div class="course-header">
         <h1>@Model.CourseName (@Model.CourseCode)</h1>
-        <p>@Model.DepartmentName — Semester @Model.SemesterName</p>
+        <p>@Model.DepartmentName — @Model.SemesterName</p>
     </div>
 
     <div class="info-grid">
@@ -138,7 +137,7 @@
            asp-controller="Teacher"
            asp-action="StudentsInCourse"
            asp-route-courseId="@Model.CourseID">
-            <div class="info-card" style="cursor:pointer;">
+            <div class="info-card">
                 <div class="info-card-title">Students Enrolled</div>
                 <div class="info-card-value">@Model.StudentCount</div>
             </div>

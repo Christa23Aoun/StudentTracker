@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.DTOs.AdminDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
@@ -204,6 +205,30 @@ namespace StudentTrackerDAL.Repositories
                 new { TestID = testId });
 
             return result ?? 0;
+        }
+        public async Task<CourseStatsDto> GetCourseStatsAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+                SELECT
+                    COUNT(DISTINCT sc.StudentID) AS StudentCount,
+                    COALESCE(AVG(CAST(tg.Score AS FLOAT)), 0) AS AverageGrade,
+                    COALESCE(
+                        (100.0 * SUM(CASE WHEN a.IsPresent = 1 THEN 1 ELSE 0 END))
+                        / NULLIF(COUNT(a.AttendanceID), 0),
+                        0
+                    ) AS AttendanceRate
+                FROM StudentCourses sc
+                LEFT JOIN Tests t ON t.CourseID = sc.CourseID
+                LEFT JOIN TestGrades tg ON tg.TestID = t.TestID
+                LEFT JOIN Attendance a ON a.CourseID = sc.CourseID
+                WHERE sc.CourseID = @CourseID
+                  AND sc.IsActive = 1";
+
+            return await con.QuerySingleAsync<CourseStatsDto>(
+                sql,
+                new { CourseID = courseId });
         }
     }
 }

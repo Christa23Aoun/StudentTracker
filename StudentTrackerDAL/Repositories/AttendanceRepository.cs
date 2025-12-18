@@ -28,6 +28,7 @@ namespace StudentTrackerDAL.Repositories
 
             return result > 0;
         }
+
         public async Task<int> CreateAsync(Attendance attendance)
         {
             using var con = new SqlConnection(_connectionString);
@@ -44,6 +45,20 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
+        public async Task<double> GetAttendanceRateByCourseAsync(int courseId)
+        {
+            using var con = new SqlConnection(_connectionString);
+            var sql = @"
+                SELECT 
+                    CAST(
+                        (100.0 * SUM(CASE WHEN IsPresent = 1 THEN 1 ELSE 0))
+                        / NULLIF(COUNT(*), 0)
+                    AS DECIMAL(5,2))
+                FROM Attendance
+                WHERE CourseID = @CourseID";
+
+            return await con.ExecuteScalarAsync<double>(sql, new { CourseID = courseId });
+        }
 
         public async Task<int> DeleteAsync(int attendanceId)
         {

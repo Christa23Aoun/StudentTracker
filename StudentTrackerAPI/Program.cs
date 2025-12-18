@@ -66,6 +66,8 @@ builder.Services.AddScoped<IStudentCourseService, StudentCourseService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<TeacherDashboardService>();
 
 builder.Services.AddScoped<TestService>();
 builder.Services.AddScoped<TestGradeService>();

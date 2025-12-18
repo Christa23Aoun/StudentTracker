@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 using StudentTrackerDAL.Infrastructure;
 
 namespace StudentTrackerDAL.Repositories
@@ -52,7 +53,7 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> UpdateAsync(Course entity)
         {
             using var conn = _factory.Create();
-            return await conn.ExecuteScalarAsync<int>(
+            return await conn.ExecuteAsync(
                 "dbo.Courses_Update",
                 new
                 {
@@ -71,7 +72,7 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> DeleteAsync(int id)
         {
             using var conn = _factory.Create();
-            return await conn.ExecuteScalarAsync<int>(
+            return await conn.ExecuteAsync(
                 "dbo.Courses_Delete",
                 new { CourseID = id },
                 commandType: CommandType.StoredProcedure);
@@ -80,7 +81,7 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> DeactivateAsync(int id)
         {
             using var conn = _factory.Create();
-            return await conn.ExecuteScalarAsync<int>(
+            return await conn.ExecuteAsync(
                 "dbo.Courses_Deactivate",
                 new { CourseID = id },
                 commandType: CommandType.StoredProcedure);
@@ -89,9 +90,21 @@ namespace StudentTrackerDAL.Repositories
         public async Task<List<Course>> GetByTeacherIdAsync(int teacherId)
         {
             using var conn = _factory.Create();
-            var result = await conn.QueryAsync<Course>(
-                "SELECT * FROM Courses WHERE TeacherID = @TeacherID",
-                new { TeacherID = teacherId });
+            var sql = @"
+                SELECT 
+                    c.CourseID,
+                    c.CourseCode,
+                    c.CourseName,
+                    c.CreditHours,
+                    c.DepartmentID,
+                    c.SemesterID,
+                    c.TeacherID,
+                    c.IsActive
+                FROM Courses c
+                WHERE c.TeacherID = @TeacherID
+                  AND c.IsActive = 1";
+
+            var result = await conn.QueryAsync<Course>(sql, new { TeacherID = teacherId });
             return result.ToList();
         }
 
@@ -131,10 +144,10 @@ namespace StudentTrackerDAL.Repositories
             return await conn.QueryAsync(sql);
         }
 
-        public async Task<IEnumerable<dynamic>> GetCourseStatsByTeacherAsync(int teacherId)
+        public async Task<IEnumerable<TeacherCourseRowDto>> GetCourseStatsByTeacherAsync(int teacherId)
         {
             using var conn = _factory.Create();
-            return await conn.QueryAsync(
+            return await conn.QueryAsync<TeacherCourseRowDto>(
                 "dbo.sp_TeacherDashboard_GetCourseStats",
                 new { TeacherId = teacherId },
                 commandType: CommandType.StoredProcedure);

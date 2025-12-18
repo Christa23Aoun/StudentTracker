@@ -43,6 +43,15 @@ namespace StudentTrackerBLL.Services
                     "/StudentDashboard/Profile"
                 );
             }
+            else if (createdUser.RoleID == ROLE_TEACHER)
+            {
+                await _notificationService.NotifyTeacherAsync(
+                    userId,
+                    "Your teacher account has been created.",
+                    "ADMIN",
+                    "/Teacher/Dashboard"
+                );
+            }
 
             return userId;
         }
@@ -64,6 +73,15 @@ namespace StudentTrackerBLL.Services
                     "Your profile was updated by the administration.",
                     "ADMIN",
                     "/StudentDashboard/Profile"
+                );
+            }
+            else if (updatedUser.RoleID == ROLE_TEACHER)
+            {
+                await _notificationService.NotifyTeacherAsync(
+                    updatedUser.UserID,
+                    "Your profile was updated by the administration.",
+                    "ADMIN",
+                    "/Teacher/Dashboard"
                 );
             }
 
@@ -89,11 +107,51 @@ namespace StudentTrackerBLL.Services
                     "/StudentDashboard/Profile"
                 );
             }
+            else if (user.RoleID == ROLE_TEACHER)
+            {
+                await _notificationService.NotifyTeacherAsync(
+                    user.UserID,
+                    "Your account has been deactivated.",
+                    "ADMIN",
+                    "/Teacher/Dashboard"
+                );
+            }
 
             return true;
         }
 
-        public Task<bool> ActivateAsync(int id) => _repo.ActivateAsync(id);
+        public async Task<bool> ActivateAsync(int id)
+        {
+            var user = await _repo.GetByIdAsync(id);
+            if (user == null)
+                return false;
+
+            var success = await _repo.ActivateAsync(id);
+            if (!success)
+                return false;
+
+            if (user.RoleID == ROLE_STUDENT)
+            {
+                await _notificationService.NotifyStudentAsync(
+                    user.UserID,
+                    "Your account has been reactivated.",
+                    "ADMIN",
+                    "/StudentDashboard/Profile"
+                );
+            }
+            else if (user.RoleID == ROLE_TEACHER)
+            {
+                await _notificationService.NotifyTeacherAsync(
+                    user.UserID,
+                    "Your account has been reactivated.",
+                    "ADMIN",
+                    "/Teacher/Dashboard"
+                );
+            }
+
+            return true;
+        }
+
         public Task<bool> SetRoleAsync(int id, int roleId) => _repo.SetRoleAsync(id, roleId);
         public Task<int> CountByRoleAsync(string roleName) => _repo.CountByRoleAsync(roleName);
     }

@@ -123,7 +123,7 @@
             <p>Modify course information and assignments.</p>
         </div>
 
-        <form asp-action="Edit" method="post">
+      <form asp-action="Edit" asp-route-id="@Model.CourseID" method="post">
 
             <input type="hidden" asp-for="CourseID" />
 
@@ -142,21 +142,18 @@
             <select asp-for="DepartmentID"
                     class="form-select"
                     asp-items="@(new SelectList(Model.Departments, "Id", "Name", Model.DepartmentID))">
-                <option value="">-- Select Department --</option>
             </select>
 
             <label class="form-label">Semester</label>
             <select asp-for="SemesterID"
                     class="form-select"
                     asp-items="@(new SelectList(Model.Semesters, "Id", "Name", Model.SemesterID))">
-                <option value="">-- Select Semester --</option>
             </select>
 
             <label class="form-label">Teacher</label>
             <select asp-for="TeacherID"
                     class="form-select"
                     asp-items="@(new SelectList(Model.Teachers, "Id", "Name", Model.TeacherID))">
-                <option value="">-- Select Teacher --</option>
             </select>
 
             <div class="form-check">
