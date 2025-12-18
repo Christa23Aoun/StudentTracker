@@ -39,6 +39,7 @@ builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>(
 builder.Services.AddScoped<IStudentDashboardRepository, StudentDashboardRepository>();
 builder.Services.AddScoped<ICourseSessionRepository, CourseSessionRepository>();
 builder.Services.AddScoped<IStudentCourseDetailsRepository, StudentCourseDetailsRepository>();
+builder.Services.AddScoped<ICourseSessionService, CourseSessionService>();
 
 builder.Services.AddScoped<ICourseScheduleRepository>(sp =>
     new CourseScheduleRepository(connectionString));

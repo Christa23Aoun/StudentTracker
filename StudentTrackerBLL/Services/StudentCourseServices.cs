@@ -9,10 +9,17 @@ namespace StudentTrackerBLL.Services
     public class StudentCourseService : IStudentCourseService
     {
         private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly INotificationService _notificationService;
+        private readonly ICourseRepository _courseRepository;
 
-        public StudentCourseService(IEnrollmentRepository enrollmentRepository)
+        public StudentCourseService(
+            IEnrollmentRepository enrollmentRepository,
+            INotificationService notificationService,
+            ICourseRepository courseRepository)
         {
             _enrollmentRepository = enrollmentRepository;
+            _notificationService = notificationService;
+            _courseRepository = courseRepository;
         }
 
         public Task<IEnumerable<StudentCourse>> GetAllAsync()
@@ -25,9 +32,10 @@ namespace StudentTrackerBLL.Services
             throw new NotSupportedException();
         }
 
-        public Task<int> CreateAsync(StudentCourse model)
+        public async Task<int> CreateAsync(StudentCourse model)
         {
-            return _enrollmentRepository.EnrollAsync(model.StudentID, model.CourseID);
+            var success = await EnrollAsync(model.StudentID, model.CourseID);
+            return success ? 1 : 0;
         }
 
         public Task<int> UpdateAsync(StudentCourse model)
@@ -65,7 +73,20 @@ namespace StudentTrackerBLL.Services
         public async Task<bool> EnrollAsync(int userId, int courseId)
         {
             var rows = await _enrollmentRepository.EnrollAsync(userId, courseId);
-            return rows > 0;
+            if (rows <= 0)
+                return false;
+
+            var course = await _courseRepository.GetByIdAsync(courseId);
+            var courseName = course?.CourseName ?? "your course";
+
+            await _notificationService.NotifyStudentAsync(
+                userId,
+                $"You have been enrolled in {courseName}.",
+                "ADMIN",
+                $"/StudentDashboard/CourseDetails?courseId={courseId}"
+            );
+
+            return true;
         }
     }
 }
