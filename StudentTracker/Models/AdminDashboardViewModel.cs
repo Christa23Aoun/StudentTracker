@@ -20,8 +20,10 @@
         public int TotalTeachers { get; set; }
         public int ActiveCourses { get; set; }
         public int Departments { get; set; }
-        public string CurrentAcademicYear { get; set; } = string.Empty;
-        public string CurrentSemester { get; set; } = string.Empty;
+        public string CurrentAcademicYear { get; set; }
+        public string CurrentSemester { get; set; }
+
+        public int PendingGrades { get; set; }
     }
 
     public class DepartmentDashboardView
