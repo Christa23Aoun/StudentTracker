@@ -1,10 +1,10 @@
 ﻿using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Interfaces.Services;
 using StudentTrackerCOMMON.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace StudentTrackerBLL.Services
 {
@@ -12,20 +12,17 @@ namespace StudentTrackerBLL.Services
     {
         private readonly ICourseSessionRepository _sessions;
         private readonly ICourseRepository _courses;
-        private readonly ISemesterRepository _semesters;
         private readonly IEnrollmentRepository _enrollments;
         private readonly INotificationService _notifications;
 
         public CourseSessionService(
             ICourseSessionRepository sessions,
             ICourseRepository courses,
-            ISemesterRepository semesters,
             IEnrollmentRepository enrollments,
             INotificationService notifications)
         {
             _sessions = sessions;
             _courses = courses;
-            _semesters = semesters;
             _enrollments = enrollments;
             _notifications = notifications;
         }
@@ -41,12 +38,8 @@ namespace StudentTrackerBLL.Services
             if (course == null)
                 return false;
 
-            var semester = await _semesters.GetByIdAsync(course.SemesterID);
-            if (semester == null)
-                return false;
-
-            var current = req.SessionDate.Date;
-            var semesterEnd = semester.EndDate.Date;
+            var current = req.StartDate.Date;
+            var endDate = req.EndDate.Date;
 
             while (true)
             {
@@ -57,18 +50,18 @@ namespace StudentTrackerBLL.Services
                     req.EndTime
                 );
 
-                if (conflicts.Any())
-                    return false;
-
-                await _sessions.CreateAsync(new CourseSession
+                if (!conflicts.Any())
                 {
-                    CourseID = req.CourseID,
-                    SessionDate = current,
-                    StartTime = req.StartTime,
-                    EndTime = req.EndTime,
-                    IsCancelled = false,
-                    RepeatType = req.RepeatType
-                });
+                    await _sessions.CreateAsync(new CourseSession
+                    {
+                        CourseID = req.CourseID,
+                        SessionDate = current,
+                        StartTime = req.StartTime,
+                        EndTime = req.EndTime,
+                        IsCancelled = false,
+                        RepeatType = req.RepeatType
+                    });
+                }
 
                 if (req.RepeatType == "None")
                     break;
@@ -77,25 +70,11 @@ namespace StudentTrackerBLL.Services
                 {
                     "Daily" => current.AddDays(1),
                     "Weekly" => current.AddDays(7),
-                    "Monthly" => current.AddMonths(1),
-                    _ => semesterEnd.AddDays(1)
+                    _ => endDate.AddDays(1)
                 };
 
-                if (current > semesterEnd)
+                if (current > endDate)
                     break;
-            }
-
-            var students = await _enrollments.GetStudentsByCourseAsync(req.CourseID);
-            var message = $"New session(s) have been scheduled for {course.CourseName} starting {req.SessionDate:dd/MM/yyyy} from {req.StartTime:hh\\:mm} to {req.EndTime:hh\\:mm}.";
-
-            foreach (var s in students)
-            {
-                await _notifications.NotifyStudentAsync(
-                    s.UserID,
-                    message,
-                    "ADMIN",
-                    $"/StudentDashboard/CourseDetails?courseId={req.CourseID}"
-                );
             }
 
             return true;
