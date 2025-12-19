@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 
 namespace StudentTrackerCOMMON.Interfaces.Repositories
 {
@@ -8,6 +9,7 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
     {
         Task<IEnumerable<CourseListItem>> GetAllAsync();
         Task<CourseListItem?> GetByIdAsync(int id);
+
         Task<int> CreateAsync(Course entity);
         Task<int> UpdateAsync(Course entity);
         Task<int> DeleteAsync(int id);
@@ -18,7 +20,8 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
 
         Task<int> CountActiveAsync();
         Task<IEnumerable<dynamic>> GetCourseSummaryAsync();
-        Task<IEnumerable<dynamic>> GetCourseStatsByTeacherAsync(int teacherId);
+
+        Task<IEnumerable<TeacherCourseRowDto>> GetCourseStatsByTeacherAsync(int teacherId);
 
         Task<IEnumerable<CourseSchedule>> GetSchedulesAsync(int courseId);
     }

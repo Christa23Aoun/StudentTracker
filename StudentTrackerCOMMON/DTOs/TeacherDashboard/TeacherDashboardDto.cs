@@ -11,8 +11,8 @@ namespace StudentTrackerCOMMON.DTOs.TeacherDashboard
         
         public int CourseCount { get; set; }
         public int StudentCount { get; set; }
-        public decimal AverageGrade { get; set; }       // 0–100
-        public decimal AttendanceRate { get; set; }     // 0–100
+        public double AverageGrade { get; set; }
+        public double AttendanceRate { get; set; }
 
         public List<TeacherCourseRowDto> Courses { get; set; } = new();
         public List<RecentActivityDto> RecentActivities { get; set; } = new();

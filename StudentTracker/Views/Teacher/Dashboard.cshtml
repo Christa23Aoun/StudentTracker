@@ -155,7 +155,7 @@
     <div class="dashboard-cards">
         <div class="card">
             <div class="card-title">My Courses</div>
-            <div class="card-value">@Model.TotalCourses</div>
+            <div class="card-value">@Model.CourseCount</div>
         </div>
     </div>
 
@@ -167,8 +167,9 @@
             @foreach (var c in Model.Courses)
             {
                 <div class="course-card" onclick="window.location.href='@Url.Action("CourseDetails", "Teacher", new { id = c.CourseID })'">
-                    <div class="course-code">@c.CourseCode</div>
-                    <div class="course-name">@c.CourseName</div>
+                    <div class="course-code">@c.CourseName</div>
+                    <div class="course-name">@c.SemesterName</div>
+
                 </div>
             }
         </div>
