@@ -11,9 +11,6 @@ namespace StudentTrackerDAL.Repositories
         private readonly ISqlConnectionFactory _factory;
         public DepartmentRepository(ISqlConnectionFactory factory) => _factory = factory;
 
-        // ===========================
-        // GET ALL
-        // ===========================
         public async Task<IEnumerable<Department>> GetAllAsync()
         {
             using var conn = _factory.Create();
@@ -35,9 +32,6 @@ namespace StudentTrackerDAL.Repositories
             return await conn.QueryAsync<Department>(sql);
         }
 
-        // ===========================
-        // GET BY ID
-        // ===========================
         public async Task<Department?> GetByIdAsync(int id)
         {
             using var conn = _factory.Create();
@@ -48,16 +42,17 @@ namespace StudentTrackerDAL.Repositories
                 d.DepartmentName,
                 d.CreatedAt,
                 d.Description,
-                CAST(ISNULL(d.IsActive, 0) AS BIT) AS IsActive
+                CAST(ISNULL(d.IsActive, 0) AS BIT) AS IsActive,
+                COUNT(c.CourseID) AS CourseCount,
+                STRING_AGG(c.CourseName, ', ') AS CourseNames
             FROM Departments d
-            WHERE d.DepartmentID = @id;";
+            LEFT JOIN Courses c ON c.DepartmentID = d.DepartmentID
+            WHERE d.DepartmentID = @id
+            GROUP BY d.DepartmentID, d.DepartmentName, d.CreatedAt, d.Description, d.IsActive;";
 
             return await conn.QueryFirstOrDefaultAsync<Department>(sql, new { id });
         }
 
-        // ===========================
-        // CREATE
-        // ===========================
         public async Task<int> CreateAsync(string departmentName)
         {
             using var conn = _factory.Create();
@@ -67,21 +62,23 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ===========================
-        // UPDATE
-        // ===========================
-        public async Task<int> UpdateAsync(int id, string departmentName)
+        public async Task<int> UpdateAsync(int id, string departmentName, bool isActive)
         {
             using var conn = _factory.Create();
             return await conn.ExecuteScalarAsync<int>(
                 "dbo.Departments_Update",
-                new { DepartmentID = id, DepartmentName = departmentName },
+                new
+                {
+                    DepartmentID = id,
+                    DepartmentName = departmentName,
+                    Description = (string?)null,
+                    IsActive = isActive
+                },
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ===========================
-        // DELETE
-        // ===========================
+
+
         public async Task<int> DeleteAsync(int id)
         {
             using var conn = _factory.Create();
@@ -91,18 +88,12 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        // ===========================
-        // COUNT
-        // ===========================
         public async Task<int> CountAsync()
         {
             using var conn = _factory.Create();
             return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Departments");
         }
 
-        // ===========================
-        // SUMMARY
-        // ===========================
         public async Task<IEnumerable<dynamic>> GetDepartmentSummaryAsync()
         {
             using var conn = _factory.Create();
@@ -118,5 +109,34 @@ namespace StudentTrackerDAL.Repositories
 
             return await conn.QueryAsync(sql);
         }
+
+        public async Task<IEnumerable<Course>> GetCoursesByDepartmentAsync(int departmentId)
+        {
+            using var conn = _factory.Create();
+
+            var sql = @"
+            SELECT CourseID, CourseName
+            FROM Courses
+            WHERE DepartmentID = @departmentId";
+
+            return await conn.QueryAsync<Course>(sql, new { departmentId });
+        }
+        public async Task<int> UpdateStatusAsync(int id, bool isActive)
+        {
+            using var conn = _factory.Create();
+
+            return await conn.ExecuteScalarAsync<int>(
+                "dbo.Departments_Update",
+                new
+                {
+                    DepartmentID = id,
+                    DepartmentName = "",
+                    Description = (string?)null,
+                    IsActive = isActive
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
     }
 }

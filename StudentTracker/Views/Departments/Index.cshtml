@@ -42,6 +42,8 @@
         text-decoration: none;
         font-weight: 600;
         transition: .2s;
+        display: inline-block;
+        text-align: center;
     }
 
         .btn-main:hover {
@@ -57,8 +59,15 @@
         border: 1px solid rgba(148, 163, 184, 0.25);
     }
 
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     table {
         width: 100%;
+        min-width: 700px;
         border-collapse: collapse;
         margin-top: 10px;
     }
@@ -104,6 +113,8 @@
         font-weight: 600;
         text-decoration: none;
         font-size: .85rem;
+        white-space: nowrap;
+        display: inline-block;
     }
 
     .btn-info {
@@ -123,6 +134,109 @@
         .btn-delete:hover {
             background: #fcbcbc;
         }
+
+
+   @@media (max-width: 768px) {
+        .page-wrapper
+
+    {
+        padding: 0 12px;
+        margin: 30px auto;
+    }
+
+    .glass-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .header-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .header-row > div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+    .btn-main {
+        width: 100%;
+    }
+
+    th, td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+
+    .actions a {
+        margin: 4px 0;
+    }
+
+    }
+
+    .btn-deactivate {
+        background: #fff7ed;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .btn-deactivate:hover {
+            background: #ffedd5;
+        }
+
+    .btn-reactivate {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .btn-reactivate:hover {
+            background: #d1fae5;
+        }
+
+    tbody td {
+        color: #0b2540; 
+    }
+
+    tr.inactive-row td {
+        color: #94a3b8;
+    }
+
+    tr.active-row td {
+        color: #0b2540;
+    }
+
+    .btn-reactivate {
+        background: #ecfeff;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .btn-reactivate:hover {
+            background: #cffafe;
+        }
+
+
+
 </style>
 
 <div class="page-wrapper">
@@ -130,56 +244,96 @@
         <h1>Departments</h1>
 
         <div>
-            <a asp-controller="Admin" asp-action="Dashboard" class="btn-main">⬅ Back to Dashboard</a>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn-main">Back to Dashboard</a>
             <a asp-action="Create" class="btn-main">+ Add Department</a>
         </div>
     </div>
 
     <div class="glass-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Department Name</th>
-                    <th>Status</th>
-                    <th>Course Count</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Department Name</th>
+                        <th>Status</th>
+                        <th>Course Count</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var d in Model)
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var d in Model)
+                        {
+                            <tr>
+                                <td>@d.DepartmentID</td>
+                                <td>@d.DepartmentName</td>
+                                <td>
+                                    @if (d.IsActive)
+                                    {
+                                        <span class="badge-active">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-inactive">Inactive</span>
+                                    }
+                                </td>
+                                <td>@d.CourseCount</td>
+                                <td class="actions">
+                                    <a asp-action="Details"
+                                       asp-route-id="@d.DepartmentID"
+                                       class="btn-info">
+                                        Details
+                                    </a>
+
+                                    @if (d.IsActive)
+                                    {
+                                        <form asp-controller="Departments"
+                                              asp-action="Deactivate"
+                                              method="post"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="departmentId"
+                                                   value="@d.DepartmentID" />
+                                            <button type="submit"
+                                                    class="btn-deactivate">
+                                                Deactivate
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Departments"
+                                              asp-action="Reactivate"
+                                              method="post"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden"
+                                                   name="departmentId"
+                                                   value="@d.DepartmentID" />
+                                            <button type="submit"
+                                                    class="btn-reactivate">
+                                                Reactivate
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+
+
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@d.DepartmentID</td>
-                            <td>@d.DepartmentName</td>
-                            <td>
-                                @if (d.IsActive)
-                                {
-                                    <span class="badge-active">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-inactive">Inactive</span>
-                                }
-                            </td>
-                            <td>@d.CourseCount</td>
-                            <td class="actions">
-                                <a asp-action="Details" asp-route-id="@d.DepartmentID" class="btn-info">Details</a>
-                                <a asp-action="Delete" asp-route-id="@d.DepartmentID" class="btn-delete">Delete</a>
-                            </td>
+                            <td colspan="5" style="padding: 30px; color: #64748b;">No departments found.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" style="padding: 30px; color: #64748b;">No departments found.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

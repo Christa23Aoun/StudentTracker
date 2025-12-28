@@ -13,9 +13,11 @@ public interface IDepartmentRepository
     Task<IEnumerable<Department>> GetAllAsync();
     Task<Department?> GetByIdAsync(int id);
     Task<int> CreateAsync(string departmentName);
-    Task<int> UpdateAsync(int id, string departmentName);
+    Task<int> UpdateAsync(int id, string departmentName, bool isActive);
     Task<int> DeleteAsync(int id);
     Task<int> CountAsync();
     Task<IEnumerable<dynamic>> GetDepartmentSummaryAsync();
+    Task<int> UpdateStatusAsync(int id, bool isActive);
+
 
 }

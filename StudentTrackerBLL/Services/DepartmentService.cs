@@ -24,7 +24,8 @@ public class DepartmentService : IDepartmentService
         => _repo.CreateAsync(dto.DepartmentName);
 
     public Task<int> UpdateAsync(DepartmentUpdateDto dto)
-        => _repo.UpdateAsync(dto.DepartmentID, dto.DepartmentName);
+    => _repo.UpdateAsync(dto.DepartmentID, dto.DepartmentName, dto.IsActive);
+
 
     public Task<int> DeleteAsync(int id)
         => _repo.DeleteAsync(id);

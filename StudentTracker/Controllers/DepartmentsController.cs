@@ -11,8 +11,7 @@ namespace StudentTracker.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        // ✅ Fixed: no "Web" enum here
-        private static readonly JsonSerializerOptions _json = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions _json = new()
         {
             PropertyNameCaseInsensitive = true
         };
@@ -24,12 +23,9 @@ namespace StudentTracker.Controllers
 
         private HttpClient Api() => _httpClientFactory.CreateClient("API");
 
-        // ===== Index =====
         public async Task<IActionResult> Index()
         {
-            var client = Api();
-            var res = await client.GetAsync("departments");
-
+            var res = await Api().GetAsync("departments");
             var list = new List<DepartmentView>();
 
             if (res.IsSuccessStatusCode)
@@ -38,15 +34,24 @@ namespace StudentTracker.Controllers
                 list = JsonSerializer.Deserialize<List<DepartmentView>>(json, _json) ?? new();
                 list = list.OrderByDescending(d => d.DepartmentID).ToList();
             }
-            else
-            {
-                ViewBag.Error = $"⚠️ Unable to fetch departments (HTTP {(int)res.StatusCode}).";
-            }
 
             return View(list);
         }
 
-        // ===== Create =====
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var res = await Api().GetAsync($"departments/{id}");
+            if (!res.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
+
+            var json = await res.Content.ReadAsStringAsync();
+            var department = JsonSerializer.Deserialize<DepartmentView>(json, _json);
+
+            return department == null
+                ? RedirectToAction(nameof(Index))
+                : View(department);
+        }
+
         [HttpGet]
         public IActionResult Create() => View();
 
@@ -54,114 +59,115 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DepartmentView model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
-            var client = Api();
             var payload = new StringContent(
                 JsonSerializer.Serialize(model, _json),
                 Encoding.UTF8,
                 "application/json");
 
-            var res = await client.PostAsync("departments", payload);
+            var res = await Api().PostAsync("departments", payload);
 
-            if (res.IsSuccessStatusCode)
-            {
-                TempData["Msg"] = "✅ Department created successfully.";
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["Msg"] = res.IsSuccessStatusCode
+                ? "✅ Department created successfully."
+                : "❌ Failed to create department.";
 
-            ViewBag.Error = "❌ Failed to create department.";
-            return View(model);
+            return RedirectToAction(nameof(Index));
         }
 
-        // ===== Edit =====
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var client = Api();
-            var res = await client.GetAsync($"departments/{id}");
-
-            if (!res.IsSuccessStatusCode)
-                return RedirectToAction(nameof(Index));
+            var res = await Api().GetAsync($"departments/{id}");
+            if (!res.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
 
             var json = await res.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<DepartmentView>(json, _json);
-            if (data == null)
-                return RedirectToAction(nameof(Index));
 
-            return View(data);
+            return data == null
+                ? RedirectToAction(nameof(Index))
+                : View(data);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DepartmentView model)
         {
-            if (id != model.DepartmentID) return BadRequest();
-            if (!ModelState.IsValid) return View(model);
-
-            var client = Api();
-            var body = JsonSerializer.Serialize(model, _json);
-            var payload = new StringContent(body, Encoding.UTF8, "application/json");
-
-            var res = await client.PutAsync($"departments/{id}", payload);
-
-            if (!res.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "❌ Failed to update department.";
+            if (id != model.DepartmentID || !ModelState.IsValid)
                 return View(model);
-            }
 
-            TempData["Msg"] = "✅ Department updated successfully.";
-            return RedirectToAction(nameof(Index));
-        }
+            var payload = new StringContent(
+                JsonSerializer.Serialize(model, _json),
+                Encoding.UTF8,
+                "application/json");
 
-        // ===== Delete =====
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var client = Api();
-            var res = await client.GetAsync($"departments/{id}");
-            if (!res.IsSuccessStatusCode)
-                return RedirectToAction(nameof(Index));
-
-            var json = await res.Content.ReadAsStringAsync();
-            var data = JsonSerializer.Deserialize<DepartmentView>(json, _json);
-            if (data == null)
-                return RedirectToAction(nameof(Index));
-
-            return View(data);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int departmentId)
-        {
-            var client = Api();
-            var res = await client.DeleteAsync($"departments/{departmentId}");
+            var res = await Api().PutAsync($"departments/{id}", payload);
 
             TempData["Msg"] = res.IsSuccessStatusCode
-                ? "✅ Department deleted successfully."
-                : "⚠️ Failed to delete department.";
+                ? "✅ Department updated successfully."
+                : "❌ Failed to update department.";
 
             return RedirectToAction(nameof(Index));
         }
 
-        // ===== Details (Info Page) =====
-        [HttpGet]
-        public async Task<IActionResult> Details(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deactivate(int departmentId)
         {
             var client = Api();
-            var res = await client.GetAsync($"departments/{id}");
+
+            var res = await client.GetAsync($"departments/{departmentId}");
             if (!res.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "⚠️ Department not found.";
                 return RedirectToAction(nameof(Index));
+            }
 
             var json = await res.Content.ReadAsStringAsync();
-            var department = JsonSerializer.Deserialize<DepartmentView>(json, _json);
-            if (department == null)
-                return RedirectToAction(nameof(Index));
+            var dep = JsonSerializer.Deserialize<DepartmentView>(json, _json);
 
-            return View(department);
+            if (dep == null)
+            {
+                TempData["Msg"] = "⚠️ Department not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!dep.IsActive)
+            {
+                TempData["Msg"] = "ℹ️ This department is already inactive.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            dep.IsActive = false;
+
+            var payload = new StringContent(
+                JsonSerializer.Serialize(dep, _json),
+                Encoding.UTF8,
+                "application/json");
+
+            var update = await client.PutAsync($"departments/{departmentId}", payload);
+
+            TempData["Msg"] = update.IsSuccessStatusCode
+                ? "✅ Department deactivated successfully."
+                : "❌ Failed to deactivate department.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reactivate(int departmentId)
+        {
+            var res = await Api().PutAsync($"departments/{departmentId}/reactivate", null);
+
+            TempData["Msg"] = res.IsSuccessStatusCode
+                ? "✅ Department reactivated successfully."
+                : "ℹ️ Department is already active or cannot be reactivated.";
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -148,6 +148,37 @@
         padding: 6px 16px;
         border: 1px solid #fecaca;
     }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .session-table {
+        min-width: 700px;
+    }
+
+    @@media (max-width: 768px) {
+        .page-wrapper
+
+    {
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+
+    .glass-card {
+        padding: 16px;
+    }
+
+    .btn-danger,
+    .status-pill,
+    .repeat-pill {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    }
 </style>
 
 <div class="page-wrapper">
@@ -221,7 +252,9 @@
             <button id="clearFilters" class="btn-back">Clear</button>
         </div>
 
-        <table class="session-table">
+        <div class="table-responsive">
+            <table class="session-table">
+
             <thead>
                 <tr>
                     <th>Date</th>
@@ -253,6 +286,7 @@
                 }
             </tbody>
         </table>
+        </div>
     </div>
 
 </div>
