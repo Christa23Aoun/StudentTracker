@@ -9,7 +9,6 @@
     --ghost-border: rgba(255, 255, 255, 0.7);
 }
 
-/* ===== Page Structure ===== */
 * {
     box-sizing: border-box;
 }
@@ -38,7 +37,6 @@ main {
     margin-inline: auto;
 }
 
-/* ===== Top Contact Bar ===== */
 .topbar {
     background: var(--brand-blue);
     color: #e8f1fb;
@@ -56,7 +54,7 @@ main {
     margin-right: 18px;
 }
 
-/* ===== Header / Nav ===== */
+
 .site-header {
     border-bottom: 1px solid #e8eef5;
     background: #fff;
@@ -168,10 +166,9 @@ main {
     font-size: 22px;
 }
 
-/* ===== Hero Section ===== */
 .hero {
     position: relative;
-    height: 90vh; /* was 72vh */
+    height: 90vh; 
     min-height: 440px;
     overflow: hidden;
 }
@@ -182,7 +179,7 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top; /* shows upper area more */
+    object-position: center top; 
     filter: brightness(0.65) saturate(1.05);
 }
 
@@ -220,7 +217,6 @@ main {
     justify-content: center;
 }
 
-/* ===== News Section ===== */
 .news-block {
     margin: 48px auto 32px;
 }
@@ -316,7 +312,6 @@ main {
         text-decoration: underline;
     }
 
-/* ===== Stats Section ===== */
 .stats-band {
     background: linear-gradient(90deg, #0d4b84 0%, #0a3862 100%);
     color: #fff;
@@ -345,7 +340,6 @@ main {
     letter-spacing: 0.3px;
 }
 
-/* ===== Footer ===== */
 .footer {
     background: #0a3252;
     color: #fff;
@@ -409,7 +403,6 @@ main {
     opacity: 0.9;
 }
 
-/* ===== Footer Icons ===== */
 .footer-social {
     margin-top: 8px;
     display: flex;
@@ -452,7 +445,6 @@ main {
 }
 
 
-/* ===== Connect Dropdown ===== */
 .connect-dropdown {
     position: relative;
     display: inline-block;
@@ -503,7 +495,6 @@ main {
     }
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 1024px) {
     .main-nav {
         display: none;
@@ -523,19 +514,16 @@ main {
         border-radius: 8px;
     }
 }
-/* Footer clean-up: remove thin line / border */
 .footer-bottom {
     border-top: none !important;
     background: transparent !important;
     box-shadow: none !important;
 }
 
-/* make sure body/footer take full height without stray lines */
 html, body {
     height: 100%;
     background-clip: border-box;
 }
-/* ===== Footer Cleanup ===== */
 .footer {
     margin-top: auto;
     position: relative;
@@ -551,7 +539,6 @@ html, body {
     padding-top: 10px;
 }
 
-/* ===== Page Body Layout ===== */
 html, body {
     height: 100%;
     margin: 0;
@@ -562,3 +549,142 @@ html, body {
 main {
     flex: 1;
 }
+
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+}
+
+th, td {
+    white-space: nowrap;
+    text-align: center;
+}
+
+
+td {
+    color: #0b2540;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+}
+
+th, td {
+    white-space: nowrap;
+    text-align: center;
+}
+
+
+td {
+    color: #0b2540;
+}
+
+
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+}
+
+th, td {
+    white-space: nowrap;
+    text-align: center;
+}
+
+td {
+    color: #0b2540;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+}
+
+th, td {
+    white-space: nowrap;
+    text-align: center;
+}
+
+td {
+    color: #0b2540;
+}
+
+@media (max-width: 768px) {
+
+    table {
+        min-width: 500px;
+    }
+
+    th, td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+}
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+}
+
+th, td {
+    white-space: nowrap;
+    text-align: center;
+}
+
+td {
+    color: #0b2540;
+}
+
+@media (max-width: 768px) {
+
+    table {
+        min-width: 500px;
+    }
+
+    th, td {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+}
+*:not(input):not(textarea):not(select):not([contenteditable="true"]) {
+    caret-color: transparent;
+}
+
+input,
+textarea,
+select {
+    caret-color: auto;
+}
+
+
