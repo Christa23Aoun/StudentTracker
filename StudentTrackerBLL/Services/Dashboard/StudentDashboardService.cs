@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Interfaces.Repositories;
@@ -44,6 +46,15 @@ namespace StudentTrackerBLL.Services.Dashboard
             dto.AttendanceTrend = attendance.ToList();
 
             return dto;
+        }
+
+        public async Task<IEnumerable<StudentScheduleItemDto>> GetStudentScheduleAsync(
+            int studentId,
+            int semesterId,
+            DateTime weekStart,
+            DateTime weekEnd)
+        {
+            return await _repo.GetStudentScheduleAsync(studentId, semesterId, weekStart, weekEnd);
         }
     }
 }

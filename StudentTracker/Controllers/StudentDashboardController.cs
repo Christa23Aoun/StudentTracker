@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
 using StudentTracker.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace StudentTracker.Controllers
 {
@@ -29,7 +30,7 @@ namespace StudentTracker.Controllers
 
             try
             {
-                var endpoint = $"{_apiBase}Dashboard/Student/{id}?semester={semester}&department={department}";
+                var endpoint = $"{_apiBase}Dashboard/Student/{id}";
                 var response = await _client.GetAsync(endpoint);
                 if (!response.IsSuccessStatusCode)
                     return View(model);
@@ -95,6 +96,52 @@ namespace StudentTracker.Controllers
             }
 
             return View(vm);
+        }
+
+        public async Task<IActionResult> Schedule(int? semesterId, DateTime? weekStart)
+        {
+            var studentId = HttpContext.Session.GetInt32("StudentId");
+            if (studentId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var semestersRes = await _client.GetAsync($"{_apiBase}Semesters");
+            var semestersJson = await semestersRes.Content.ReadAsStringAsync();
+            var semesters = JsonConvert.DeserializeObject<List<SemesterView>>(semestersJson) ?? new();
+
+            var selectedSemesterId = semesterId ?? semesters.FirstOrDefault()?.SemesterID ?? 0;
+
+            var semesterOptions = semesters.Select(s => new SelectListItem
+            {
+                Value = s.SemesterID.ToString(),
+                Text = s.Name,
+                Selected = s.SemesterID == selectedSemesterId
+            }).ToList();
+
+            var start = weekStart ?? DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+            var end = start.AddDays(6);
+
+            var endpoint =
+                $"{_apiBase}Dashboard/Student/{studentId}/schedule" +
+                $"?semesterId={selectedSemesterId}" +
+                $"&weekStart={start:yyyy-MM-dd}" +
+                $"&weekEnd={end:yyyy-MM-dd}";
+
+            var response = await _client.GetAsync(endpoint);
+
+            var schedule = new List<StudentScheduleItemView>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                schedule = JsonConvert.DeserializeObject<List<StudentScheduleItemView>>(json) ?? new();
+            }
+
+            ViewBag.SemesterOptions = semesterOptions;
+            ViewBag.SelectedSemesterId = selectedSemesterId;
+            ViewBag.WeekStart = start;
+            ViewBag.WeekEnd = end;
+
+            return View(schedule);
         }
     }
 }

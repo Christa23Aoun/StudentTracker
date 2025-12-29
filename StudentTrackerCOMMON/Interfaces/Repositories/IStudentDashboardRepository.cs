@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using StudentTrackerCOMMON.DTOs;
 
@@ -11,5 +12,12 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<IEnumerable<NotificationDTO>> GetNotificationsAsync(int studentId);
         Task<IEnumerable<GradePointDTO>> GetGradeProgressAsync(int studentId);
         Task<IEnumerable<AttendancePointDTO>> GetAttendanceTrendAsync(int studentId);
+
+        Task<IEnumerable<StudentScheduleItemDto>> GetStudentScheduleAsync(
+            int studentId,
+            int semesterId,
+            DateTime weekStart,
+            DateTime weekEnd
+        );
     }
 }
