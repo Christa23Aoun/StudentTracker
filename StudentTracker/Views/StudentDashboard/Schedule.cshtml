@@ -1,0 +1,181 @@
+﻿@model List<StudentTracker.Models.StudentScheduleItemView>
+@using Microsoft.AspNetCore.Mvc.Rendering
+<h1>Sessions count: @Model.Count</h1>
+
+@{
+    ViewData["Title"] = "My Schedule";
+
+    int? selectedSemesterId = ViewBag.SelectedSemesterId as int?;
+    DateTime? weekStart = ViewBag.WeekStart as DateTime?;
+    DateTime? weekEnd = ViewBag.WeekEnd as DateTime?;
+
+    var semesterOptions = ViewBag.SemesterOptions as List<SelectListItem> ?? new List<SelectListItem>();
+
+    DayOfWeek[] days =
+    {
+        DayOfWeek.Monday,
+        DayOfWeek.Tuesday,
+        DayOfWeek.Wednesday,
+        DayOfWeek.Thursday,
+        DayOfWeek.Friday,
+        DayOfWeek.Saturday,
+        DayOfWeek.Sunday
+    };
+
+    int startHour = 8;
+    int startMinute = 0;
+
+    int endHour = 19;
+    int endMinute = 30;
+
+    int slotMinutes = 15;
+    int slotHeightPx = 24;
+
+    int startTotalMinutes = startHour * 60 + startMinute;
+    int endTotalMinutes = endHour * 60 + endMinute;
+
+    int totalSlots = (endTotalMinutes - startTotalMinutes) / slotMinutes;
+    int columnHeightPx = totalSlots * slotHeightPx;
+
+    var sessions = Model
+        .GroupBy(s => new { s.CourseCode, s.Day, s.StartTime, s.EndTime })
+        .Select(g => g.First())
+        .ToList();
+
+    string[] gradients =
+    {
+        "linear-gradient(135deg, #2563eb, #0d4b84)",
+        "linear-gradient(135deg, #7c3aed, #4c1d95)",
+        "linear-gradient(135deg, #059669, #065f46)",
+        "linear-gradient(135deg, #db2777, #9d174d)",
+        "linear-gradient(135deg, #ea580c, #9a3412)",
+        "linear-gradient(135deg, #0ea5e9, #075985)",
+        "linear-gradient(135deg, #16a34a, #166534)",
+        "linear-gradient(135deg, #f97316, #c2410c)"
+    };
+
+    string GetGradient(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return gradients[0];
+        int hash = 0;
+        foreach (var ch in key) hash = (hash * 31) + ch;
+        if (hash < 0) hash = -hash;
+        return gradients[hash % gradients.Length];
+    }
+}
+
+<style>
+    body {
+        background: #f2f4fb;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .schedule-wrapper {
+        max-width: 1500px;
+        margin: 60px auto;
+        padding: 20px;
+    }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: 90px repeat(7, 1fr);
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 14px 30px rgba(15,23,42,.12);
+    }
+
+    .calendar-header {
+        background: #0d4b84;
+        color: white;
+        text-align: center;
+        padding: 12px;
+        font-weight: 700;
+    }
+
+    .time-col {
+        background: #f8fafc;
+    }
+
+    .time-slot {
+        height: 24px;
+        font-size: .75rem;
+        color: #475569;
+        text-align: right;
+        padding-right: 8px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .day-col {
+        position: relative;
+        height: @(columnHeightPx) px;
+        border-left: 1px solid #e2e8f0;
+        background: repeating-linear-gradient(to bottom, #ffffff, #ffffff 23px, #e2e8f0 24px);
+    }
+
+    .event {
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        border-radius: 12px;
+        padding: 10px;
+        color: white;
+        font-size: .82rem;
+        font-weight: 800;
+        box-shadow: 0 8px 18px rgba(2,6,23,.18);
+    }
+</style>
+
+<div class="schedule-wrapper">
+    <h2>📅 Weekly Schedule</h2>
+    @if (weekStart != null && weekEnd != null)
+    {
+        <div>Week of @weekStart.Value.ToString("dd MMM yyyy") – @weekEnd.Value.ToString("dd MMM yyyy")</div>
+    }
+
+    <form method="get" asp-controller="StudentDashboard" asp-action="Schedule">
+        <select name="semesterId" asp-items="semesterOptions"></select>
+        <input type="date" name="weekStart" value="@weekStart?.ToString("yyyy-MM-dd")" />
+        <button type="submit">Show</button>
+    </form>
+
+    <div class="calendar">
+        <div class="calendar-header"></div>
+        @foreach (var d in days)
+        {
+            <div class="calendar-header">@d</div>
+        }
+
+        <div class="time-col">
+            @for (int i = 0; i < totalSlots; i++)
+            {
+                int t = startTotalMinutes + (i * slotMinutes);
+                <div class="time-slot">@($"{t / 60:D2}:{t % 60:D2}")</div>
+            }
+        </div>
+
+        @foreach (var day in days)
+        {
+            <div class="day-col">
+                @foreach (var s in sessions.Where(x => ((int)x.Day + 6) % 7 == ((int)day + 6) % 7))
+                {
+                    int startMinutes = (int)s.StartTime.TotalMinutes - startTotalMinutes;
+                    int durationMinutes = (int)(s.EndTime - s.StartTime).TotalMinutes;
+
+                    int topPx = (startMinutes / slotMinutes) * slotHeightPx;
+                    int heightPx = Math.Max(slotHeightPx, (durationMinutes / slotMinutes) * slotHeightPx);
+
+                    <div class="event" style="top:@(topPx)px; height:@(heightPx)px; background:linear-gradient(135deg, #2563eb, #0d4b84);
+        ;">
+                        @s.CourseName
+                        <div>@s.CourseCode</div>
+                        <div>@s.StartTime.ToString(@"hh\:mm") – @s.EndTime.ToString(@"hh\:mm")</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
