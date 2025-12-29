@@ -23,6 +23,7 @@ namespace StudentTracker.Controllers
 
         private HttpClient Api() => _httpClientFactory.CreateClient("API");
 
+        // ========================= INDEX =========================
         public async Task<IActionResult> Index()
         {
             var res = await Api().GetAsync("departments");
@@ -38,6 +39,7 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
+        // ========================= DETAILS =========================
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -52,6 +54,7 @@ namespace StudentTracker.Controllers
                 : View(department);
         }
 
+        // ========================= CREATE =========================
         [HttpGet]
         public IActionResult Create() => View();
 
@@ -75,6 +78,7 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ========================= EDIT =========================
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -110,6 +114,7 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ========================= DEACTIVATE =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deactivate(int departmentId)
@@ -138,34 +143,73 @@ namespace StudentTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            dep.IsActive = false;
+            var updatePayload = new
+            {
+                DepartmentID = dep.DepartmentID,
+                DepartmentName = dep.DepartmentName,
+                IsActive = false
+            };
 
             var payload = new StringContent(
-                JsonSerializer.Serialize(dep, _json),
+                JsonSerializer.Serialize(updatePayload, _json),
                 Encoding.UTF8,
                 "application/json");
 
             var update = await client.PutAsync($"departments/{departmentId}", payload);
 
             TempData["Msg"] = update.IsSuccessStatusCode
-                ? "✅ Department deactivated successfully."
+                ? "⚠️ Department deactivated successfully."
                 : "❌ Failed to deactivate department.";
 
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
+        // ========================= REACTIVATE =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reactivate(int departmentId)
         {
-            var res = await Api().PutAsync($"departments/{departmentId}/reactivate", null);
+            var client = Api();
 
-            TempData["Msg"] = res.IsSuccessStatusCode
+            var res = await client.GetAsync($"departments/{departmentId}");
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Msg"] = "⚠️ Department not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var dep = JsonSerializer.Deserialize<DepartmentView>(json, _json);
+
+            if (dep == null)
+            {
+                TempData["Msg"] = "⚠️ Department not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (dep.IsActive)
+            {
+                TempData["Msg"] = "ℹ️ This department is already active.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var updatePayload = new
+            {
+                DepartmentID = dep.DepartmentID,
+                DepartmentName = dep.DepartmentName,
+                IsActive = true
+            };
+
+            var payload = new StringContent(
+                JsonSerializer.Serialize(updatePayload, _json),
+                Encoding.UTF8,
+                "application/json");
+
+            var update = await client.PutAsync($"departments/{departmentId}", payload);
+
+            TempData["Msg"] = update.IsSuccessStatusCode
                 ? "✅ Department reactivated successfully."
-                : "ℹ️ Department is already active or cannot be reactivated.";
+                : "❌ Failed to reactivate department.";
 
             return RedirectToAction(nameof(Index));
         }
