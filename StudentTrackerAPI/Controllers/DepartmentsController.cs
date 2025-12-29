@@ -11,7 +11,7 @@ namespace StudentTrackerAPI.Controllers
     public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentRepository _departmentRepo;
-        private readonly ICourseRepository _courseRepo; // 🔹 add this
+        private readonly ICourseRepository _courseRepo;
 
         public DepartmentsController(IDepartmentRepository departmentRepo, ICourseRepository courseRepo)
         {
@@ -19,7 +19,6 @@ namespace StudentTrackerAPI.Controllers
             _courseRepo = courseRepo;
         }
 
-        // ✅ GET: api/departments
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -42,12 +41,10 @@ namespace StudentTrackerAPI.Controllers
             return Ok(result);
         }
 
-        // ✅ GET: api/departments/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var departments = await _departmentRepo.GetAllAsync();
-            var dep = departments.FirstOrDefault(d => d.DepartmentID == id);
+            var dep = await _departmentRepo.GetByIdAsync(id);
             if (dep == null)
                 return NotFound();
 
@@ -63,12 +60,12 @@ namespace StudentTrackerAPI.Controllers
                 dep.DepartmentName,
                 dep.CreatedAt,
                 dep.IsActive,
-                CourseCount = depCourses.Count,
+                dep.CourseCount,
                 Courses = depCourses
             });
         }
 
-        // ✅ POST: api/departments
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Department department)
         {
@@ -83,25 +80,25 @@ namespace StudentTrackerAPI.Controllers
             return Ok(new { DepartmentID = id, Message = "Department created successfully." });
         }
 
-        // ✅ PUT: api/departments/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Department department)
         {
             if (department == null || id != department.DepartmentID)
                 return BadRequest("Department ID mismatch.");
 
-            var name = department.DepartmentName?.Trim();
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest("Department name is required.");
+            var rows = await _departmentRepo.UpdateAsync(
+                department.DepartmentID,
+                department.DepartmentName,
+                department.IsActive
+            );
 
-            var rows = await _departmentRepo.UpdateAsync(id, name);
             if (rows <= 0)
                 return NotFound("Department not found or update failed.");
 
             return Ok(new { Message = "Department updated successfully." });
         }
 
-        // ✅ DELETE: api/departments/{id}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -111,5 +108,21 @@ namespace StudentTrackerAPI.Controllers
 
             return Ok(new { Message = "Department deleted successfully." });
         }
+        [HttpPut("{id}/deactivate")]
+        public async Task<IActionResult> Deactivate(int id)
+        {
+            var rows = await _departmentRepo.UpdateStatusAsync(id, false);
+            if (rows <= 0) return NotFound();
+            return Ok(new { Message = "Department deactivated." });
+        }
+
+        [HttpPut("{id}/reactivate")]
+        public async Task<IActionResult> Reactivate(int id)
+        {
+            var rows = await _departmentRepo.UpdateStatusAsync(id, true);
+            if (rows <= 0) return NotFound();
+            return Ok(new { Message = "Department reactivated." });
+        }
+
     }
 }

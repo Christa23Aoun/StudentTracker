@@ -22,7 +22,6 @@ namespace StudentTrackerAPI.Controllers
             var list = await _service.GetByCourseAsync(courseId);
             return Ok(list);
         }
-
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateSessions([FromBody] GenerateSessionsRequest req)
         {
@@ -33,6 +32,7 @@ namespace StudentTrackerAPI.Controllers
 
             return Ok();
         }
+
 
         [HttpDelete("{sessionId}")]
         public async Task<IActionResult> Delete(int sessionId)
