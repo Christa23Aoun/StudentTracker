@@ -14,12 +14,11 @@ namespace StudentTracker.Controllers
         public CoursesController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient("API");
-            _apiBase = config.GetSection("ApiSettings:BaseUrl").Value!;
+
+            var baseUrl = config.GetSection("ApiSettings:BaseUrl").Value ?? "";
+            _apiBase = baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
         }
 
-        // =========================
-        // INDEX
-        // =========================
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -32,9 +31,6 @@ namespace StudentTracker.Controllers
             return View(list);
         }
 
-        // =========================
-        // LOOKUPS
-        // =========================
         private async Task PopulateLookupsAsync(CourseView model)
         {
             var depRes = await _client.GetAsync($"{_apiBase}Lookups/departments");
@@ -53,9 +49,6 @@ namespace StudentTracker.Controllers
                 : new();
         }
 
-        // =========================
-        // CREATE (GET)
-        // =========================
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -64,9 +57,6 @@ namespace StudentTracker.Controllers
             return View(model);
         }
 
-        // =========================
-        // CREATE (POST)
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CourseView model)
@@ -77,14 +67,27 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
 
-            var payload = JsonConvert.SerializeObject(model);
+            var cleanPayload = new
+            {
+                model.CourseCode,
+                model.CourseName,
+                model.CreditHours,
+                model.DepartmentID,
+                model.SemesterID,
+                model.TeacherID,
+                model.IsActive
+            };
+
+
+            var payload = JsonConvert.SerializeObject(cleanPayload);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
             var res = await _client.PostAsync($"{_apiBase}Courses", content);
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["CourseError"] = "Failed to create course.";
+                var apiMsg = await res.Content.ReadAsStringAsync();
+                TempData["CourseError"] = string.IsNullOrWhiteSpace(apiMsg) ? "Failed to create course." : apiMsg;
                 await PopulateLookupsAsync(model);
                 return View(model);
             }
@@ -93,9 +96,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // EDIT (GET)  ✅ FIXED
-        // =========================
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -166,9 +166,6 @@ namespace StudentTracker.Controllers
             return View(course);
         }
 
-        // =========================
-        // DEACTIVATE (POST) ✅ FIXED
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeactivateCourse(int courseId)
@@ -182,9 +179,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // SESSIONS
-        // =========================
         [HttpGet]
         public async Task<IActionResult> Sessions(int courseId)
         {
@@ -224,9 +218,6 @@ namespace StudentTracker.Controllers
             return View("Sessions", vm);
         }
 
-        // =========================
-        // GENERATE SESSIONS
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateSessions(GenerateSessionsRequest req)
@@ -243,9 +234,6 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Sessions), new { courseId = req.CourseID });
         }
 
-        // =========================
-        // DELETE SESSION
-        // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteSession(int sessionId, int courseId)

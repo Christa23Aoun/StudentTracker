@@ -35,6 +35,9 @@ namespace StudentTrackerBLL.Services
 
         public async Task<bool> AddSessionAsync(CourseSession session)
         {
+            session.SessionDate = session.SessionDate.Date;
+            session.IsCancelled = false;
+
             var result = await _sessions.CreateAsync(session);
             return result > 0;
         }
@@ -50,7 +53,7 @@ namespace StudentTrackerBLL.Services
             var current = req.StartDate.Date;
             var endDate = req.EndDate.Date;
 
-            while (true)
+            while (current <= endDate)
             {
                 var conflicts = await _sessions.GetTeacherConflictsAsync(
                     course.TeacherID,
@@ -67,8 +70,7 @@ namespace StudentTrackerBLL.Services
                         SessionDate = current,
                         StartTime = req.StartTime,
                         EndTime = req.EndTime,
-                        IsCancelled = false,
-                        RepeatType = req.RepeatType
+                        IsCancelled = false
                     });
 
                     foreach (var s in students)
@@ -76,7 +78,7 @@ namespace StudentTrackerBLL.Services
                         await _notifications.CreateAsync(new Notification
                         {
                             UserID = s.UserID,
-                            Message = $"New session(s) have been scheduled for {course.CourseName} starting {current:dd/MM/yyyy} from {req.StartTime:hh\\:mm} to {req.EndTime:hh\\:mm}.",
+                            Message = $"New session scheduled for {course.CourseName} on {current:dd/MM/yyyy} from {req.StartTime:hh\\:mm} to {req.EndTime:hh\\:mm}.",
                             Type = "info",
                             CreatedAt = DateTime.UtcNow,
                             IsRead = false
@@ -87,15 +89,9 @@ namespace StudentTrackerBLL.Services
                 if (req.RepeatType == "None")
                     break;
 
-                current = req.RepeatType switch
-                {
-                    "Daily" => current.AddDays(1),
-                    "Weekly" => current.AddDays(7),
-                    _ => endDate.AddDays(1)
-                };
-
-                if (current > endDate)
-                    break;
+                current = req.RepeatType == "Daily"
+                    ? current.AddDays(1)
+                    : current.AddDays(7);
             }
 
             return true;
@@ -122,7 +118,7 @@ namespace StudentTrackerBLL.Services
                     await _notifications.CreateAsync(new Notification
                     {
                         UserID = s.UserID,
-                        Message = $"A session for {course.CourseName} on {session.SessionDate:dd/MM/yyyy} from {session.StartTime:hh\\:mm} to {session.EndTime:hh\\:mm} has been cancelled.",
+                        Message = $"Session for {course.CourseName} on {session.SessionDate:dd/MM/yyyy} has been cancelled.",
                         Type = "warning",
                         CreatedAt = DateTime.UtcNow,
                         IsRead = false

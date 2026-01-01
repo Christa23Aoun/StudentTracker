@@ -78,13 +78,28 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<int>> GetSessionIdsWithAttendanceByCourseAsync(int courseId, DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<int>> GetSessionIdsWithAttendanceByCourseAsync(
+            int courseId,
+            DateTime startDate,
+            DateTime endDate)
         {
             using var con = new SqlConnection(_connectionString);
+
+            var sql = @"
+                SELECT DISTINCT SessionID
+                FROM Attendance
+                WHERE CourseID = @CourseID
+                  AND CAST(CreatedAt AS DATE) BETWEEN @StartDate AND @EndDate
+            ";
+
             return await con.QueryAsync<int>(
-                "sp_GetAttendanceSessionIdsByCourse",
-                new { CourseID = courseId, StartDate = startDate.Date, EndDate = endDate.Date },
-                commandType: CommandType.StoredProcedure);
+                sql,
+                new
+                {
+                    CourseID = courseId,
+                    StartDate = startDate.Date,
+                    EndDate = endDate.Date
+                });
         }
 
         public async Task<int> UpdateAsync(Attendance attendance)

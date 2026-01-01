@@ -18,15 +18,11 @@ namespace StudentTracker.Controllers
 
         private HttpClient Api() => _http.CreateClient("API");
 
-        // ===========================
-        // GET: Enroll page
-        // ===========================
         [HttpGet]
         public async Task<IActionResult> Enroll(int studentId, string? role, string? status)
         {
             var client = Api();
 
-            // Get student info
             var studentRes = await client.GetAsync($"users/{studentId}");
             if (!studentRes.IsSuccessStatusCode)
                 return RedirectToAction("Index", "Users");
@@ -37,7 +33,6 @@ namespace StudentTracker.Controllers
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
 
-            // Get departments
             var depRes = await client.GetAsync("departments");
             if (!depRes.IsSuccessStatusCode)
                 return RedirectToAction("Index", "Users");
@@ -48,7 +43,6 @@ namespace StudentTracker.Controllers
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             ) ?? new();
 
-            // Get student's enrolled courses
             var enrollRes = await client.GetAsync($"Enrollments/student/{studentId}");
             var enrollJson = await enrollRes.Content.ReadAsStringAsync();
 
@@ -59,7 +53,6 @@ namespace StudentTracker.Controllers
 
             var active = enrollments.Where(e => e.IsActive).Select(e => e.CourseID).ToList();
 
-            // Build department list
             var departmentCourses = new List<DepartmentCoursesView>();
             foreach (var d in deps)
             {
@@ -98,9 +91,6 @@ namespace StudentTracker.Controllers
             return View("~/Views/Enrollments/Enroll.cshtml", vm);
         }
 
-        // ===========================
-        // POST — Enroll Selected
-        // ===========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Enroll(EnrollmentViewModel model)
@@ -118,17 +108,13 @@ namespace StudentTracker.Controllers
                 }
             }
 
-            return RedirectToAction("Enroll", new
-            {
-                studentId = model.StudentID,
-                role = model.ReturnRole,
-                status = model.ReturnStatus
-            });
+            return RedirectToAction(
+                "Index",
+                "Users",
+                new { role = "Student", status = "All" }
+            );
         }
 
-        // ===========================
-        // POST — Unenroll
-        // ===========================
         [HttpPost]
         public async Task<IActionResult> Unenroll(int studentId, int courseId, string? role, string? status)
         {

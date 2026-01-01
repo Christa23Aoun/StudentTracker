@@ -118,15 +118,6 @@
     select {
         max-width: 100%;
     }
-
-    @@media (max-width: 768px) {
-        select
-
-    {
-        font-size: 0.9rem;
-    }
-
-    }
 </style>
 
 <div class="course-form-shell">
@@ -137,6 +128,7 @@
         </div>
 
         <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
             <label class="form-label">Course Code</label>
             <input asp-for="CourseCode" class="form-control" />
@@ -150,22 +142,19 @@
             <span asp-validation-for="CreditHours" class="text-danger"></span>
 
             <label class="form-label">Department</label>
-            <select asp-for="DepartmentID"
-                    class="form-select"
+            <select asp-for="DepartmentID" class="form-select"
                     asp-items="@(new SelectList(Model.Departments, "Id", "Name", Model.DepartmentID))">
                 <option value="">-- Select Department --</option>
             </select>
 
             <label class="form-label">Semester</label>
-            <select asp-for="SemesterID"
-                    class="form-select"
+            <select asp-for="SemesterID" class="form-select"
                     asp-items="@(new SelectList(Model.Semesters, "Id", "Name", Model.SemesterID))">
                 <option value="">-- Select Semester --</option>
             </select>
 
             <label class="form-label">Teacher</label>
-            <select asp-for="TeacherID"
-                    class="form-select"
+            <select asp-for="TeacherID" class="form-select"
                     asp-items="@(new SelectList(Model.Teachers, "Id", "Name", Model.TeacherID))">
                 <option value="">-- Select Teacher --</option>
             </select>
@@ -179,7 +168,6 @@
                 <button class="btn btn-primary" type="submit">Save</button>
                 <a asp-action="Index" class="btn btn-secondary">Back</a>
             </div>
-
         </form>
     </div>
 </div>

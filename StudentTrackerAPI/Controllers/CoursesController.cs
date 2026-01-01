@@ -2,7 +2,6 @@
 using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Interfaces.Services;
 using StudentTrackerCOMMON.Interfaces.Repositories;
-using StudentTrackerCOMMON.Models;
 using System.Threading.Tasks;
 
 namespace StudentTrackerAPI.Controllers
@@ -23,17 +22,10 @@ namespace StudentTrackerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Course model)
+        public async Task<IActionResult> Create([FromBody] CourseCreateDto dto)
         {
-            var dto = new CourseCreateDto(
-                string.IsNullOrWhiteSpace(model.CourseCode) ? null : model.CourseCode.Trim(),
-                model.CourseName.Trim(),
-                model.CreditHours,
-                model.DepartmentID,
-                model.SemesterID,
-                model.TeacherID,
-                model.IsActive
-            );
+            if (dto == null)
+                return BadRequest("Invalid payload.");
 
             var id = await _courseService.CreateAsync(dto);
             return Ok(new { CourseID = id });
