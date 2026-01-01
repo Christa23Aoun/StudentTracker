@@ -1,18 +1,25 @@
-﻿using StudentTrackerCOMMON.DTOs.TeacherDashboard;
+﻿using StudentTrackerCOMMON.DTOs;
+using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 using StudentTrackerCOMMON.Interfaces.Repositories;
+using StudentTrackerCOMMON.Interfaces.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace StudentTrackerBLL.Services.Dashboard
 {
-    public class TeacherDashboardService
+    public class TeacherDashboardService : ITeacherDashboardService
     {
         private readonly ICourseRepository _courses;
+        private readonly ICourseSessionRepository _sessions;
 
-        public TeacherDashboardService(ICourseRepository courses)
+        public TeacherDashboardService(
+            ICourseRepository courses,
+            ICourseSessionRepository sessions)
         {
             _courses = courses;
+            _sessions = sessions;
         }
 
         public async Task<TeacherDashboardDto> GetDashboardAsync(int userId)
@@ -34,5 +41,19 @@ namespace StudentTrackerBLL.Services.Dashboard
 
             return dto;
         }
+
+        public async Task<IEnumerable<TeacherScheduleItemDto>> GetTeacherWeeklyScheduleAsync(
+    int teacherId,
+    DateTime weekStart,
+    DateTime weekEnd)
+        {
+            return await _sessions.GetTeacherWeeklyScheduleAsync(
+                teacherId,
+                weekStart,
+                weekEnd
+            );
+        }
+
+
     }
 }

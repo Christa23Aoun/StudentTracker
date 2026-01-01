@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using StudentTrackerCOMMON.DTOs;
 using StudentTrackerCOMMON.Interfaces.Repositories;
 using StudentTrackerCOMMON.Models;
 using StudentTrackerDAL.Infrastructure;
@@ -70,6 +71,25 @@ namespace StudentTrackerDAL.Repositories
                 commandType: CommandType.StoredProcedure
             );
         }
+
+        public async Task<IEnumerable<TeacherScheduleItemDto>> GetTeacherWeeklyScheduleAsync(
+          int teacherId,
+          DateTime weekStart,
+          DateTime weekEnd)
+        {
+            using var conn = _factory.Create();
+            return await conn.QueryAsync<TeacherScheduleItemDto>(
+                "dbo.sp_TeacherSchedule_GetWeekly",
+                new
+                {
+                    TeacherID = teacherId,
+                    WeekStart = weekStart,
+                    WeekEnd = weekEnd
+                },
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
 
         public async Task<int> UpdateAsync(CourseSession session)
         {

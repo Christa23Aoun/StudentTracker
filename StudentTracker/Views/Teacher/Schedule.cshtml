@@ -1,37 +1,31 @@
-﻿@model List<StudentTracker.Models.StudentScheduleItemView>
+﻿@model List<StudentTracker.Models.TeacherScheduleItemView>
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "My Schedule";
+    ViewData["Title"] = "My Teaching Schedule";
 
     int? selectedSemesterId = ViewBag.SelectedSemesterId as int?;
-    DateTime? weekStart = ViewBag.WeekStart as DateTime?;
-    DateTime? weekEnd = ViewBag.WeekEnd as DateTime?;
+    DateTime weekStart = (DateTime)ViewBag.WeekStart;
+    DateTime weekEnd = (DateTime)ViewBag.WeekEnd;
 
-    var semesterOptions = ViewBag.SemesterOptions as List<SelectListItem> ?? new List<SelectListItem>();
+    var semesterOptions = ViewBag.SemesterOptions as List<SelectListItem> ?? new();
 
     int startHour = 8;
-    int startMinute = 0;
-
     int endHour = 19;
     int endMinute = 30;
 
     int slotMinutes = 15;
     int slotHeightPx = 24;
 
-    int startTotalMinutes = startHour * 60 + startMinute;
+    int startTotalMinutes = startHour * 60;
     int endTotalMinutes = endHour * 60 + endMinute;
 
     int totalSlots = (endTotalMinutes - startTotalMinutes) / slotMinutes;
     int columnHeightPx = totalSlots * slotHeightPx;
 
-    var weekDates = new List<DateTime>();
-    if (weekStart != null)
-    {
-        var ws = weekStart.Value.Date;
-        for (int i = 0; i < 7; i++)
-            weekDates.Add(ws.AddDays(i));
-    }
+    var weekDates = Enumerable.Range(0, 7)
+        .Select(i => weekStart.AddDays(i))
+        .ToList();
 }
 
 <style>
@@ -80,26 +74,26 @@
         flex-wrap: wrap;
     }
 
-    .schedule-filters select,
-    .schedule-filters input[type="date"] {
-        height: 42px;
-        border-radius: 10px;
-        border: 1px solid #cbd5f5;
-        padding: 0 12px;
-        font-size: .9rem;
-        background: #f8fafc;
-    }
+        .schedule-filters select,
+        .schedule-filters input[type="date"] {
+            height: 42px;
+            border-radius: 10px;
+            border: 1px solid #cbd5f5;
+            padding: 0 12px;
+            font-size: .9rem;
+            background: #f8fafc;
+        }
 
-    .schedule-filters button {
-        height: 42px;
-        border-radius: 10px;
-        border: none;
-        padding: 0 22px;
-        background: #0d4b84;
-        color: white;
-        font-weight: 700;
-        cursor: pointer;
-    }
+        .schedule-filters button {
+            height: 42px;
+            border-radius: 10px;
+            border: none;
+            padding: 0 22px;
+            background: #0d4b84;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
 
     .calendar {
         display: grid;
@@ -119,12 +113,12 @@
         font-size: .95rem;
     }
 
-    .calendar-header small {
-        display: block;
-        font-size: .75rem;
-        opacity: .85;
-        margin-top: 3px;
-    }
+        .calendar-header small {
+            display: block;
+            font-size: .75rem;
+            opacity: .85;
+            margin-top: 3px;
+        }
 
     .time-col {
         background: #f8fafc;
@@ -144,14 +138,9 @@
 
     .day-col {
         position: relative;
-        height: @(columnHeightPx)px;
+        height: @(columnHeightPx) px;
         border-left: 1px solid #e2e8f0;
-        background: repeating-linear-gradient(
-            to bottom,
-            #ffffff,
-            #ffffff 23px,
-            #e2e8f0 24px
-        );
+        background: repeating-linear-gradient( to bottom, #ffffff, #ffffff 23px, #e2e8f0 24px );
     }
 
     .event {
@@ -166,35 +155,43 @@
         background: #2563eb;
         box-shadow: 0 8px 18px rgba(2,6,23,.18);
     }
+
+        .event .code {
+            font-size: .75rem;
+            opacity: .9;
+            margin-top: 2px;
+        }
+
+        .event .time {
+            font-size: .72rem;
+            margin-top: 4px;
+            opacity: .95;
+        }
 </style>
 
 <div class="schedule-wrapper">
 
     <div class="schedule-header">
         <div class="schedule-title">
-            <h2>📅 Weekly Schedule</h2>
-            @if (weekStart != null && weekEnd != null)
-            {
-                <span>Week of @weekStart.Value.ToString("dd MMM yyyy") – @weekEnd.Value.ToString("dd MMM yyyy")</span>
-            }
+            <h2>📅 Teaching Schedule</h2>
+            <span>Week of @weekStart.ToString("dd MMM yyyy") – @weekEnd.ToString("dd MMM yyyy")</span>
         </div>
 
-        <form method="get" asp-controller="StudentDashboard" asp-action="Schedule" class="schedule-filters">
+        <form method="get" asp-controller="Teacher" asp-action="Schedule" class="schedule-filters">
             <select name="semesterId" asp-items="semesterOptions"></select>
-            <input type="date" name="weekStart" value="@weekStart?.ToString("yyyy-MM-dd")" />
+            <input type="date" name="weekStart" value="@weekStart.ToString("yyyy-MM-dd")" />
             <button type="submit">Show</button>
         </form>
     </div>
 
     <div class="calendar">
-        <div class="calendar-header"></div>
+        <div></div>
 
-        @for (int i = 0; i < 7; i++)
+        @foreach (var d in weekDates)
         {
-            var date = weekDates[i];
             <div class="calendar-header">
-                @date.ToString("dddd")
-                <small>@date.ToString("dd MMM")</small>
+                @d.ToString("dddd")
+                <small>@d.ToString("dd MMM")</small>
             </div>
         }
 
@@ -206,12 +203,10 @@
             }
         </div>
 
-        @for (int i = 0; i < 7; i++)
+        @foreach (var date in weekDates)
         {
-            var date = weekDates[i].Date;
-
             <div class="day-col">
-                @foreach (var s in Model.Where(x => x.SessionDate.Date == date).OrderBy(x => x.StartTime))
+                @foreach (var s in Model.Where(x => x.SessionDate.Date == date.Date))
                 {
                     int startMinutes = (int)s.StartTime.TotalMinutes - startTotalMinutes;
                     int durationMinutes = (int)(s.EndTime - s.StartTime).TotalMinutes;
@@ -220,9 +215,11 @@
                     int heightPx = Math.Max(slotHeightPx, (durationMinutes / slotMinutes) * slotHeightPx);
 
                     <div class="event" style="top:@(topPx)px; height:@(heightPx)px;">
-                        @s.CourseName
-                        <div>@s.CourseCode</div>
-                        <div>@s.StartTime.ToString(@"hh\:mm") – @s.EndTime.ToString(@"hh\:mm")</div>
+                        <div>@s.CourseName</div>
+                        <div class="code">@s.CourseCode</div>
+                        <div class="time">
+                            @s.StartTime.ToString(@"hh\:mm") – @s.EndTime.ToString(@"hh\:mm")
+                        </div>
                     </div>
                 }
             </div>

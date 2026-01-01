@@ -2,7 +2,7 @@
 
 namespace StudentTrackerCOMMON.DTOs
 {
-    public class StudentScheduleItemDto
+    public class TeacherScheduleItemDto
     {
         public int CourseID { get; set; }
         public string CourseName { get; set; } = string.Empty;

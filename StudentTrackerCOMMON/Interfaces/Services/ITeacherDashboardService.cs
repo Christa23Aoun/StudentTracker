@@ -1,17 +1,14 @@
 ﻿using StudentTrackerCOMMON.DTOs;
-using StudentTrackerCOMMON.Models;
+using StudentTrackerCOMMON.DTOs.TeacherDashboard;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace StudentTrackerCOMMON.Interfaces.Services
 {
-    public interface ICourseSessionService
+    public interface ITeacherDashboardService
     {
-        Task<IEnumerable<CourseSession>> GetByCourseAsync(int courseId);
-        Task<bool> AddSessionAsync(CourseSession session);
-        Task<bool> GenerateSessionsAsync(GenerateSessionsRequest request);
-        Task<bool> DeleteSessionAsync(int sessionId);
+        Task<TeacherDashboardDto> GetDashboardAsync(int userId);
         Task<IEnumerable<TeacherScheduleItemDto>> GetTeacherWeeklyScheduleAsync(
             int teacherId,
             DateTime weekStart,

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using StudentTrackerCOMMON.DTOs;
+using StudentTrackerCOMMON.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using StudentTrackerCOMMON.Models;
 
 namespace StudentTrackerCOMMON.Interfaces.Repositories
 {
@@ -14,8 +15,11 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
             int teacherId,
             DateTime sessionDate,
             TimeSpan startTime,
-            TimeSpan endTime
-        );
+            TimeSpan endTime);
+        Task<IEnumerable<TeacherScheduleItemDto>> GetTeacherWeeklyScheduleAsync(
+            int teacherId,
+            DateTime weekStart,
+            DateTime weekEnd);
         Task<int> UpdateAsync(CourseSession session);
         Task<int> DeleteAsync(int sessionId);
     }

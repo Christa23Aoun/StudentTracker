@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using StudentTracker.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace StudentTracker.Controllers
 {
@@ -26,7 +27,7 @@ namespace StudentTracker.Controllers
             if (userId == null)
                 return RedirectToAction("LoginTeacher", "Auth");
 
-            var res = await _client.GetAsync($"{_apiBase}TeacherDashboard/User/{userId}");
+            var res = await _client.GetAsync($"{_apiBase}Dashboard/Teacher/{userId}");
 
             if (!res.IsSuccessStatusCode)
                 return View(new TeacherDashboardView());
@@ -76,6 +77,55 @@ namespace StudentTracker.Controllers
 
             ViewBag.CourseID = courseId;
             return View("~/Views/Teacher/StudentsInCourse.cshtml", students);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Schedule(int? semesterId, DateTime? weekStart)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserID");
+            if (teacherId == null)
+                return RedirectToAction("LoginTeacher", "Auth");
+
+            var semestersRes = await _client.GetAsync($"{_apiBase}Semesters");
+            var semestersJson = await semestersRes.Content.ReadAsStringAsync();
+            var semesters = JsonConvert.DeserializeObject<List<SemesterView>>(semestersJson) ?? new();
+
+            var selectedSemesterId = semesterId ?? semesters.FirstOrDefault()?.SemesterID ?? 0;
+
+            var semesterOptions = semesters.Select(s => new SelectListItem
+            {
+                Value = s.SemesterID.ToString(),
+                Text = s.Name,
+                Selected = s.SemesterID == selectedSemesterId
+            }).ToList();
+
+            var today = DateTime.Today;
+            var diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var start = weekStart ?? today.AddDays(-diff);
+            var end = start.AddDays(6);
+
+            var endpoint =
+                $"{_apiBase}Dashboard/Teacher/{teacherId}/schedule" +
+                $"?semesterId={selectedSemesterId}" +
+                $"&weekStart={start:yyyy-MM-dd}" +
+                $"&weekEnd={end:yyyy-MM-dd}";
+
+            var response = await _client.GetAsync(endpoint);
+
+            var schedule = new List<TeacherScheduleItemView>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                schedule = JsonConvert.DeserializeObject<List<TeacherScheduleItemView>>(json) ?? new();
+            }
+
+            ViewBag.SemesterOptions = semesterOptions;
+            ViewBag.SelectedSemesterId = selectedSemesterId;
+            ViewBag.WeekStart = start;
+            ViewBag.WeekEnd = end;
+
+            return View("~/Views/Teacher/Schedule.cshtml", schedule);
         }
     }
 }

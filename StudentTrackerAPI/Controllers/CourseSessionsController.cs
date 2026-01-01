@@ -22,17 +22,20 @@ namespace StudentTrackerAPI.Controllers
             var list = await _service.GetByCourseAsync(courseId);
             return Ok(list);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSession([FromBody] CourseSession session)
+        {
+            var success = await _service.AddSessionAsync(session);
+            return success ? Ok() : BadRequest();
+        }
+
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateSessions([FromBody] GenerateSessionsRequest req)
         {
             var success = await _service.GenerateSessionsAsync(req);
-
-            if (!success)
-                return BadRequest();
-
-            return Ok();
+            return success ? Ok() : BadRequest();
         }
-
 
         [HttpDelete("{sessionId}")]
         public async Task<IActionResult> Delete(int sessionId)

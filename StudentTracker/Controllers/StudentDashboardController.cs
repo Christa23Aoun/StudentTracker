@@ -117,7 +117,18 @@ namespace StudentTracker.Controllers
                 Selected = s.SemesterID == selectedSemesterId
             }).ToList();
 
-            var start = weekStart ?? DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+            DateTime start;
+            if (weekStart.HasValue)
+            {
+                start = weekStart.Value.Date;
+            }
+            else
+            {
+                var today = DateTime.Today;
+                int diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+                start = today.AddDays(-diff);
+            }
+
             var end = start.AddDays(6);
 
             var endpoint =

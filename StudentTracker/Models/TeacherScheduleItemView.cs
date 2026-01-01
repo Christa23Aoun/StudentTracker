@@ -2,9 +2,10 @@
 
 namespace StudentTracker.Models
 {
-    public class StudentScheduleItemView
+    public class TeacherScheduleItemView
     {
         public int CourseID { get; set; }
+
         public string CourseName { get; set; } = "";
         public string CourseCode { get; set; } = "";
 
@@ -12,7 +13,5 @@ namespace StudentTracker.Models
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-
-        public string Room { get; set; } = "";
     }
 }
