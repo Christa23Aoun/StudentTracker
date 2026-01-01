@@ -234,7 +234,16 @@
         .btn-reactivate:hover {
             background: #cffafe;
         }
+    @@media (max-width: 768px) {
+        .actions
 
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    }
 
 
 </style>
@@ -290,38 +299,29 @@
 
                                     @if (d.IsActive)
                                     {
-                                        <form asp-controller="Departments"
-                                              asp-action="Deactivate"
+                                        <form asp-action="Deactivate"
                                               method="post"
                                               style="display:inline;">
                                             @Html.AntiForgeryToken()
-                                            <input type="hidden"
-                                                   name="departmentId"
-                                                   value="@d.DepartmentID" />
-                                            <button type="submit"
-                                                    class="btn-deactivate">
+                                            <input type="hidden" name="departmentId" value="@d.DepartmentID" />
+                                            <button type="submit" class="btn-deactivate">
                                                 Deactivate
                                             </button>
                                         </form>
                                     }
                                     else
                                     {
-                                        <form asp-controller="Departments"
-                                              asp-action="Reactivate"
+                                        <form asp-action="Reactivate"
                                               method="post"
                                               style="display:inline;">
                                             @Html.AntiForgeryToken()
-                                            <input type="hidden"
-                                                   name="departmentId"
-                                                   value="@d.DepartmentID" />
-                                            <button type="submit"
-                                                    class="btn-reactivate">
+                                            <input type="hidden" name="departmentId" value="@d.DepartmentID" />
+                                            <button type="submit" class="btn-reactivate">
                                                 Reactivate
                                             </button>
                                         </form>
                                     }
                                 </td>
-
 
                             </tr>
                         }
