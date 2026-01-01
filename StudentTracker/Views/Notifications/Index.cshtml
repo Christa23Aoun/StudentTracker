@@ -129,9 +129,6 @@
         <div class="notifications-list">
             @foreach (var n in Model)
             {
-                var date = n.CreatedAt.Date;
-                var weekStart = date.AddDays(-(int)date.DayOfWeek + 1);
-
                 <div class="notification-card @(n.IsRead ? "" : "unread")">
                     <div class="notification-left">
                         <div class="notification-message">@n.Message</div>
@@ -141,9 +138,9 @@
                     </div>
 
                     <div class="notification-actions">
-                        <a asp-controller="StudentDashboard"
-                           asp-action="Schedule"
-                           asp-route-weekStart="@weekStart.ToString("yyyy-MM-dd")">
+                        <a asp-controller="Notifications"
+                           asp-action="View"
+                           asp-route-id="@n.NotificationID">
                             View
                         </a>
                     </div>

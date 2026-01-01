@@ -82,7 +82,7 @@ namespace StudentTrackerBLL.Services
                     teacherId,
                     $"You added a new test '{t.TestName}' for {courseName}.",
                     "TEST",
-                    $"/Tests?courseId={t.CourseID}"
+                    $"/Teacher/CourseDetails?courseId={t.CourseID}"
                 );
 
             return testId;

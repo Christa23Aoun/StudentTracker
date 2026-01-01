@@ -98,6 +98,7 @@ namespace StudentTracker.Controllers
             return View(vm);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Schedule(int? semesterId, DateTime? weekStart)
         {
             var studentId = HttpContext.Session.GetInt32("StudentId");
