@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentTrackerCOMMON.Interfaces.Repositories;
-using StudentTrackerCOMMON.Models;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace StudentTrackerAPI.Controllers
 
             var result = list.Select(d => new
             {
-                Id = d.DepartmentID,
+                DepartmentID = d.DepartmentID,
                 Name = d.DepartmentName
             });
 
@@ -45,8 +44,10 @@ namespace StudentTrackerAPI.Controllers
 
             var result = list.Select(s => new
             {
-                Id = s.SemesterID,
-                Name = s.Name
+                SemesterID = s.SemesterID,
+                Name = s.Name,
+                StartDate = s.StartDate,
+                EndDate = s.EndDate
             });
 
             return Ok(result);
@@ -61,7 +62,7 @@ namespace StudentTrackerAPI.Controllers
                 .Where(u => u.RoleID == 2 && u.IsActive)
                 .Select(u => new
                 {
-                    Id = u.UserID,
+                    UserID = u.UserID,
                     Name = u.FullName
                 });
 

@@ -1,481 +1,168 @@
-﻿@* @model List<StudentTracker.Models.AttendanceView>
+﻿@model List<StudentTracker.Models.AttendanceView>
+
+@using StudentTracker.Controllers
 
 @{
     ViewData["Title"] = "Attendance";
 
     int courseId = (int)(ViewBag.CourseID ?? 0);
     int? selectedSessionId = ViewBag.SelectedSessionId as int?;
-    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
+
+    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView>
+                   ?? new List<StudentTracker.Models.CourseSessionView>();
+
+    var semesters = ViewBag.Semesters as List<AttendanceController.SemesterOptionView>
+                    ?? new List<AttendanceController.SemesterOptionView>();
+
+    int selectedSemesterId = ViewBag.SelectedSemesterId != null
+        ? (int)ViewBag.SelectedSemesterId
+        : (semesters.Any() ? semesters.First().SemesterID : 0);
+
+    var courseName = ViewBag.CourseName as string ?? "";
 }
 
 <style>
-
     .attendance-page {
         background: #f5f7fa;
-        font-family: 'Inter', sans-serif;
-        color: #1a2b4c;
         padding: 70px 0;
         min-height: calc(100vh - 200px);
+        font-family: 'Inter', sans-serif;
     }
 
     .attendance-container {
         width: 92%;
-        max-width: 1300px;
-        margin: 0 auto;
-        background: #ffffff;
-        border: 1px solid #d9e1ec;
-        border-radius: 8px;
-        padding: 35px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.06);
+        max-width: 1350px;
+        margin: auto;
+        background: #fff;
+        border-radius: 14px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
     }
 
-    .page-header {
-        text-align: left;
-        margin-bottom: 25px;
-        border-left: 5px solid #003c8f;
-        padding-left: 18px;
-    }
-
-        .page-header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 0;
-            color: #003c8f;
-        }
-
-    .top-actions {
+    .header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 22px;
+        align-items: flex-end;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 20px;
+        margin-bottom: 30px;
     }
 
-    .btn-primary {
-        background: #003c8f;
-        color: white;
-        padding: 12px 22px;
-        border-radius: 6px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
-    }
-
-        .btn-primary:hover {
-            background: #002a6a;
-        }
-
-    .btn-secondary {
-        background: #5b6e80;
-        color: white;
-        padding: 12px 22px;
-        border-radius: 6px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
-    }
-
-        .btn-secondary:hover {
-            background: #445664;
-        }
-
-    .layout {
-        display: grid;
-        grid-template-columns: 330px 1fr;
-        gap: 22px;
-        margin-top: 10px;
-    }
-
-    .sessions {
-        border: 1px solid #d9e1ec;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #ffffff;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
-    }
-
-    .sessions-header {
-        background: #003c8f;
-        color: #ffffff;
-        padding: 14px;
-        font-weight: 700;
-        text-align: left;
-    }
-
-    .sessions a {
-        display: block;
-        padding: 14px;
-        border-bottom: 1px solid #edf2f7;
-        text-decoration: none;
-        color: #1a2b4c;
-        font-weight: 600;
-        transition: 0.2s ease;
-    }
-
-        .sessions a:hover {
-            background: #f0f6ff;
-        }
-
-        .sessions a.active {
-            background: #e6f0ff;
-            color: #003c8f;
-        }
-
-    .panel {
-        background: #ffffff;
-        border: 1px solid #d9e1ec;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
-    }
-
-    .panel-header {
-        padding: 14px 16px;
-        font-weight: 800;
+    .header-left h2 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 900;
         color: #003c8f;
-        border-bottom: 1px solid #edf2f7;
+    }
+
+    .header-left p {
+        margin-top: 6px;
+        color: #5b6e80;
+        font-weight: 600;
+    }
+
+    .header-right {
         display: flex;
-        justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
         align-items: center;
     }
 
-    .panel-sub {
-        color: #5b6e80;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    thead {
-        background: #003c8f;
-        color: white;
-    }
-
-    th {
-        padding: 14px;
-        font-size: 15px;
-        font-weight: 700;
-        text-align: center;
-    }
-
-    td {
-        padding: 14px;
-        text-align: center;
-        border-bottom: 1px solid #edf2f7;
-        color: #1a2b4c;
-    }
-
-    tr:hover {
-        background: #f0f6ff;
-    }
-
-    .present {
-        font-weight: 700;
-        color: #0a7d2c;
-    }
-
-    .absent {
-        font-weight: 700;
-        color: #b30000;
-    }
-
-    .btn-danger {
-        background: #c62828;
-        padding: 7px 16px;
-        border-radius: 6px;
-        font-weight: 700;
-        color: white;
-        text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
-    }
-
-        .btn-danger:hover {
-            background: #a71f1f;
-        }
-
-    .hint {
-        padding: 18px;
-        color: #5b6e80;
-        font-weight: 600;
-    }
-</style>
-
-<div class="attendance-page">
-    <div class="attendance-container">
-
-        <div class="page-header">
-            <h1>Attendance</h1>
-        </div>
-
-        <div class="top-actions">
-            <a class="btn-primary"
-               asp-action="Create"
-               asp-route-courseId="@courseId">
-                Add Attendance
-            </a>
-
-            <a class="btn-secondary"
-               asp-controller="Teacher"
-               asp-action="CourseDetails"
-               asp-route-id="@courseId">
-                ⬅ Back to Course
-            </a>
-        </div>
-
-        <div class="layout">
-
-            <div class="sessions">
-                <div class="sessions-header">Sessions</div>
-
-                @if (!sessions.Any())
-                {
-                    <div class="hint">No sessions found for this course.</div>
-                }
-                else
-                {
-                    foreach (var s in sessions.OrderByDescending(x => x.SessionDate))
-                    {
-                        <a asp-action="Index"
-                           asp-route-courseId="@courseId"
-                           asp-route-sessionId="@s.SessionID"
-                           class="@(selectedSessionId == s.SessionID ? "active" : "")">
-                            @s.SessionDate.ToString("dd/MM/yyyy")
-                            (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
-                        </a>
-                    }
-                }
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
-                    <div>
-                        Attendance List
-                        <div class="panel-sub">
-                            @(selectedSessionId == null ? "Select a session to view attendance." : $"Session ID: {selectedSessionId}")
-                        </div>
-                    </div>
-                </div>
-
-                @if (selectedSessionId == null)
-                {
-                    <div class="hint">Click a session on the left to display students attendance.</div>
-                }
-                else if (!Model.Any())
-                {
-                    <div class="hint">No attendance recorded for this session.</div>
-                }
-                else
-                {
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@item.StudentName</td>
-                                    <td class="@(item.IsPresent ? "present" : "absent")">
-                                        @(item.IsPresent ? "Present ✔" : "Absent ✘")
-                                    </td>
-                                    <td>
-                                        <a class="btn-danger"
-                                           asp-action="Delete"
-                                           asp-route-id="@item.AttendanceID"
-                                           asp-route-courseId="@courseId"
-                                           asp-route-sessionId="@selectedSessionId"
-                                           onclick="return confirm('Delete this attendance record?');">
-                                            Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-
-            </div>
-
-        </div>
-
-    </div>
-</div>
- *@
-@model List<StudentTracker.Models.AttendanceView>
-@{
-    ViewData["Title"] = "Attendance";
-
-    int courseId = (int)(ViewBag.CourseID ?? 0);
-    int? selectedSessionId = ViewBag.SelectedSessionId as int?;
-    var sessions = ViewBag.Sessions as List<StudentTracker.Models.CourseSessionView> ?? new();
-
-    var courseName = (string?)ViewBag.CourseName;
-    if (string.IsNullOrWhiteSpace(courseName))
-    {
-        courseName = "";
-    }
-}
-<style>
-    .attendance-page {
-        background: #f5f7fa;
-        font-family: 'Inter', sans-serif;
-        color: #1a2b4c;
-        padding: 70px 0;
-        min-height: calc(100vh - 200px);
-    }
-
-    .attendance-container {
-        width: 92%;
-        max-width: 1300px;
-        margin: 0 auto;
-        background: #ffffff;
-        border: 1px solid #d9e1ec;
+    select {
+        padding: 12px 14px;
         border-radius: 8px;
-        padding: 35px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.06);
-    }
-
-    .page-header {
-        text-align: left;
-        margin-bottom: 25px;
-        border-left: 5px solid #003c8f;
-        padding-left: 18px;
-    }
-
-        .page-header h1 {
-            font-size: 30px;
-            font-weight: 800;
-            margin: 0;
-            color: #003c8f;
-            line-height: 1.2;
-        }
-
-        .page-header .sub {
-            margin-top: 6px;
-            color: #5b6e80;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-    .top-actions {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 22px;
-        flex-wrap: wrap;
-        gap: 10px;
+        border: 1px solid #d0d7e2;
+        font-weight: 700;
+        background: #fff;
     }
 
     .btn-primary {
         background: #003c8f;
-        color: white;
+        color: #fff;
         padding: 12px 22px;
-        border-radius: 6px;
-        font-weight: 700;
+        border-radius: 8px;
+        font-weight: 800;
         text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
+        transition: .2s;
     }
 
         .btn-primary:hover {
             background: #002a6a;
+            color: #fff;
         }
 
     .btn-secondary {
         background: #5b6e80;
-        color: white;
+        color: #fff;
         padding: 12px 22px;
-        border-radius: 6px;
-        font-weight: 700;
+        border-radius: 8px;
+        font-weight: 800;
         text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
+        transition: .2s;
     }
 
         .btn-secondary:hover {
             background: #445664;
+            color: #fff;
         }
 
     .layout {
         display: grid;
-        grid-template-columns: 330px 1fr;
-        gap: 22px;
-        margin-top: 10px;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+        margin-top: 20px;
     }
 
     .sessions {
-        border: 1px solid #d9e1ec;
-        border-radius: 8px;
+        border: 1px solid #e1e6ef;
+        border-radius: 12px;
         overflow: hidden;
-        background: #ffffff;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
-        height: fit-content;
+        background: #fff;
     }
 
     .sessions-header {
         background: #003c8f;
-        color: #ffffff;
-        padding: 14px;
-        font-weight: 800;
-        text-align: left;
+        color: #fff;
+        padding: 16px;
+        font-weight: 900;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
     }
 
-    .sessions-count {
-        font-weight: 700;
-        opacity: .9;
-        font-size: 13px;
-    }
-
-    .sessions a {
+    .session-item {
         display: block;
-        padding: 14px;
-        border-bottom: 1px solid #edf2f7;
+        padding: 15px 16px;
+        border-bottom: 1px solid #edf1f6;
         text-decoration: none;
-        color: #1a2b4c;
-        font-weight: 650;
-        transition: 0.2s ease;
+        color: #003c8f;
+        font-weight: 700;
+        transition: .15s;
     }
 
-        .sessions a:hover {
+        .session-item:hover {
             background: #f0f6ff;
         }
 
-        .sessions a.active {
+        .session-item.active {
             background: #e6f0ff;
-            color: #003c8f;
-            border-left: 4px solid #003c8f;
-            padding-left: 10px;
+            border-left: 5px solid #003c8f;
         }
 
     .panel {
-        background: #ffffff;
-        border: 1px solid #d9e1ec;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.06);
+        border: 1px solid #e1e6ef;
+        border-radius: 12px;
+        padding: 28px;
+        background: #fff;
         min-height: 240px;
     }
 
-    .panel-empty {
-        padding: 28px;
+    .empty-state {
+        text-align: center;
         color: #5b6e80;
-        font-weight: 650;
+        font-weight: 700;
+        font-size: 16px;
+        padding-top: 40px;
     }
 
     table {
@@ -485,88 +172,65 @@
 
     thead {
         background: #003c8f;
-        color: white;
+        color: #fff;
     }
 
-    th {
+    th, td {
         padding: 14px;
-        font-size: 15px;
-        font-weight: 800;
-        text-align: center;
+        text-align: left;
+        font-weight: 700;
     }
 
-    td {
-        padding: 14px;
-        text-align: center;
-        border-bottom: 1px solid #edf2f7;
-        color: #1a2b4c;
-        font-weight: 600;
+    tbody tr {
+        border-bottom: 1px solid #edf1f6;
     }
 
-    tr:hover {
-        background: #f0f6ff;
-    }
-
-    .present {
-        font-weight: 800;
-        color: #0a7d2c;
-    }
-
-    .absent {
-        font-weight: 800;
-        color: #b30000;
-    }
-
-    .btn-danger {
-        background: #c62828;
-        padding: 7px 16px;
-        border-radius: 6px;
-        font-weight: 800;
-        color: white;
-        text-decoration: none;
-        transition: 0.25s ease;
-        display: inline-block;
-    }
-
-        .btn-danger:hover {
-            background: #a71f1f;
+        tbody tr:hover {
+            background: #f7fbff;
         }
-
-    .hint {
-        padding: 18px;
-        color: #5b6e80;
-        font-weight: 650;
-    }
 </style>
 
 <div class="attendance-page">
     <div class="attendance-container">
 
-        <div class="page-header">
-            @if (!string.IsNullOrWhiteSpace(courseName))
-            {
-                <h1>Attendance for @courseName</h1>
-            }
-            else
-            {
-                <h1>Attendance</h1>
-            }
-            <div class="sub">Choose a session to view recorded attendance.</div>
-        </div>
+        <div class="header">
+            <div class="header-left">
+                <h2>Attendance : @courseName</h2>
+                <p>Select a semester and session to view attendance</p>
+            </div>
 
-        <div class="top-actions">
-            <a class="btn-primary"
-               asp-action="Create"
-               asp-route-courseId="@courseId">
-                Add Attendance
-            </a>
+            <div class="header-right">
+                <form method="get" asp-action="Index">
+                    <input type="hidden" name="courseId" value="@courseId" />
+                    <select name="semesterId" onchange="this.form.submit()">
+                        @foreach (var sem in semesters)
+                        {
+                            if (sem.SemesterID == selectedSemesterId)
+                            {
+                                <option value="@sem.SemesterID" selected>@sem.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@sem.SemesterID">@sem.Name</option>
+                            }
+                        }
+                    </select>
+                </form>
 
-            <a class="btn-secondary"
-               asp-controller="Teacher"
-               asp-action="CourseDetails"
-               asp-route-id="@courseId">
-                ⬅ Back to Course
-            </a>
+                <a class="btn-primary"
+                   asp-action="Create"
+                   asp-route-courseId="@courseId"
+                   asp-route-semesterId="@selectedSemesterId">
+                    Add Attendance
+                </a>
+
+                <a class="btn-secondary"
+                   asp-controller="Teacher"
+                   asp-action="CourseDetails"
+                   asp-route-id="@courseId">
+                    ← Back
+                </a>
+            </div>
         </div>
 
         <div class="layout">
@@ -574,23 +238,24 @@
             <div class="sessions">
                 <div class="sessions-header">
                     <span>Sessions</span>
-                    <span class="sessions-count">@sessions.Count</span>
+                    <span>@sessions.Count</span>
                 </div>
 
                 @if (!sessions.Any())
                 {
-                    <div class="hint">No sessions with recorded attendance yet.</div>
+                    <div class="empty-state">No sessions with attendance</div>
                 }
                 else
                 {
-                    foreach (var s in sessions.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartTime))
+                    @foreach (var s in sessions)
                     {
-                        <a asp-action="Index"
+                        <a class="session-item @(selectedSessionId == s.SessionID ? "active" : "")"
+                           asp-action="Index"
                            asp-route-courseId="@courseId"
-                           asp-route-sessionId="@s.SessionID"
-                           class="@(selectedSessionId == s.SessionID ? "active" : "")">
+                           asp-route-semesterId="@selectedSemesterId"
+                           asp-route-sessionId="@s.SessionID">
                             @s.SessionDate.ToString("dd/MM/yyyy")
-                            (@s.StartTime.ToString(@"hh\:mm") - @s.EndTime.ToString(@"hh\:mm"))
+                            (@s.StartTime - @s.EndTime)
                         </a>
                     }
                 }
@@ -599,11 +264,11 @@
             <div class="panel">
                 @if (selectedSessionId == null)
                 {
-                    <div class="panel-empty">Select a session </div>
+                    <div class="empty-state">Select a session to view attendance</div>
                 }
                 else if (!Model.Any())
                 {
-                    <div class="panel-empty">No attendance found for the selected session.</div>
+                    <div class="empty-state">No attendance recorded for this session</div>
                 }
                 else
                 {
@@ -612,27 +277,15 @@
                             <tr>
                                 <th>Student</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var a in Model)
                             {
                                 <tr>
-                                    <td>@item.StudentName</td>
-                                    <td class="@(item.IsPresent ? "present" : "absent")">
-                                        @(item.IsPresent ? "Present" : "Absent")
-                                    </td>
-                                    <td>
-                                        <a class="btn-danger"
-                                           asp-action="Delete"
-                                           asp-route-id="@item.AttendanceID"
-                                           asp-route-courseId="@courseId"
-                                           asp-route-sessionId="@selectedSessionId"
-                                           onclick="return confirm('Delete this attendance record?');">
-                                            Delete
-                                        </a>
+                                    <td>@a.StudentName</td>
+                                    <td style="color:@(a.IsPresent ? "#1b8f3c" : "#c62828"); font-weight:900;">
+                                        @(a.IsPresent ? "Present" : "Absent")
                                     </td>
                                 </tr>
                             }
@@ -642,6 +295,5 @@
             </div>
 
         </div>
-
     </div>
 </div>

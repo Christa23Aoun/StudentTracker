@@ -32,8 +32,23 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> CreateAsync(Attendance attendance)
         {
             using var con = new SqlConnection(_connectionString);
+            await con.OpenAsync();
 
-            return await con.ExecuteScalarAsync<int>(
+            using var tx = con.BeginTransaction(IsolationLevel.Serializable);
+
+            var exists = await con.ExecuteScalarAsync<int>(
+                "sp_AttendanceExists_BySession",
+                new { StudentID = attendance.StudentID, SessionID = attendance.SessionID },
+                transaction: tx,
+                commandType: CommandType.StoredProcedure);
+
+            if (exists > 0)
+            {
+                tx.Rollback();
+                throw new InvalidOperationException("Attendance already exists.");
+            }
+
+            var id = await con.ExecuteScalarAsync<int>(
                 "sp_CreateAttendance_BySession",
                 new
                 {
@@ -42,7 +57,11 @@ namespace StudentTrackerDAL.Repositories
                     CourseID = attendance.CourseID,
                     IsPresent = attendance.IsPresent
                 },
+                transaction: tx,
                 commandType: CommandType.StoredProcedure);
+
+            tx.Commit();
+            return id;
         }
 
         public async Task<double> GetAttendanceRateByCourseAsync(int courseId)
