@@ -1,0 +1,129 @@
+﻿@model StudentTracker.Models.AttendanceView
+
+@{
+    ViewData["Title"] = "Edit Attendance";
+
+    int courseId = (int)(ViewBag.CourseID ?? 0);
+    int sessionId = (int)(ViewBag.SessionID ?? 0);
+    int? semesterId = ViewBag.SemesterID as int?;
+}
+
+<style>
+    .edit-page {
+        background: #f5f7fa;
+        padding: 80px 0;
+        min-height: calc(100vh - 200px);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .edit-container {
+        width: 90%;
+        max-width: 520px;
+        margin: auto;
+        background: #fff;
+        border-radius: 14px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: 900;
+        color: #003c8f;
+        text-align: center;
+    }
+
+    .student-name {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 800;
+        color: #1a2b4c;
+        margin-bottom: 25px;
+    }
+
+    select {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid #d0d7e2;
+        font-weight: 800;
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .btn-save {
+        background: #003c8f;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-weight: 900;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .btn-cancel {
+        background: #5b6e80;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-weight: 900;
+        text-decoration: none;
+        text-align: center;
+        width: 100%;
+    }
+</style>
+
+<div class="edit-page">
+    <div class="edit-container">
+
+        <h2>Edit Attendance</h2>
+
+        <div class="student-name">
+            @Model.StudentName
+        </div>
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="AttendanceID" value="@Model.AttendanceID" />
+            <input type="hidden" name="courseId" value="@courseId" />
+            <input type="hidden" name="sessionId" value="@sessionId" />
+            <input type="hidden" name="semesterId" value="@semesterId" />
+
+            <select name="IsPresent">
+                @if (Model.IsPresent)
+                {
+                    <option value="true" selected>Present</option>
+                    <option value="false">Absent</option>
+                }
+                else
+                {
+                    <option value="true">Present</option>
+                    <option value="false" selected>Absent</option>
+                }
+            </select>
+
+
+            <div class="actions">
+                <button type="submit" class="btn-save">Save</button>
+                <a class="btn-cancel"
+                   asp-action="Index"
+                   asp-route-courseId="@courseId"
+                   asp-route-sessionId="@sessionId"
+                   asp-route-semesterId="@semesterId">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>

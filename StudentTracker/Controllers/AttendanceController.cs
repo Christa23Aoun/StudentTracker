@@ -175,11 +175,16 @@ namespace StudentTracker.Controllers
             return RedirectToAction(nameof(Index),
                 new { courseId, sessionId, semesterId });
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id, int courseId, int sessionId, int? semesterId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(
+            int id,
+            int courseId,
+            int sessionId,
+            int? semesterId)
         {
             await _client.DeleteAsync($"{_apiBase}Attendance/{id}");
+
             return RedirectToAction(nameof(Index),
                 new { courseId, sessionId, semesterId });
         }
@@ -361,6 +366,47 @@ namespace StudentTracker.Controllers
             if (byToday != null) return byToday;
 
             return semesters.OrderByDescending(s => s.StartDate).FirstOrDefault();
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, int courseId, int sessionId, int? semesterId)
+        {
+            var res = await _client.GetAsync($"{_apiBase}Attendance/bySession/{sessionId}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction(nameof(Index), new { courseId, sessionId, semesterId });
+
+            var json = await res.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<AttendanceView>>(json) ?? new();
+
+            var attendance = list.FirstOrDefault(a => a.AttendanceID == id);
+            if (attendance == null)
+                return RedirectToAction(nameof(Index), new { courseId, sessionId, semesterId });
+
+            ViewBag.CourseID = courseId;
+            ViewBag.SessionID = sessionId;
+            ViewBag.SemesterID = semesterId;
+
+            return View(attendance);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            AttendanceView model,
+            int courseId,
+            int sessionId,
+            int? semesterId)
+        {
+            var payload = JsonConvert.SerializeObject(new
+            {
+                AttendanceID = model.AttendanceID,
+                CourseID = courseId,
+                IsPresent = model.IsPresent
+            });
+
+            await _client.PutAsync(
+                $"{_apiBase}Attendance",
+                new StringContent(payload, Encoding.UTF8, "application/json"));
+
+            return RedirectToAction(nameof(Index), new { courseId, sessionId, semesterId });
         }
 
         private class StudentMiniView

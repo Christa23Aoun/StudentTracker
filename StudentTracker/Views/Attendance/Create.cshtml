@@ -190,7 +190,7 @@
                             <button type="submit" class="btn-primaryy">💾 Save Attendance</button>
                         </div>
 
-                        <table>
+                        <table id="studentsTable">
                             <thead>
                                 <tr>
                                     <th>Student</th>
@@ -230,3 +230,22 @@
         }
     </div>
 </div>
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+
+    <script>
+        $(function () {
+            if ($('#studentsTable').length) {
+                new DataTable('#studentsTable', {
+                    paging: false,
+                    info: false,
+                    searching: true,
+                    ordering: true,
+                    order: [[0, 'asc']]
+                });
+            }
+        });
+    </script>
+}

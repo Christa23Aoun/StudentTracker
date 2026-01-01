@@ -277,6 +277,8 @@
                             <tr>
                                 <th>Student</th>
                                 <th>Status</th>
+                                <th>Actions</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -287,6 +289,30 @@
                                     <td style="color:@(a.IsPresent ? "#1b8f3c" : "#c62828"); font-weight:900;">
                                         @(a.IsPresent ? "Present" : "Absent")
                                     </td>
+                                    <td>
+                                        <a asp-action="Edit"
+                                           asp-route-id="@a.AttendanceID"
+                                           asp-route-courseId="@courseId"
+                                           asp-route-sessionId="@selectedSessionId"
+                                           asp-route-semesterId="@selectedSemesterId"
+                                           style="margin-right:10px; color:#003c8f; font-weight:800;">
+                                            Edit
+                                        </a>
+
+                                        <form asp-action="Delete"
+                                              method="post"
+                                              style="display:inline;">
+                                            <input type="hidden" name="id" value="@a.AttendanceID" />
+                                            <input type="hidden" name="courseId" value="@courseId" />
+                                            <input type="hidden" name="sessionId" value="@selectedSessionId" />
+                                            <input type="hidden" name="semesterId" value="@selectedSemesterId" />
+                                            <button type="submit"
+                                                    style="background:none;border:none;color:#c62828;font-weight:800;cursor:pointer;">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+
                                 </tr>
                             }
                         </tbody>
