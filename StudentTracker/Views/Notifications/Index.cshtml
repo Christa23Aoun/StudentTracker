@@ -138,12 +138,13 @@
                     </div>
 
                     <div class="notification-actions">
-                        <a asp-controller="Notifications"
-                           asp-action="View"
-                           asp-route-id="@n.NotificationID">
-                            View
-                        </a>
+                        @if (!string.IsNullOrEmpty(n.TargetUrl))
+                        {
+                            <a href="@n.TargetUrl">View</a>
+                        }
                     </div>
+
+
                 </div>
             }
         </div>

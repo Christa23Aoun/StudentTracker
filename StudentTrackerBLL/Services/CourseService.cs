@@ -131,9 +131,10 @@ namespace StudentTrackerBLL.Services
                     dto.TeacherID,
                     message,
                     "ADMIN",
-                    "/Teacher/Dashboard"
+                    $"/Teacher/CourseDetails/{dto.CourseID}"
                 );
             }
+
 
             return result;
         }

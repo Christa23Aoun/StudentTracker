@@ -150,6 +150,14 @@
 
 <div class="dashboard-container">
 
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="dashboard-header">
         <div class="dashboard-header-left">
             <h1>Teacher Dashboard</h1>
