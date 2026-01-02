@@ -123,10 +123,11 @@
             ⬅ Cancel / Back to Tests
         </a>
 
-        <form asp-action="Delete" method="post">
+        <form asp-controller="Tests" asp-action="DeletePost" method="post">
             @Html.AntiForgeryToken()
-            <input asp-for="TestID" type="hidden" />
-            <input asp-for="CourseID" type="hidden" />
+            <input type="hidden" name="TestID" value="@Model.TestID" />
+            <input type="hidden" name="CourseID" value="@Model.CourseID" />
+
             <button type="submit" class="btn-delete">🗑 Confirm Delete</button>
         </form>
     </div>

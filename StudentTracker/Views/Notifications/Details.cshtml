@@ -1,0 +1,23 @@
+﻿@model StudentTracker.Models.NotificationView
+
+@{
+    ViewData["Title"] = "Notification";
+}
+
+<div class="notifications-container" style="width:92%;max-width:900px;margin:70px auto;">
+    <div class="notification-card" style="background:#fff;border:1px solid #d9e1ec;border-radius:6px;padding:22px 26px;box-shadow:0px 4px 10px rgba(0, 0, 0, 0.06);">
+        <div class="notification-message" style="font-size:16px;line-height:1.6;color:#1a2b4c;margin-bottom:10px;">
+            @Model.Message
+        </div>
+
+        <div class="notification-date" style="font-size:14px;color:#5b6e80;">
+            @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+        </div>
+
+        <hr style="margin:18px 0;" />
+
+        <a href="/Notifications" style="background:#003c8f;color:white;padding:8px 18px;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;">
+            ← Back to Notifications
+        </a>
+    </div>
+</div>

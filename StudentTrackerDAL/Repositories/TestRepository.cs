@@ -113,6 +113,38 @@ namespace StudentTrackerDAL.Repositories
                 "SELECT TeacherID FROM Courses WHERE CourseID = @CourseID",
                 new { CourseID = courseId });
         }
+        public async Task<bool> ExistsAsync(int courseId, string testName, DateTime testDate)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var count = await con.ExecuteScalarAsync<int>(
+                @"SELECT COUNT(*) 
+          FROM Tests 
+          WHERE CourseID = @CourseID 
+            AND TestName = @TestName 
+            AND TestDate = @TestDate",
+                new
+                {
+                    CourseID = courseId,
+                    TestName = testName,
+                    TestDate = testDate
+                });
+
+            return count > 0;
+        }
+
+        public async Task<bool> HasValidatedGradesAsync(int testId)
+        {
+            using var con = new SqlConnection(_connectionString);
+
+            var count = await con.ExecuteScalarAsync<int>(
+                "sp_Test_HasValidatedGrades",
+                new { TestID = testId },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return count > 0;
+        }
 
     }
 }

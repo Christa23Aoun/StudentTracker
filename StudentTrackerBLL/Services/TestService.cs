@@ -43,6 +43,17 @@ namespace StudentTrackerBLL.Services
 
         public async Task<int> CreateAsync(Test t)
         {
+            bool exists = await _testRepository.ExistsAsync(
+                t.CourseID,
+                t.TestName,
+                t.TestDate
+            );
+
+            if (exists)
+                throw new InvalidOperationException(
+                    "This test already exists for the selected course and date."
+                );
+
             if (string.IsNullOrWhiteSpace(t.TestName))
                 throw new ArgumentException("Test name required.");
 
@@ -74,7 +85,7 @@ namespace StudentTrackerBLL.Services
                     studentIds,
                     message,
                     "TEST",
-                    $"/StudentDashboard/CourseDetails?courseId={t.CourseID}"
+                    $"/Tests?courseId={t.CourseID}"
                 );
 
             if (teacherId > 0)
@@ -82,7 +93,7 @@ namespace StudentTrackerBLL.Services
                     teacherId,
                     $"You added a new test '{t.TestName}' for {courseName}.",
                     "TEST",
-                    $"/Teacher/CourseDetails?courseId={t.CourseID}"
+                    $"/Tests?courseId={t.CourseID}"
                 );
 
             return testId;
@@ -106,8 +117,20 @@ namespace StudentTrackerBLL.Services
             return await _testRepository.UpdateAsync(t);
         }
 
-        public Task<int> DeleteAsync(int id)
-            => _testRepository.DeleteAsync(id);
+        public async Task DeleteAsync(int testId)
+        {
+            var test = await _testRepository.GetByIdAsync(testId);
+            if (test == null)
+                throw new ArgumentException("Test not found.");
+
+            bool hasValidatedGrades = await _testRepository.HasValidatedGradesAsync(testId);
+            if (hasValidatedGrades)
+                throw new InvalidOperationException(
+                    "This test cannot be deleted because it has validated grades."
+                );
+
+            await _testRepository.DeleteAsync(testId);
+        }
 
         private async Task<decimal> GetTotalWeightForCourseAsync(int courseId)
         {

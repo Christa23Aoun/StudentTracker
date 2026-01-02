@@ -32,7 +32,6 @@ namespace StudentTrackerAPI.Controllers
 
             return Ok(test);
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(Test t)
         {
@@ -41,11 +40,16 @@ namespace StudentTrackerAPI.Controllers
                 var id = await _service.CreateAsync(t);
                 return Ok(new { message = "Test created successfully", testId = id });
             }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
 
         [HttpPut]
         public async Task<IActionResult> Update(Test t)
@@ -64,8 +68,19 @@ namespace StudentTrackerAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return Ok(new { message = "Test deleted successfully" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "Test deleted successfully" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

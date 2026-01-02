@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace StudentTracker.Models
 {
@@ -8,6 +11,7 @@ namespace StudentTracker.Models
 
         [StringLength(30)]
         public string? CourseCode { get; set; }
+
         public string? TeacherName { get; set; }
 
         [Required, StringLength(200)]
@@ -34,15 +38,14 @@ namespace StudentTracker.Models
         public int StudentCount { get; set; }
         public List<StudentView> Students { get; set; } = new();
 
-
         public IEnumerable<LookupItem> Departments { get; set; } = new List<LookupItem>();
         public IEnumerable<LookupItem> Semesters { get; set; } = new List<LookupItem>();
         public IEnumerable<LookupItem> Teachers { get; set; } = new List<LookupItem>();
 
-
         public string? DepartmentName { get; set; }
         public string? SemesterName { get; set; }
     }
+
     public class StudentView
     {
         public string StudentName { get; set; } = string.Empty;
@@ -52,7 +55,18 @@ namespace StudentTracker.Models
 
     public class LookupItem
     {
+        [JsonIgnore]
         public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
+
+        [JsonProperty("DepartmentID")]
+        private int DepartmentID { set => Id = value; }
+
+        [JsonProperty("SemesterID")]
+        private int SemesterID { set => Id = value; }
+
+        [JsonProperty("UserID")]
+        private int UserID { set => Id = value; }
     }
 }

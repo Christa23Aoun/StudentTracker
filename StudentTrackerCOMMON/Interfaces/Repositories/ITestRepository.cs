@@ -14,6 +14,8 @@ namespace StudentTrackerCOMMON.Interfaces.Repositories
         Task<Test?> GetModelByIdAsync(int id);
         Task<IEnumerable<Test>> GetModelsByCourseAsync(int courseId);
         Task<int> GetTeacherIdByCourseAsync(int courseId);
+        Task<bool> HasValidatedGradesAsync(int testId);
+        Task<bool> ExistsAsync(int courseId, string testName, DateTime testDate);
 
         Task<int> CreateAsync(Test test);
         Task<int> UpdateAsync(Test test);

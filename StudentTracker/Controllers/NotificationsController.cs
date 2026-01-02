@@ -85,7 +85,7 @@ namespace StudentTracker.Controllers
             {
                 var msg = (notification.Message ?? "").ToLower();
 
-                /* CASE 1: TargetUrl EXISTS */
+                /* CASE 1: TargetUrl EXISTS -> check assignment if course-related, then redirect */
                 if (!string.IsNullOrWhiteSpace(notification.TargetUrl))
                 {
                     var courseId = ExtractCourseId(notification.TargetUrl);
@@ -95,7 +95,7 @@ namespace StudentTracker.Controllers
                         if (!assigned)
                         {
                             TempData["Error"] =
-                                "You cannot view this item because you are no longer assigned to this course.";
+                                "You are no longer assigned to this course and cannot view its content.";
                             return Redirect("/Teacher/Dashboard");
                         }
                     }
@@ -103,19 +103,50 @@ namespace StudentTracker.Controllers
                     return Redirect(notification.TargetUrl);
                 }
 
-                /* CASE 2: COURSE UPDATED (NO TargetUrl) */
-                if (msg.Contains("course") && msg.Contains("updated"))
+                /* CASE 2: Course details updated but TargetUrl is Dashboard (or empty) -> resolve course then go details */
+                if (msg.Contains("course") && msg.Contains("details") && msg.Contains("updated"))
                 {
                     var courseId = await ResolveCourseIdFromMessage(userId.Value, notification.Message);
                     if (courseId.HasValue)
+                    {
+                        var assigned = await IsTeacherAssignedToCourse(userId.Value, courseId.Value);
+                        if (!assigned)
+                        {
+                            TempData["Error"] =
+                                "You are no longer assigned to this course and cannot view its content.";
+                            return Redirect("/Teacher/Dashboard");
+                        }
+
                         return Redirect($"/Teacher/CourseDetails/{courseId.Value}");
+                    }
                 }
 
-                TempData["Error"] = "This notification is no longer valid.";
-                return Redirect("/Teacher/Dashboard");
+                /* CASE 3: No TargetUrl (assigned/unassigned/profile updates etc.) -> show the message page */
+                return RedirectToAction(nameof(Details), new { id });
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserID");
+            if (userId == null)
+                return RedirectToAction("Login", "Auth");
+
+            var res = await _client.GetAsync($"{_apiBase}Notifications/user/{userId}");
+            if (!res.IsSuccessStatusCode)
+                return RedirectToAction(nameof(Index));
+
+            var json = await res.Content.ReadAsStringAsync();
+            var notifications = JsonConvert.DeserializeObject<List<NotificationView>>(json) ?? new();
+
+            var notification = notifications.FirstOrDefault(n => n.NotificationID == id);
+            if (notification == null)
+                return RedirectToAction(nameof(Index));
+
+            return View(notification);
         }
 
         private int? ExtractCourseId(string targetUrl)
@@ -148,7 +179,6 @@ namespace StudentTracker.Controllers
 
             return null;
         }
-
 
         private async Task<int?> ResolveCourseIdFromMessage(int teacherUserId, string message)
         {
@@ -190,16 +220,12 @@ namespace StudentTracker.Controllers
         {
             try
             {
-                var res = await _client.GetAsync($"{_apiBase}TeacherDashboard/{teacherUserId}");
+                var res = await _client.GetAsync($"{_apiBase}Courses/ByTeacher/{teacherUserId}");
                 if (!res.IsSuccessStatusCode)
                     return false;
 
                 var json = await res.Content.ReadAsStringAsync();
-                var obj = JObject.Parse(json);
-
-                var courses = obj["courses"] ?? obj["Courses"];
-                if (courses == null)
-                    return false;
+                var courses = JArray.Parse(json);
 
                 return courses.Any(c =>
                 {

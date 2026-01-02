@@ -53,18 +53,18 @@ namespace StudentTrackerDAL.Repositories
         public async Task<int> UpdateAsync(Course entity)
         {
             using var conn = _factory.Create();
-            return await conn.ExecuteAsync(
+            return await conn.ExecuteScalarAsync<int>(
                 "dbo.Courses_Update",
                 new
                 {
-                    entity.CourseID,
-                    entity.CourseCode,
-                    entity.CourseName,
-                    entity.CreditHours,
-                    entity.DepartmentID,
-                    entity.SemesterID,
-                    entity.TeacherID,
-                    entity.IsActive
+                    CourseID = entity.CourseID,
+                    CourseCode = entity.CourseCode,
+                    CourseName = entity.CourseName,
+                    CreditHours = entity.CreditHours,
+                    DepartmentID = entity.DepartmentID,
+                    SemesterID = entity.SemesterID,
+                    TeacherID = entity.TeacherID,
+                    IsActive = entity.IsActive
                 },
                 commandType: CommandType.StoredProcedure);
         }

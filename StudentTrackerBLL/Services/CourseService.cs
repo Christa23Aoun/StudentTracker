@@ -36,7 +36,10 @@ namespace StudentTrackerBLL.Services
 
         public async Task<int> CreateAsync(CourseCreateDto dto)
         {
-            Validate(dto.CourseName, dto.CreditHours, dto.DepartmentID, dto.SemesterID, dto.TeacherID);
+            ValidateBase(dto.CourseName, dto.CreditHours, dto.DepartmentID, dto.SemesterID);
+
+            if (dto.TeacherID <= 0)
+                throw new ArgumentException("TeacherID is required.");
 
             var entity = new Course
             {
@@ -55,7 +58,7 @@ namespace StudentTrackerBLL.Services
                 dto.TeacherID,
                 $"You have been assigned to teach the course \"{entity.CourseName}\".",
                 "ADMIN",
-                "/Teacher/Dashboard"
+                $"/Teacher/CourseDetails/{courseId}"
             );
 
             return courseId;
@@ -63,11 +66,15 @@ namespace StudentTrackerBLL.Services
 
         public async Task<int> UpdateAsync(CourseUpdateDto dto)
         {
-            Validate(dto.CourseName, dto.CreditHours, dto.DepartmentID, dto.SemesterID, dto.TeacherID);
+            ValidateBase(dto.CourseName, dto.CreditHours, dto.DepartmentID, dto.SemesterID);
 
             var oldCourse = await _repo.GetByIdAsync(dto.CourseID);
             if (oldCourse == null)
                 throw new ArgumentException("Course not found.");
+
+            var finalTeacherId = dto.TeacherID > 0
+                ? dto.TeacherID
+                : oldCourse.TeacherID;
 
             var changes = new List<string>();
 
@@ -90,17 +97,16 @@ namespace StudentTrackerBLL.Services
                 CourseName = dto.CourseName.Trim(),
                 CreditHours = dto.CreditHours,
                 DepartmentID = dto.DepartmentID,
-                TeacherID = dto.TeacherID,
+                TeacherID = finalTeacherId,
                 SemesterID = dto.SemesterID,
                 IsActive = dto.IsActive
             };
 
             var result = await _repo.UpdateAsync(entity);
-
             if (result <= 0)
                 return result;
 
-            if (oldCourse.TeacherID != dto.TeacherID)
+            if (oldCourse.TeacherID != finalTeacherId)
             {
                 await _notificationService.NotifyTeacherAsync(
                     oldCourse.TeacherID,
@@ -110,10 +116,10 @@ namespace StudentTrackerBLL.Services
                 );
 
                 await _notificationService.NotifyTeacherAsync(
-                    dto.TeacherID,
+                    finalTeacherId,
                     $"You have been assigned to teach the course \"{entity.CourseName}\".",
                     "ADMIN",
-                    "/Teacher/Dashboard"
+                    $"/Teacher/CourseDetails/{dto.CourseID}"
                 );
             }
             else
@@ -128,13 +134,12 @@ namespace StudentTrackerBLL.Services
                     message = $"Course \"{entity.CourseName}\" was updated ({string.Join(", ", changes)}).";
 
                 await _notificationService.NotifyTeacherAsync(
-                    dto.TeacherID,
+                    finalTeacherId,
                     message,
                     "ADMIN",
                     $"/Teacher/CourseDetails/{dto.CourseID}"
                 );
             }
-
 
             return result;
         }
@@ -221,7 +226,7 @@ namespace StudentTrackerBLL.Services
             });
         }
 
-        private static void Validate(string name, int creditHours, int deptId, int semId, int teacherId)
+        private static void ValidateBase(string name, int creditHours, int deptId, int semId)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("CourseName is required.");
@@ -234,9 +239,6 @@ namespace StudentTrackerBLL.Services
 
             if (semId <= 0)
                 throw new ArgumentException("SemesterID is required.");
-
-            if (teacherId <= 0)
-                throw new ArgumentException("TeacherID is required.");
         }
     }
 }

@@ -34,8 +34,11 @@ namespace StudentTrackerAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CourseUpdateDto dto)
         {
-            if (dto == null || dto.CourseID != id)
+            if (dto == null)
                 return BadRequest("Invalid payload.");
+
+            // ✅ FORCE CourseID from route (fixes init-only binding issue)
+            dto = dto with { CourseID = id };
 
             var rows = await _courseService.UpdateAsync(dto);
 
@@ -64,6 +67,13 @@ namespace StudentTrackerAPI.Controllers
         {
             var item = await _courseService.GetByIdAsync(id);
             return item == null ? NotFound() : Ok(item);
+        }
+
+        [HttpGet("ByTeacher/{teacherId}")]
+        public async Task<IActionResult> GetByTeacher(int teacherId)
+        {
+            var courses = await _courseService.GetByTeacherIdAsync(teacherId);
+            return Ok(courses);
         }
 
         [HttpGet]

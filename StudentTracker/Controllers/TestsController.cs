@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StudentTracker.Models;
 using System.Text;
 
@@ -29,14 +30,63 @@ namespace StudentTracker.Controllers
             return $"{b}/api/{r}";
         }
 
+        private async Task<bool> EnsureTeacherAssigned(int courseId)
+        {
+            var teacherId = HttpContext.Session.GetInt32("UserID");
+            if (teacherId == null)
+                return false;
+
+            var res = await _client.GetAsync(ApiUrl($"Courses/ByTeacher/{teacherId.Value}"));
+            if (!res.IsSuccessStatusCode)
+                return false;
+
+            var json = await res.Content.ReadAsStringAsync();
+
+            JArray courses;
+            try
+            {
+                courses = JArray.Parse(json);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return courses.Any(c =>
+            {
+                var id = c["courseID"] ?? c["CourseID"];
+                return id != null && id.Value<int>() == courseId;
+            });
+        }
+
         public async Task<IActionResult> Index(int? courseId)
         {
+            string? pageError = null;
+
+            if (TempData.ContainsKey("TestsIndexError"))
+            {
+                pageError = TempData["TestsIndexError"]?.ToString();
+                TempData.Keep("TestsIndexError");
+            }
+
+            if (courseId.HasValue && pageError == null)
+            {
+                var allowed = await EnsureTeacherAssigned(courseId.Value);
+                if (!allowed)
+                {
+                    TempData["Error"] = "You are no longer assigned to this course and cannot view its content.";
+                    return Redirect("/Teacher/Dashboard");
+                }
+            }
+
+            ViewBag.Error = pageError;
             ViewBag.CourseID = courseId;
+
             var list = new List<TestView>();
 
             if (courseId.HasValue)
             {
-                var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
+                var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId.Value}"));
                 if (courseRes.IsSuccessStatusCode)
                 {
                     var jsonCourse = await courseRes.Content.ReadAsStringAsync();
@@ -46,7 +96,7 @@ namespace StudentTracker.Controllers
             }
 
             var endpoint = courseId.HasValue
-                ? ApiUrl($"Tests/byCourse/{courseId}")
+                ? ApiUrl($"Tests/byCourse/{courseId.Value}")
                 : ApiUrl("Tests");
 
             var response = await _client.GetAsync(endpoint);
@@ -60,15 +110,9 @@ namespace StudentTracker.Controllers
             foreach (var t in list)
             {
                 var avgRes = await _client.GetAsync(ApiUrl($"TestGrades/AverageByTest/{t.TestID}"));
-                if (avgRes.IsSuccessStatusCode)
-                {
-                    var avgJson = await avgRes.Content.ReadAsStringAsync();
-                    t.AverageScore = JsonConvert.DeserializeObject<decimal>(avgJson);
-                }
-                else
-                {
-                    t.AverageScore = 0;
-                }
+                t.AverageScore = avgRes.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<decimal>(await avgRes.Content.ReadAsStringAsync())
+                    : 0;
             }
 
             return View(list);
@@ -77,64 +121,52 @@ namespace StudentTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(int courseId)
         {
+            if (!await EnsureTeacherAssigned(courseId))
+            {
+                TempData["Error"] = "You are no longer assigned to this course.";
+                return Redirect("/Teacher/Dashboard");
+            }
+
             ViewBag.CourseID = courseId;
 
             var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
             if (courseRes.IsSuccessStatusCode)
             {
-                var json = await courseRes.Content.ReadAsStringAsync();
-                var course = JsonConvert.DeserializeObject<CourseView>(json);
+                var course = JsonConvert.DeserializeObject<CourseView>(
+                    await courseRes.Content.ReadAsStringAsync());
                 ViewBag.CourseName = course?.CourseName ?? "";
             }
 
             return View(new TestView { CourseID = courseId });
         }
 
-        private async Task LoadCourseName(int courseId)
-        {
-            var courseRes = await _client.GetAsync(ApiUrl($"Courses/{courseId}"));
-            if (courseRes.IsSuccessStatusCode)
-            {
-                var json = await courseRes.Content.ReadAsStringAsync();
-                var course = JsonConvert.DeserializeObject<CourseView>(json);
-                ViewBag.CourseName = course?.CourseName ?? "";
-            }
-
-            ViewBag.CourseID = courseId;
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TestView model)
         {
-            if (!ModelState.IsValid)
+            if (!await EnsureTeacherAssigned(model.CourseID))
             {
-                await LoadCourseName(model.CourseID);
+                TempData["Error"] = "You are no longer assigned to this course.";
+                return Redirect("/Teacher/Dashboard");
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var json = JsonConvert.SerializeObject(model);
+            var res = await _client.PostAsync(
+                ApiUrl("Tests"),
+                new StringContent(json, Encoding.UTF8, "application/json")
+            );
+
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = await res.Content.ReadAsStringAsync();
                 return View(model);
             }
 
-            var payload = new
-            {
-                CourseID = model.CourseID,
-                TestName = model.TestName,
-                TestDate = model.TestDate,
-                Weight = model.Weight,
-                MaxScore = model.MaxScore
-            };
-
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var res = await _client.PostAsync(ApiUrl("Tests"), content);
-
-            if (res.IsSuccessStatusCode)
-            {
-                TempData["Msg"] = "Test created successfully!";
-                return RedirectToAction("Index", new { courseId = model.CourseID });
-            }
-
-            ViewBag.Error = await res.Content.ReadAsStringAsync();
-            await LoadCourseName(model.CourseID);
-            return View(model);
+            TempData["Msg"] = "Test created successfully!";
+            return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
         }
 
         [HttpGet]
@@ -142,10 +174,16 @@ namespace StudentTracker.Controllers
         {
             var res = await _client.GetAsync(ApiUrl($"Tests/{id}"));
             if (!res.IsSuccessStatusCode)
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
 
-            var json = await res.Content.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<TestView>(json);
+            var model = JsonConvert.DeserializeObject<TestView>(
+                await res.Content.ReadAsStringAsync());
+
+            if (model == null || !await EnsureTeacherAssigned(model.CourseID))
+            {
+                TempData["Error"] = "Access denied.";
+                return Redirect("/Teacher/Dashboard");
+            }
 
             return View(model);
         }
@@ -154,83 +192,71 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TestView model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var payload = new
+            if (!await EnsureTeacherAssigned(model.CourseID))
             {
-                TestID = model.TestID,
-                CourseID = model.CourseID,
-                TestName = model.TestName,
-                TestDate = model.TestDate,
-                Weight = model.Weight,
-                MaxScore = model.MaxScore
-            };
+                TempData["Error"] = "Access denied.";
+                return Redirect("/Teacher/Dashboard");
+            }
 
-            var json = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var json = JsonConvert.SerializeObject(model);
+            var res = await _client.PutAsync(
+                ApiUrl("Tests"),
+                new StringContent(json, Encoding.UTF8, "application/json")
+            );
 
-            var res = await _client.PutAsync(ApiUrl("Tests"), content);
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["Error"] = await res.Content.ReadAsStringAsync();
+                return View(model);
+            }
 
-            if (res.IsSuccessStatusCode)
-                return RedirectToAction("Index", new { courseId = model.CourseID });
-
-            ViewBag.Error = await res.Content.ReadAsStringAsync();
-            return View(model);
+            return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var testRes = await _client.GetAsync(ApiUrl($"Tests/{id}"));
-            if (!testRes.IsSuccessStatusCode)
+            var res = await _client.GetAsync(ApiUrl($"Tests/{id}"));
+            if (!res.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Index));
 
-            var testJson = await testRes.Content.ReadAsStringAsync();
-            var test = JsonConvert.DeserializeObject<TestView>(testJson);
+            var model = JsonConvert.DeserializeObject<TestView>(
+                await res.Content.ReadAsStringAsync());
 
-            if (test == null)
-                return RedirectToAction(nameof(Index));
-
-            var gradeRes = await _client.GetAsync(ApiUrl($"TestGrades/ByTest?courseId={test.CourseID}&testId={test.TestID}"));
-
-            if (gradeRes.IsSuccessStatusCode)
+            if (model == null || !await EnsureTeacherAssigned(model.CourseID))
             {
-                var gJson = await gradeRes.Content.ReadAsStringAsync();
-                var grades = JsonConvert.DeserializeObject<List<TestGradeView>>(gJson);
-
-                if (grades != null && grades.Any(g => g.IsValidated))
-                {
-                    TempData["Error"] = "This test cannot be deleted because it has validated grades.";
-                    return RedirectToAction(nameof(Index), new { courseId = test.CourseID });
-                }
+                TempData["Error"] = "Access denied.";
+                return Redirect("/Teacher/Dashboard");
             }
 
-            return View(test);
+            return View(model);
         }
-
-        [HttpPost, ActionName("Delete")]
+       
+        
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int TestID, int CourseID)
+        public async Task<IActionResult> DeletePost(TestView model)
         {
-            var gradeRes = await _client.GetAsync(ApiUrl($"TestGrades/ByTest?courseId={CourseID}&testId={TestID}"));
-
-            if (gradeRes.IsSuccessStatusCode)
+            var allowed = await EnsureTeacherAssigned(model.CourseID);
+            if (!allowed)
             {
-                var gJson = await gradeRes.Content.ReadAsStringAsync();
-                var grades = JsonConvert.DeserializeObject<List<TestGradeView>>(gJson);
-
-                if (grades != null && grades.Any(g => g.IsValidated))
-                {
-                    TempData["Error"] = "This test cannot be deleted because it has validated grades.";
-                    return RedirectToAction(nameof(Index), new { courseId = CourseID });
-                }
+                TempData["Error"] = "You are no longer assigned to this course.";
+                return Redirect("/Teacher/Dashboard");
             }
 
-            await _client.DeleteAsync(ApiUrl($"Tests/{TestID}"));
-            TempData["Msg"] = "Test deleted successfully.";
+            var res = await _client.DeleteAsync(ApiUrl($"Tests/{model.TestID}"));
 
-            return RedirectToAction(nameof(Index), new { courseId = CourseID });
+            if (!res.IsSuccessStatusCode)
+            {
+                TempData["TestsIndexError"] = await res.Content.ReadAsStringAsync();
+                return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
+            }
+
+            TempData["Msg"] = "Test deleted successfully.";
+            return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
         }
+
+
+
     }
 }

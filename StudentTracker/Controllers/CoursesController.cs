@@ -78,7 +78,6 @@ namespace StudentTracker.Controllers
                 model.IsActive
             };
 
-
             var payload = JsonConvert.SerializeObject(cleanPayload);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -110,6 +109,16 @@ namespace StudentTracker.Controllers
                 return RedirectToAction(nameof(Index));
 
             await PopulateLookupsAsync(model);
+
+            if (model.DepartmentID == 0 && model.Departments.Any())
+                model.DepartmentID = model.Departments.First().Id;
+
+            if (model.SemesterID == 0 && model.Semesters.Any())
+                model.SemesterID = model.Semesters.First().Id;
+
+            if (model.TeacherID == 0 && model.Teachers.Any())
+                model.TeacherID = model.Teachers.First().Id;
+
             return View(model);
         }
 
@@ -117,14 +126,16 @@ namespace StudentTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, CourseView model)
         {
-            if (id <= 0)
+            var finalId = id > 0 ? id : model.CourseID;
+
+            if (finalId <= 0)
             {
                 TempData["CourseError"] = "Invalid course id.";
                 await PopulateLookupsAsync(model);
                 return View(model);
             }
 
-            model.CourseID = id;
+            model.CourseID = finalId;
 
             if (!ModelState.IsValid)
             {
@@ -133,15 +144,29 @@ namespace StudentTracker.Controllers
                 return View(model);
             }
 
-            var payload = JsonConvert.SerializeObject(model);
+            var cleanPayload = new
+            {
+                CourseID = finalId,
+                model.CourseCode,
+                model.CourseName,
+                model.CreditHours,
+                model.DepartmentID,
+                model.SemesterID,
+                model.TeacherID,
+                model.IsActive
+            };
+
+            var payload = JsonConvert.SerializeObject(cleanPayload);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            var res = await _client.PutAsync($"{_apiBase}Courses/{id}", content);
-
+            var res = await _client.PutAsync($"{_apiBase}Courses/{finalId}", content);
             if (!res.IsSuccessStatusCode)
             {
                 var apiMsg = await res.Content.ReadAsStringAsync();
-                TempData["CourseError"] = string.IsNullOrWhiteSpace(apiMsg) ? "Failed to update course." : apiMsg;
+
+                TempData["CourseError"] =
+                    $"API ERROR | Status: {(int)res.StatusCode} {res.StatusCode} | Message: {apiMsg}";
+
                 await PopulateLookupsAsync(model);
                 return View(model);
             }
