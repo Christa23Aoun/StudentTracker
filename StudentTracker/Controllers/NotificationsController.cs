@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StudentTracker.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace StudentTracker.Controllers
 {
@@ -60,12 +64,21 @@ namespace StudentTracker.Controllers
 
             await _client.PostAsync($"{_apiBase}Notifications/{id}/read", null);
 
-            /* ===================== STUDENT ===================== */
             if (isStudent)
             {
                 var msg = (notification.Message ?? "").ToLower();
+                var target = (notification.TargetUrl ?? "").Trim();
+                var courseId = ExtractCourseId(target);
 
-                if (msg.Contains("session"))
+                if (msg.Contains("test") || msg.Contains("grade") || msg.Contains("attendance"))
+                {
+                    if (courseId.HasValue)
+                        return Redirect($"/StudentDashboard/CourseDetails?courseId={courseId.Value}");
+
+                    return Redirect("/StudentDashboard/Index");
+                }
+
+                if (msg.Contains("session") || msg.Contains("scheduled"))
                     return Redirect("/StudentDashboard/Schedule");
 
                 if (msg.Contains("enrolled"))
@@ -74,18 +87,20 @@ namespace StudentTracker.Controllers
                 if (msg.Contains("profile") || msg.Contains("account"))
                     return Redirect("/StudentDashboard/Profile");
 
-                if (!string.IsNullOrWhiteSpace(notification.TargetUrl))
-                    return Redirect(notification.TargetUrl);
+                if (!string.IsNullOrWhiteSpace(target))
+                {
+                    if (target.StartsWith("/studentdashboard", StringComparison.OrdinalIgnoreCase))
+                        return Redirect(target);
 
-                return Redirect("/Notifications");
+                    if (courseId.HasValue)
+                        return Redirect($"/StudentDashboard/CourseDetails?courseId={courseId.Value}");
+                }
+
+                return RedirectToAction(nameof(Index));
             }
 
-            /* ===================== TEACHER ===================== */
             if (isTeacher)
             {
-                var msg = (notification.Message ?? "").ToLower();
-
-                /* CASE 1: TargetUrl EXISTS -> check assignment if course-related, then redirect */
                 if (!string.IsNullOrWhiteSpace(notification.TargetUrl))
                 {
                     var courseId = ExtractCourseId(notification.TargetUrl);
@@ -103,25 +118,6 @@ namespace StudentTracker.Controllers
                     return Redirect(notification.TargetUrl);
                 }
 
-                /* CASE 2: Course details updated but TargetUrl is Dashboard (or empty) -> resolve course then go details */
-                if (msg.Contains("course") && msg.Contains("details") && msg.Contains("updated"))
-                {
-                    var courseId = await ResolveCourseIdFromMessage(userId.Value, notification.Message);
-                    if (courseId.HasValue)
-                    {
-                        var assigned = await IsTeacherAssignedToCourse(userId.Value, courseId.Value);
-                        if (!assigned)
-                        {
-                            TempData["Error"] =
-                                "You are no longer assigned to this course and cannot view its content.";
-                            return Redirect("/Teacher/Dashboard");
-                        }
-
-                        return Redirect($"/Teacher/CourseDetails/{courseId.Value}");
-                    }
-                }
-
-                /* CASE 3: No TargetUrl (assigned/unassigned/profile updates etc.) -> show the message page */
                 return RedirectToAction(nameof(Details), new { id });
             }
 
@@ -156,60 +152,22 @@ namespace StudentTracker.Controllers
 
             try
             {
-                if (targetUrl.Contains("/"))
+                if (targetUrl.Contains("?"))
                 {
-                    var parts = targetUrl.Trim('/').Split('/');
-                    var last = parts.Last();
-                    if (int.TryParse(last, out var routeId))
-                        return routeId;
+                    var uri = new Uri("http://dummy" + targetUrl);
+                    var query = uri.Query.TrimStart('?').Split('&');
+                    foreach (var q in query)
+                    {
+                        var kv = q.Split('=');
+                        if (kv.Length == 2 && kv[0].ToLower() == "courseid")
+                            return int.TryParse(kv[1], out var id) ? id : null;
+                    }
                 }
 
-                var uri = new Uri("http://dummy" + targetUrl);
-                var query = uri.Query.TrimStart('?').Split('&');
-
-                foreach (var q in query)
-                {
-                    var kv = q.Split('=');
-                    if (kv.Length == 2 &&
-                        (kv[0].ToLower().Contains("courseid") || kv[0].ToLower() == "id"))
-                        return int.TryParse(kv[1], out var id) ? id : null;
-                }
-            }
-            catch { }
-
-            return null;
-        }
-
-        private async Task<int?> ResolveCourseIdFromMessage(int teacherUserId, string message)
-        {
-            try
-            {
-                var start = message.IndexOf("\"");
-                var end = message.LastIndexOf("\"");
-                if (start == -1 || end <= start)
-                    return null;
-
-                var courseName = message.Substring(start + 1, end - start - 1).Trim();
-
-                var res = await _client.GetAsync($"{_apiBase}TeacherDashboard/{teacherUserId}");
-                if (!res.IsSuccessStatusCode)
-                    return null;
-
-                var json = await res.Content.ReadAsStringAsync();
-                var obj = JObject.Parse(json);
-
-                var courses = obj["courses"] ?? obj["Courses"];
-                if (courses == null)
-                    return null;
-
-                foreach (var c in courses)
-                {
-                    var name = c["courseName"] ?? c["CourseName"];
-                    var id = c["courseID"] ?? c["CourseID"];
-                    if (name != null && id != null &&
-                        name.ToString().Equals(courseName, StringComparison.OrdinalIgnoreCase))
-                        return id.Value<int>();
-                }
+                var parts = targetUrl.Trim('/').Split('/');
+                var last = parts.Last();
+                if (int.TryParse(last, out var routeId))
+                    return routeId;
             }
             catch { }
 
