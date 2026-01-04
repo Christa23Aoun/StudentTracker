@@ -121,12 +121,14 @@
     </div>
 
     <div class="course-label">
-        Course: @ViewBag.CourseName (@ViewBag.CourseID)
+        Course: @ViewBag.CourseName 
     </div>
 
-    @if (ViewBag.Error != null)
+    @if (!ViewData.ModelState.IsValid)
     {
-        <div class="error-box">@ViewBag.Error</div>
+        <div class="error-box">
+            @Html.ValidationSummary(false)
+        </div>
     }
 
     <form asp-action="Create" method="post" onsubmit="disableSubmit(this)">
@@ -159,16 +161,15 @@
                readonly />
 
         <div class="btn-group">
-            <button type="submit" class="btn-save">
-                💾 Save
-            </button>
+            <button type="submit" class="btn-save">💾 Save</button>
 
             <a asp-controller="Tests"
                asp-action="Index"
-               asp-route-courseId="@ViewBag.CourseID"
+               asp-route-courseId="@Model.CourseID"
                class="btn-cancel">
                 ✖ Cancel
             </a>
+
         </div>
     </form>
 </div>

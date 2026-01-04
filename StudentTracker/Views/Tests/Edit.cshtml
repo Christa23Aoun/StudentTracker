@@ -44,7 +44,7 @@
         display: block;
     }
 
-    input, select {
+    input {
         width: 100%;
         padding: 11px 14px;
         border-radius: 6px;
@@ -78,6 +78,15 @@
             background: #002a6a;
         }
 
+    .btn-cancel {
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        font-weight: 700;
+        color: #5b6e80;
+        text-decoration: none;
+    }
+
     .error-box {
         background: #ffe5e5;
         color: #b30000;
@@ -95,9 +104,11 @@
         <h1>Edit Test</h1>
     </div>
 
-    @if (ViewBag.Error != null)
+    @if (!ViewData.ModelState.IsValid)
     {
-        <div class="error-box">@ViewBag.Error</div>
+        <div class="error-box">
+            @Html.ValidationSummary(false)
+        </div>
     }
 
     <form method="post">
@@ -119,5 +130,12 @@
         <input asp-for="MaxScore" type="number" readonly />
 
         <button class="btn-save" type="submit">💾 Save Changes</button>
+
+        <a asp-controller="Tests"
+           asp-action="Index"
+           asp-route-courseId="@Model.CourseID"
+           class="btn-cancel">
+            ✖ Cancel
+        </a>
     </form>
 </div>

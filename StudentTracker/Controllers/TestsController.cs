@@ -161,9 +161,21 @@ namespace StudentTracker.Controllers
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["Error"] = await res.Content.ReadAsStringAsync();
+                var error = await res.Content.ReadAsStringAsync();
+
+                var courseRes = await _client.GetAsync(ApiUrl($"Courses/{model.CourseID}"));
+                if (courseRes.IsSuccessStatusCode)
+                {
+                    var course = JsonConvert.DeserializeObject<CourseView>(
+                        await courseRes.Content.ReadAsStringAsync());
+                    ViewBag.CourseName = course?.CourseName ?? "";
+                }
+
+                ModelState.AddModelError(string.Empty, error);
                 return View(model);
             }
+
+
 
             TempData["Msg"] = "Test created successfully!";
             return RedirectToAction(nameof(Index), new { courseId = model.CourseID });
@@ -206,7 +218,17 @@ namespace StudentTracker.Controllers
 
             if (!res.IsSuccessStatusCode)
             {
-                TempData["Error"] = await res.Content.ReadAsStringAsync();
+                var error = await res.Content.ReadAsStringAsync();
+
+                var courseRes = await _client.GetAsync(ApiUrl($"Courses/{model.CourseID}"));
+                if (courseRes.IsSuccessStatusCode)
+                {
+                    var course = JsonConvert.DeserializeObject<CourseView>(
+                        await courseRes.Content.ReadAsStringAsync());
+                    ViewBag.CourseName = course?.CourseName ?? "";
+                }
+
+                ModelState.AddModelError(string.Empty, error);
                 return View(model);
             }
 
