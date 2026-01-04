@@ -176,41 +176,66 @@
     </script>
 
     <style>
+        :root {
+            --footerBlueDark: #0a3252;
+            --footerBlueMid: #0d3f66;
+            --footerBlueLight: #1e6fa8;
+            --footerText: #e6f1ff;
+            --footerMuted: #b8d4ee;
+            --footerBorder: rgba(255,255,255,.16);
+            --footerCard: rgba(255,255,255,.08);
+            --footerCardBorder: rgba(255,255,255,.14);
+        }
+
         .uni-footer {
-            background: #0a3252 !important;
-            padding: 60px 0 30px 0;
-            color: #fff !important;
+            background: linear-gradient(180deg, var(--footerBlueMid), var(--footerBlueDark)) !important;
+            padding: 60px 0 22px 0;
+            color: var(--footerText) !important;
             font-family: 'Inter', sans-serif;
         }
 
         .footer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 40px;
+            gap: 34px;
+            align-items: start;
         }
 
+        /* Make footer columns feel cleaner/modern */
+        .footer-col {
+            background: transparent;
+        }
+
+        /* WTF smaller */
         .footer-logo {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 6px;
+            font-size: 1.65rem;
+            font-weight: 850;
+            margin: 0 0 10px 0;
+            letter-spacing: 0.8px;
+            color: #ffffff;
         }
 
+        /* "We're The Future" bigger */
         .footer-sub {
-            font-size: 0.95rem;
-            opacity: 0.85;
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 850;
+            line-height: 1.25;
+            color: #ffffff;
         }
 
         .footer-tagline {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            opacity: 0.65;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: var(--footerMuted);
         }
 
         .footer-title {
-            font-size: 1.1rem;
-            color: #cfe6ff;
-            margin-bottom: 12px;
-            font-weight: 700;
+            font-size: 1.08rem;
+            color: #ffffff;
+            margin: 0 0 14px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
         }
 
         .footer-links {
@@ -220,74 +245,106 @@
         }
 
             .footer-links li {
-                margin-bottom: 8px;
+                margin-bottom: 10px;
             }
 
             .footer-links a {
-                color: #e8f1ff;
+                color: var(--footerMuted);
                 text-decoration: none;
-                font-weight: 500;
-                transition: 0.25s;
+                font-weight: 650;
+                transition: color .2s ease, transform .2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
             }
 
                 .footer-links a:hover {
-                    color: #00baff;
-                    padding-left: 4px;
+                    color: #ffffff;
+                    transform: translateX(2px);
                 }
 
         .footer-contact {
             list-style: none;
             padding: 0;
-            margin: 0 0 10px 0;
+            margin: 0 0 14px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
             .footer-contact li {
-                margin-bottom: 8px;
-                opacity: 0.85;
+                color: var(--footerMuted);
+                font-weight: 650;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
 
+            /* Icon pills */
             .footer-contact i {
-                margin-right: 6px;
-                color: #86c8ff;
+                width: 34px;
+                height: 34px;
+                border-radius: 12px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--footerCard);
+                border: 1px solid var(--footerCardBorder);
+                color: #9ed4ff;
+                margin-right: 0;
+                font-size: 0.95rem;
+                flex: 0 0 auto;
             }
 
-        .footer-social a {
-            margin-right: 10px;
-            font-size: 1.1rem;
-            color: #86c8ff;
-            transition: 0.3s;
+        .footer-social {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-            .footer-social a:hover {
-                color: #00baff;
-                transform: translateY(-2px);
+            .footer-social a {
+                width: 42px;
+                height: 42px;
+                border-radius: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--footerCard);
+                border: 1px solid var(--footerCardBorder);
+                color: #e6f1ff;
+                transition: transform .15s ease, background .15s ease, border-color .15s ease;
+                text-decoration: none;
             }
+
+                .footer-social a:hover {
+                    transform: translateY(-2px);
+                    background: rgba(255,255,255,.12);
+                    border-color: rgba(255,255,255,.22);
+                }
 
         .footer-bottom {
             text-align: center;
-            padding-top: 25px;
+            padding-top: 18px;
             margin-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.15);
-            font-size: 0.9rem;
-            opacity: 0.75;
-            background: #0a3252 !important;
+            border-top: 1px solid var(--footerBorder);
+            font-size: 0.92rem;
+            color: var(--footerMuted);
+            background: transparent !important;
+            opacity: 1;
         }
 
-        footer.footer {
-            margin-top: auto !important;
-            position: relative !important;
-            bottom: 0 !important;
-            width: 100% !important;
-            border-top: none !important;
-            background: linear-gradient(135deg, #002b66, #003c8f) !important;
-            color: #fff;
-            box-shadow: none !important;
-        }
+        @@media (max-width: 520px) {
+            .uni-footer {
+                padding: 46px 0 18px 0;
+            }
 
-        .footer-bottom {
-            border-top: none !important;
-            background: linear-gradient(135deg, #002b66, #003c8f) !important;
-            color: #fff;
+            .footer-sub {
+                font-size: 1.18rem;
+            }
+
+            .footer-logo {
+                font-size: 1.5rem;
+            }
         }
     </style>
 

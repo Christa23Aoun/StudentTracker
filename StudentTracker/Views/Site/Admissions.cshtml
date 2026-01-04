@@ -3,127 +3,295 @@
     ViewData["Title"] = "Admissions – WTF University";
 }
 
-<!-- ===================== -->
-<!-- ADMIN-STYLE HEADER -->
-<!-- ===================== -->
-<section class="admission-header">
-    <div class="admission-header-content container">
+<section class="admission-hero">
+    <div class="admission-hero-bg"></div>
+    <div class="admission-hero-content container">
+        <div class="admission-badge">Admissions</div>
         <h1>Admissions at WTF University</h1>
         <p>Join a community of innovators, dreamers, and future leaders.</p>
     </div>
 </section>
 
-<!-- ===================== -->
-<!-- ADMISSIONS STEPS -->
-<!-- ===================== -->
 <section class="admission-section container">
-
     <div class="row g-5 align-items-center">
+        <div class="col-lg-7">
 
-        <div class="col-lg-6">
-            <h2 class="admission-title">How to Apply</h2>
-
-            <p class="admission-text">
-                Our admissions process is designed to be simple, supportive, and transparent.
-                Submit your online application, provide the required documents, and our admissions
-                advisors will guide you every step of the way.
-            </p>
+            <div class="admission-head">
+                <div class="admission-kicker">How to Apply</div>
+                <h2 class="admission-title">A simple, supportive process—step by step.</h2>
+                <p class="admission-text">
+                    Our admissions process is designed to be simple, supportive, and transparent.
+                    Submit your online application, provide the required documents, and our admissions
+                    advisors will guide you every step of the way.
+                </p>
+            </div>
 
             <div class="admission-steps">
-                <div class="step-box">Online Application Form</div>
-                <div class="step-box">Transcripts & Certificates</div>
-                <div class="step-box">Motivation Letter</div>
-                <div class="step-box">Interview (if shortlisted)</div>
-            </div></br></br/>
+                <div class="step-card">
+                    <div class="step-pill">Step 1</div>
+                    <div class="step-title">Online Application Form</div>
+                    <div class="step-desc">Complete the form with your personal and academic details.</div>
+                </div>
 
-            <a href="#" class="admission-btn">Start Your Application</a>
+                <div class="step-card">
+                    <div class="step-pill">Step 2</div>
+                    <div class="step-title">Transcripts &amp; Certificates</div>
+                    <div class="step-desc">Upload your latest transcripts and relevant certificates.</div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-pill">Step 3</div>
+                    <div class="step-title">Motivation Letter</div>
+                    <div class="step-desc">Tell us your goals and why you want to join WTF University.</div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-pill">Step 4</div>
+                    <div class="step-title">Interview (if shortlisted)</div>
+                    <div class="step-desc">A short conversation to understand your interests and fit.</div>
+                </div>
+            </div>
+
+            <div class="admission-cta">
+                <a href="#" class="admission-btn">Start Your Application</a>
+                <span class="admission-note">It only takes a few minutes to begin.</span>
+            </div>
+
         </div>
-
     </div>
-
 </section>
 
-<!-- ===================== -->
-<!-- STYLING -->
-<!-- ===================== -->
 <style>
-
-    /* ===== HEADER (ADMIN STYLE) ===== */
-    .admission-header {
-        background: linear-gradient(135deg, #003c8f, #001e44);
-        padding: 70px 0 65px 0;
-        color: white;
-        text-align: center;
-        margin-bottom: 40px;
+    :root {
+        --navy: #0b1b3a;
+        --navy2: #0a2a55;
+        --blue: #2563eb;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
+        --border: #e5e7eb;
+        --surface: #f8fafc;
+        --surface2: #eef4ff;
+        --shadowSoft: 0 10px 22px rgba(15, 23, 42, .06);
+        --shadow: 0 14px 40px rgba(15, 23, 42, .08);
     }
 
-    .admission-header-content h1 {
-        font-size: 46px;
-        font-weight: 800;
+    .admission-hero {
+        position: relative;
+        min-height: 44vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--navy), var(--navy2));
+        color: #fff;
+        text-align: left;
+        margin-bottom: 34px;
+    }
+
+    .admission-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(37, 99, 235, .22), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(110, 231, 255, .14), transparent 55%), linear-gradient(180deg, rgba(7, 11, 20, .12), rgba(7, 11, 20, .46));
+        backdrop-filter: blur(1px);
+    }
+
+    .admission-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 66px 0;
+        max-width: 980px;
+    }
+
+    .admission-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.92);
+        font-weight: 750;
+        letter-spacing: .2px;
+        margin-bottom: 14px;
+    }
+
+    .admission-hero-content h1 {
+        margin: 0 0 10px;
+        font-size: clamp(30px, 4.2vw, 52px);
+        font-weight: 900;
+        letter-spacing: -0.6px;
+        line-height: 1.08;
+    }
+
+    .admission-hero-content p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.65;
+        color: rgba(255,255,255,.82);
+        max-width: 72ch;
+    }
+
+    .admission-section {
+        padding-bottom: 110px;
+    }
+
+    .admission-head {
+        margin-bottom: 18px;
+    }
+
+    .admission-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 850;
+        color: var(--blue);
+        letter-spacing: .2px;
         margin-bottom: 10px;
     }
 
-    .admission-header-content p {
-        font-size: 18px;
-        opacity: 0.9;
-    }
-
-    /* ===== CONTENT SECTION ===== */
-    .admission-section {
-        padding-bottom: 120px;
-    }
+        .admission-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
+        }
 
     .admission-title {
         font-size: 32px;
-        font-weight: 800;
-        color: #003c8f;
-        margin-bottom: 18px;
+        font-weight: 900;
+        color: var(--text);
+        margin: 0 0 10px;
+        letter-spacing: -0.4px;
+        line-height: 1.15;
     }
 
     .admission-text {
         font-size: 17px;
-        color: #333;
-        line-height: 1.7;
-        margin-bottom: 25px;
+        color: var(--muted);
+        line-height: 1.75;
+        margin: 0;
+        max-width: 78ch;
     }
 
-    /* ===== STEPS ===== */
     .admission-steps {
         display: grid;
+        grid-template-columns: repeat(12, 1fr);
         gap: 14px;
+        margin-top: 22px;
     }
 
-    .step-box {
-        background: #eef4ff;
-        border-left: 5px solid #003c8f;
-        padding: 12px 16px;
-        border-radius: 10px;
-        font-weight: 600;
-        color: #003c8f;
-        font-size: 15px;
-        transition: 0.3s ease;
+    .step-card {
+        grid-column: span 6;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-        .step-box:hover {
-            background: #dce8ff;
-            transform: translateX(4px);
+        .step-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(37, 99, 235, .10), transparent 42%);
+            opacity: .55;
+            pointer-events: none;
         }
 
-    /* ===== BUTTON ===== */
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadowSoft);
+            border-color: rgba(37, 99, 235, .22);
+        }
+
+    .step-pill {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, .10);
+        border: 1px solid rgba(37, 99, 235, .18);
+        color: var(--blue);
+        font-weight: 800;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .step-title {
+        position: relative;
+        z-index: 1;
+        font-size: 16.5px;
+        font-weight: 900;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.2px;
+    }
+
+    .step-desc {
+        position: relative;
+        z-index: 1;
+        color: var(--muted2);
+        font-size: 14.5px;
+        line-height: 1.65;
+    }
+
+    .admission-cta {
+        margin-top: 22px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
     .admission-btn {
-        background: linear-gradient(135deg, #0066cc, #004c99);
-        padding: 12px 28px;
-        color: white;
-        font-weight: 600;
-        border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        padding: 12px 22px;
+        color: #fff;
+        font-weight: 750;
+        border-radius: 14px;
         text-decoration: none;
-        transition: 0.3s ease;
-        display: inline-block;
+        transition: transform .15s ease, filter .15s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 26px rgba(37, 99, 235, .22);
     }
 
         .admission-btn:hover {
-            background: linear-gradient(135deg, #0080ff, #005bb5);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
+            filter: brightness(1.05);
         }
 
+    .admission-note {
+        color: var(--muted2);
+        font-weight: 650;
+        font-size: 14px;
+    }
+
+    @@media (max-width: 900px) {
+        .step-card {
+            grid-column: span 12;
+        }
+
+        .admission-hero-content {
+            padding: 58px 0;
+        }
+    }
+
+    @@media (max-width: 520px) {
+        .admission-section {
+            padding-bottom: 90px;
+        }
+
+        .admission-title {
+            font-size: 28px;
+        }
+    }
 </style>

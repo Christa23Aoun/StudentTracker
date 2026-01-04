@@ -3,53 +3,21 @@
     ViewData["Title"] = "About – WTF University";
 }
 
-<!-- ========================= -->
-<!--      HERO SECTION         -->
-<!-- ========================= -->
-<section class="about-hero">
+<section class="about-hero-modern">
+    <div class="about-hero-bg"></div>
     <div class="about-hero-content container">
+        <div class="about-hero-badge">About</div>
         <h1>About WTF University</h1>
         <p>Building leaders. Inspiring innovation. Shaping the future of education.</p>
     </div>
 </section>
 
-<style>
-    .about-hero {
-        position: relative;
-        height: 55vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #003c8f, #001a44);
-        color: white;
-        text-align: center;
-        padding: 0 20px;
-    }
+<section class="about-section about-who">
+    <div class="container about-two-col">
 
-    .about-hero-content h1 {
-        font-size: 50px;
-        font-weight: 800;
-        margin-bottom: 12px;
-    }
-
-    .about-hero-content p {
-        font-size: 20px;
-        opacity: 0.9;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-</style>
-
-
-
-<!-- ========================= -->
-<!--     WHO WE ARE SECTION    -->
-<!-- ========================= -->
-<section class="who-we-are">
-    <div class="container who-container">
-
-        <div class="who-text">
-            <h2>Who We Are</h2>
+        <div class="about-text">
+            <div class="about-kicker">Who We Are</div>
+            <h2>Excellence, innovation, and future-ready learning.</h2>
             <p>
                 WTF University is a leading academic institution dedicated to excellence,
                 innovation, and the empowerment of future leaders. Our programs combine cutting-edge
@@ -61,279 +29,387 @@
             </p>
         </div>
 
-
-        <div class="section-img">
-            <img src="~/images/uniHome.jpg" alt="Campus Image" class="img-round" />
-       
+        <div class="about-media">
+            <div class="about-media-card">
+                <img src="~/images/uniHome.jpg" alt="Campus Image" class="about-img" />
+            </div>
         </div>
 
     </div>
 </section>
 
-<style>
-    .who-we-are {
-        padding: 80px 0;
-        background: #f5f8ff;
-    }
-
-    .who-container {
-        display: flex;
-        gap: 50px;
-        align-items: center;
-        padding: 0 20px;
-    }
-
-    .section-img {
-        flex: 1;
-    }
-
-    .img-round {
-        width: 100%;
-        border-radius: 14px;
-        box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
-    }
-
-    .who-text {
-        flex: 1;
-    }
-
-        .who-text h2 {
-            font-size: 34px;
-            color: #003c8f;
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .who-text p {
-            font-size: 18px;
-            line-height: 1.7;
-            color: #333;
-            margin-bottom: 18px;
-        }
-
-    @@media(max - width: 900px)
-
-    {
-        .who-container
-
-    {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .who-placeholder {
-        width: 100%;
-    }
-
-    }
-</style>
-
-
-
-<!-- ========================= -->
-<!--      MISSION SECTION      -->
-<!-- ========================= -->
-<section class="mission-blue">
-    <div class="container mission-content">
-        <h2>Our Mission</h2>
+<section class="about-section about-mission">
+    <div class="container about-mission-inner">
+        <div class="about-kicker light">Our Mission</div>
+        <h2>Empower the next generation through research & impact.</h2>
         <p>
             To educate, inspire, and empower the next generation through research, innovation,
             and a steadfast commitment to academic excellence.
         </p>
+        <div class="about-mission-strip" aria-hidden="true"></div>
     </div>
 </section>
 
-<style>
-    .mission-blue {
-        padding: 70px 0;
-        background: linear-gradient(135deg, #003c8f, #001a44);
-        color: white;
-        text-align: center;
-    }
-
-        .mission-blue h2 {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 18px;
-        }
-
-        .mission-blue p {
-            font-size: 19px;
-            max-width: 900px;
-            margin: 0 auto;
-            opacity: 0.95;
-        }
-</style>
-
-
-
-<!-- ========================= -->
-<!--      VALUES SECTION       -->
-<!-- ========================= -->
-<section class="values-grid">
+<section class="about-section about-values">
     <div class="container">
+        <div class="about-head">
+            <div class="about-kicker">Our Core Values</div>
+            <h2>Principles that shape our culture and community.</h2>
+            <p>We combine academic excellence with integrity, inclusion, and real-world impact.</p>
+        </div>
 
-        <h2 class="values-header">Our Core Values</h2>
-
-        <div class="values-boxes">
-
-            <div class="value-box">
+        <div class="about-grid">
+            <div class="about-card">
                 <h3>Integrity</h3>
                 <p>We uphold truth, transparency, and ethical leadership in everything we do.</p>
             </div>
 
-            <div class="value-box">
+            <div class="about-card">
                 <h3>Innovation</h3>
                 <p>We pursue bold ideas and creative solutions that shape the future.</p>
             </div>
 
-            <div class="value-box">
+            <div class="about-card">
                 <h3>Inclusion</h3>
                 <p>We embrace diversity and create opportunities for every learner.</p>
             </div>
 
-            <div class="value-box">
+            <div class="about-card">
                 <h3>Impact</h3>
                 <p>We drive positive change through research, education, and engagement.</p>
             </div>
-
         </div>
-
     </div>
 </section>
 
-<style>
-    .values-grid {
-        padding: 80px 0;
-        background: #eef4ff;
-    }
-
-    .values-header {
-        text-align: center;
-        font-size: 34px;
-        font-weight: 800;
-        color: #003c8f;
-        margin-bottom: 45px;
-    }
-
-    .values-boxes {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 30px;
-    }
-
-    .value-box {
-        background: white;
-        padding: 28px;
-        border-radius: 14px;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-        transition: 0.25s ease;
-    }
-
-        .value-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-        }
-
-        .value-box h3 {
-            font-size: 22px;
-            color: #003c8f;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .value-box p {
-            color: #555;
-            line-height: 1.6;
-            font-size: 16px;
-        }
-</style>
-
-
-
-<!-- ========================= -->
-<!--      WHY CHOOSE US        -->
-<!-- ========================= -->
-<section class="why-wtf-section">
+<section class="about-section about-why">
     <div class="container">
+        <div class="about-head">
+            <div class="about-kicker">Why Choose Us</div>
+            <h2>Everything you need to learn, grow, and succeed.</h2>
+            <p>Supportive campus life, expert faculty, and career-driven programs.</p>
+        </div>
 
-        <h2>Why Choose WTF University?</h2>
-
-        <div class="why-cards">
-
-            <div class="why-card">
+        <div class="about-grid">
+            <div class="about-card">
                 <h3>Top Faculty</h3>
                 <p>Renowned professors and researchers leading each academic field.</p>
             </div>
 
-            <div class="why-card">
+            <div class="about-card">
                 <h3>Modern Campus</h3>
                 <p>State-of-the-art labs, classrooms, and collaborative spaces.</p>
             </div>
 
-            <div class="why-card">
+            <div class="about-card">
                 <h3>Global Opportunities</h3>
                 <p>Exchange programs and cross-border academic partnerships.</p>
             </div>
 
-            <div class="why-card">
+            <div class="about-card">
                 <h3>Career Success</h3>
                 <p>Industry-driven programs with strong career placement support.</p>
             </div>
-
         </div>
-
     </div>
 </section>
 
 <style>
-    .why-wtf-section {
-        background: #f4f7fc; /* clean light admin color */
-        padding: 80px 0;
-        color: #003c8f;
+    :root {
+        --aboutNavy: #0b1b3a;
+        --aboutNavy2: #0a2a55;
+        --aboutBlue: #2563eb;
+        --aboutText: #0f172a;
+        --aboutMuted: #475569;
+        --aboutBorder: #e5e7eb;
+        --aboutSurface: #f8fafc;
+        --aboutSurface2: #eef4ff;
+        --aboutShadow: 0 14px 40px rgba(15, 23, 42, .08);
+        --aboutShadowSoft: 0 10px 22px rgba(15, 23, 42, .06);
     }
 
-    .why-container h2 {
-        text-align: center;
-        font-size: 34px;
-        font-weight: 800;
-        margin-bottom: 50px;
-        color: #003c8f; /* deep blue title */
-    }
-
-    /* Cards */
-    .why-cards {
+    .about-hero-modern {
+        position: relative;
+        min-height: 52vh;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
+        place-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0b1b3a, #0a2a55);
+        color: #fff;
+        text-align: left;
     }
 
-    .why-card {
-        background: white;
-        padding: 25px 20px;
-        border-radius: 14px;
-        transition: 0.3s;
+    .about-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(37, 99, 235, .22), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(110, 231, 255, .14), transparent 55%), linear-gradient(180deg, rgba(7, 11, 20, .16), rgba(7, 11, 20, .48));
+        backdrop-filter: blur(1px);
+    }
+
+    .about-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 70px 0;
+        max-width: 920px;
+    }
+
+    .about-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.90);
+        font-weight: 700;
+        letter-spacing: .2px;
+        margin-bottom: 16px;
+    }
+
+    .about-hero-content h1 {
+        margin: 0 0 12px;
+        font-size: clamp(34px, 4.6vw, 56px);
+        font-weight: 850;
+        letter-spacing: -0.6px;
+        line-height: 1.08;
+    }
+
+    .about-hero-content p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.65;
+        color: rgba(255,255,255,.82);
+        max-width: 72ch;
+    }
+
+    .about-section {
+        padding: 72px 0;
+    }
+
+    .about-who {
+        background: #ffffff;
+    }
+
+    .about-two-col {
+        display: grid;
+        grid-template-columns: 1.15fr .85fr;
+        gap: 44px;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    .about-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        color: var(--aboutBlue);
+        letter-spacing: .2px;
+        margin-bottom: 12px;
+    }
+
+        .about-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--aboutBlue);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
+        }
+
+        .about-kicker.light {
+            color: rgba(255,255,255,.92);
+        }
+
+            .about-kicker.light::before {
+                background: rgba(255,255,255,.95);
+                box-shadow: 0 0 0 6px rgba(255,255,255,.14);
+            }
+
+    .about-text h2 {
+        margin: 0 0 12px;
+        font-size: 30px;
+        font-weight: 850;
+        letter-spacing: -0.4px;
+        color: var(--aboutText);
+        line-height: 1.18;
+    }
+
+    .about-text p {
+        margin: 0 0 14px;
+        color: var(--aboutMuted);
+        font-size: 17px;
+        line-height: 1.75;
+    }
+
+    .about-media-card {
+        background: var(--aboutSurface);
+        border: 1px solid var(--aboutBorder);
+        border-radius: 22px;
+        padding: 14px;
+        box-shadow: var(--aboutShadowSoft);
+    }
+
+    .about-img {
+        width: 100%;
+        display: block;
+        border-radius: 16px;
+        object-fit: cover;
+        max-height: 420px;
+    }
+
+    .about-mission {
+        background: linear-gradient(135deg, #0b1b3a, #0a2a55);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-mission-inner {
+        max-width: 980px;
+        position: relative;
+    }
+
+    .about-mission h2 {
+        margin: 0 0 12px;
+        font-size: 34px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        line-height: 1.12;
+        color: #fff;
+    }
+
+    .about-mission p {
+        margin: 0;
+        color: rgba(255,255,255,.82);
+        font-size: 17px;
+        line-height: 1.75;
+        max-width: 78ch;
+    }
+
+    .about-mission-strip {
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 360px;
+        height: 360px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 30%, rgba(37, 99, 235, .35), transparent 60%);
+        filter: blur(0px);
+        pointer-events: none;
+    }
+
+    .about-values {
+        background: var(--aboutSurface2);
+    }
+
+    .about-why {
+        background: #ffffff;
+    }
+
+    .about-head {
         text-align: center;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        border: 1px solid #e5eaf3;
+        max-width: 860px;
+        margin: 0 auto 28px;
+        padding: 0 16px;
     }
 
-        .why-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        .about-head h2 {
+            margin: 10px 0 10px;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--aboutText);
+            line-height: 1.15;
         }
 
-        .why-card h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #002b66;
+        .about-head p {
+            margin: 0;
+            color: var(--aboutMuted);
+            line-height: 1.65;
+            font-size: 16.5px;
         }
 
-        .why-card p {
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        margin-top: 22px;
+        padding: 0 16px;
+    }
+
+    .about-card {
+        grid-column: span 6;
+        background: #ffffff;
+        border: 1px solid var(--aboutBorder);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .about-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(37, 99, 235, .10), transparent 42%);
+            opacity: .55;
+            pointer-events: none;
+        }
+
+        .about-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--aboutShadowSoft);
+            border-color: rgba(37, 99, 235, .22);
+        }
+
+        .about-card h3 {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 8px;
+            font-size: 18px;
+            font-weight: 850;
+            letter-spacing: -0.2px;
+            color: var(--aboutText);
+        }
+
+        .about-card p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            color: var(--aboutMuted);
+            line-height: 1.65;
             font-size: 16px;
-            line-height: 1.6;
-            color: #444;
         }
 
+    @@media (max-width: 900px) {
+        .about-two-col {
+            grid-template-columns: 1fr;
+            text-align: left;
+        }
+
+        .about-card {
+            grid-column: span 12;
+        }
+
+        .about-hero-content {
+            padding: 58px 0;
+        }
+    }
+
+    @@media (max-width: 520px) {
+        .about-section {
+            padding: 58px 0;
+        }
+
+        .about-head h2 {
+            font-size: 28px;
+        }
+
+        .about-text h2 {
+            font-size: 26px;
+        }
+    }
 </style>

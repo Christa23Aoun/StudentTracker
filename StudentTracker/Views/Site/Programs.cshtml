@@ -2,87 +2,380 @@
     ViewData["Title"] = "Discover Our Programs";
 }
 
-<section class="hero-section" style="
-    background: linear-gradient(135deg, #001a33, #003c8f);
-    color: #fff;
-    padding: 80px 20px;
-    text-align: center;
-">
-    <h1 class="fw-bold" style="font-size: 48px;">Discover Our Programs</h1>
-    <p style="max-width: 800px; margin: 20px auto; font-size: 18px;">
-        At WTF University, we empower students with future-oriented academic programs that blend
-        innovation, technology, and real-world skills. Our mission is to develop leaders, creators, and problem-solvers
-        ready to make an impact.
-    </p>
+<section class="programs-hero">
+    <div class="programs-hero-bg"></div>
+    <div class="container programs-hero-content">
+        <div class="programs-badge">Programs</div>
+        <h1>Discover Our Programs</h1>
+        <p>
+            At WTF University, we empower students with future-oriented academic programs that blend
+            innovation, technology, and real-world skills. Our mission is to develop leaders, creators, and problem-solvers
+            ready to make an impact.
+        </p>
+    </div>
 </section>
 
-<div class="container my-5">
+<div class="container programs-wrap">
 
-    <!-- Section Title -->
-    <div class="text-center mb-5">
-        <h2 class="fw-bold" style="color:#003c8f;">Our Academic Pathways</h2>
-        <p style="max-width:650px; margin:auto; color:#5b7083;">
+    <div class="programs-head">
+        <div class="programs-kicker">Our Academic Pathways</div>
+        <h2>Choose the track that fits your future.</h2>
+        <p>
             Explore our diverse range of undergraduate programs designed to ignite curiosity,
             develop critical thinking, and shape tomorrow's innovators.
         </p>
     </div>
 
-    <!-- Cards -->
     <div class="row g-4">
-
-        <!-- Program Card 1 -->
         <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-laptop-code fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h4 class="fw-bold">Computer Science</h4>
-                    <p class="text-muted">
-                        Learn programming, algorithms, networking, AI, and software engineering —
-                        preparing you for a high-demand tech career.
-                    </p>
-                    <a class="btn btn-primary" style="border-radius:10px;">Explore Track</a>
-                </div>
+            <div class="program-card">
+                <div class="program-icon"><i class="fas fa-laptop-code"></i></div>
+                <h4>Computer Science</h4>
+                <p>
+                    Learn programming, algorithms, networking, AI, and software engineering —
+                    preparing you for a high-demand tech career.
+                </p>
+                <a class="program-btn" href="#">Explore Track</a>
             </div>
         </div>
 
-        <!-- Program Card 2 -->
         <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-chart-line fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h4 class="fw-bold">Business & Management</h4>
-                    <p class="text-muted">
-                        A dynamic program focusing on leadership, entrepreneurship,
-                        finance, and organizational strategy.
-                    </p>
-                    <a class="btn btn-primary" style="border-radius:10px;">Discover More</a>
-                </div>
+            <div class="program-card">
+                <div class="program-icon"><i class="fas fa-chart-line"></i></div>
+                <h4>Business &amp; Management</h4>
+                <p>
+                    A dynamic program focusing on leadership, entrepreneurship,
+                    finance, and organizational strategy.
+                </p>
+                <a class="program-btn" href="#">Discover More</a>
             </div>
         </div>
 
-        <!-- Program Card 3 -->
         <div class="col-md-4">
-            <div class="card shadow-lg" style="border-radius:18px;">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-flask fa-3x mb-3" style="color:#003c8f;"></i>
-                    <h4 class="fw-bold">Applied Sciences</h4>
-                    <p class="text-muted">
-                        Engage in laboratory work, research projects, and scientific exploration
-                        across multiple STEM disciplines.
-                    </p>
-                    <a class="btn btn-primary" style="border-radius:10px;">Learn More</a>
-                </div>
+            <div class="program-card">
+                <div class="program-icon"><i class="fas fa-flask"></i></div>
+                <h4>Applied Sciences</h4>
+                <p>
+                    Engage in laboratory work, research projects, and scientific exploration
+                    across multiple STEM disciplines.
+                </p>
+                <a class="program-btn" href="#">Learn More</a>
             </div>
         </div>
-
     </div>
 
-    <!-- CTA Section -->
-    <div class="text-center mt-5">
-        <h3 class="fw-bold" style="color:#003c8f;">Ready to Begin Your Journey?</h3>
-        <p class="text-muted">Join WTF University — We’re The Future (Inshallah).</p>
-        <a asp-controller="Auth" asp-action="Login" class="btn btn-success px-4 py-2 fw-semibold" style="border-radius:12px;">
-            Apply Now
-        </a>
+    <div class="programs-cta">
+        <div class="cta-card">
+            <div class="cta-left">
+                <div class="cta-kicker">Ready to begin?</div>
+                <h3>Start your journey with WTF University.</h3>
+                <p>Join WTF University — We’re The Future (Inshallah).</p>
+            </div>
+
+            <div class="cta-right">
+                <a asp-controller="Auth" asp-action="Login" class="cta-btn">
+                    Apply Now
+                </a>
+            </div>
+        </div>
     </div>
+
 </div>
+
+<style>
+    :root {
+        --navy: #0b1b3a;
+        --navy2: #0a2a55;
+        --blue: #2563eb;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
+        --border: #e5e7eb;
+        --surface: #f8fafc;
+        --shadowSoft: 0 10px 22px rgba(15, 23, 42, .06);
+        --shadow: 0 14px 40px rgba(15, 23, 42, .08);
+    }
+
+    .programs-hero {
+        position: relative;
+        min-height: 44vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--navy), var(--navy2));
+        color: #fff;
+        text-align: left;
+        padding: 0 16px;
+    }
+
+    .programs-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(37, 99, 235, .22), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(110, 231, 255, .14), transparent 55%), linear-gradient(180deg, rgba(7, 11, 20, .12), rgba(7, 11, 20, .48));
+        backdrop-filter: blur(1px);
+    }
+
+    .programs-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 68px 0;
+        max-width: 980px;
+    }
+
+    .programs-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.92);
+        font-weight: 750;
+        letter-spacing: .2px;
+        margin-bottom: 14px;
+    }
+
+    .programs-hero-content h1 {
+        margin: 0 0 12px;
+        font-size: clamp(34px, 4.5vw, 56px);
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        line-height: 1.06;
+    }
+
+    .programs-hero-content p {
+        margin: 0;
+        max-width: 88ch;
+        color: rgba(255,255,255,.82);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .programs-wrap {
+        padding: 52px 0 92px;
+    }
+
+    .programs-head {
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto 26px;
+        padding: 0 14px;
+    }
+
+    .programs-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: .2px;
+        margin-bottom: 10px;
+    }
+
+        .programs-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
+        }
+
+    .programs-head h2 {
+        margin: 0 0 10px;
+        font-size: 30px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        line-height: 1.16;
+    }
+
+    .programs-head p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16.5px;
+        line-height: 1.7;
+        max-width: 78ch;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Cards (modern but not "bootstrap card") */
+    .program-card {
+        height: 100%;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        position: relative;
+        overflow: hidden;
+        text-align: left;
+    }
+
+        .program-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(520px 220px at 18% 10%, rgba(37, 99, 235, .12), transparent 55%);
+            opacity: .9;
+            pointer-events: none;
+        }
+
+        .program-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadowSoft);
+            border-color: rgba(37, 99, 235, .22);
+        }
+
+    .program-icon {
+        position: relative;
+        z-index: 1;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(37, 99, 235, .10);
+        border: 1px solid rgba(37, 99, 235, .18);
+        color: var(--blue);
+        font-size: 22px;
+        margin-bottom: 14px;
+    }
+
+    .program-card h4 {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.2px;
+    }
+
+    .program-card p {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 16px;
+        color: var(--muted2);
+        line-height: 1.7;
+        font-weight: 650;
+        font-size: 14.6px;
+    }
+
+    .program-btn {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 14px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 850;
+        color: var(--blue);
+        background: rgba(37, 99, 235, .10);
+        border: 1px solid rgba(37, 99, 235, .18);
+        transition: transform .15s ease, background .15s ease;
+    }
+
+        .program-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(37, 99, 235, .14);
+            text-decoration: none;
+            color: var(--blue);
+        }
+
+    /* CTA */
+    .programs-cta {
+        margin-top: 26px;
+    }
+
+    .cta-card {
+        background: linear-gradient(135deg, rgba(11, 27, 58, .06), rgba(37, 99, 235, .06));
+        border: 1px solid rgba(37, 99, 235, .18);
+        border-radius: 22px;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .cta-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: .2px;
+        margin-bottom: 8px;
+    }
+
+        .cta-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
+        }
+
+    .cta-left h3 {
+        margin: 0 0 6px;
+        font-size: 22px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.3px;
+    }
+
+    .cta-left p {
+        margin: 0;
+        color: var(--muted2);
+        font-weight: 650;
+    }
+
+    .cta-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 22px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 900;
+        box-shadow: 0 12px 26px rgba(22, 163, 74, .20);
+        transition: transform .15s ease, filter .15s ease;
+        white-space: nowrap;
+    }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            color: #fff;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 900px) {
+        .programs-hero-content {
+            padding: 58px 0;
+        }
+
+        .cta-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @@media (max-width: 520px) {
+        .programs-wrap {
+            padding: 44px 0 78px;
+        }
+
+        .programs-head h2 {
+            font-size: 26px;
+        }
+    }
+</style>

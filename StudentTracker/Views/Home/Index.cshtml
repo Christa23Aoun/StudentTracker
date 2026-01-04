@@ -3,25 +3,29 @@
     ViewData["Title"] = "Home Page";
 }
 
-<!-- ===== HERO SECTION ===== -->
-<section class="hero home-section">
-    <div class="hero-overlay"></div>
+<section class="hero-modern home-section">
+    <div class="hero-bg-wrap">
+        <img src="~/images/unnamed.jpg" alt="WTF University campus" class="hero-bg-img" />
+        <div class="hero-bg-overlay"></div>
+    </div>
 
-    <img src="~/images/unnamed.jpg"
-         alt="WTF University campus"
-         class="hero-bg" />
+    <div class="container hero-modern-content">
+        <div class="hero-badge">WTF University</div>
 
-    <div class="container hero-content">
-        <h1 class="batata">
-            Welcome to <span>WTF University</span><br />
-            <small>Empowering the Future of Education</small>
+        <h1 class="hero-title">
+            <span class="hero-title-big">We’re the Future</span>
+            <span class="hero-title-small">at WTF University</span>
         </h1>
+
+        <p class="hero-subtitle">
+            Empowering the next generation through hands-on learning, research, and real-world innovation.
+        </p>
 
         <div class="hero-actions">
             <a class="btn primary"
                asp-controller="Site"
                asp-action="Programs">
-                Discover Our Programs
+                Explore Programs
             </a>
 
             <a class="btn ghost"
@@ -33,66 +37,383 @@
     </div>
 </section>
 
-<!-- ===== LATEST NEWS & EVENTS ===== -->
-<section class="news-block home-section container" aria-label="Latest News & Events">
-    <div class="news-header">
+<section class="home-section container news-light" aria-label="Latest News & Events">
+    <div class="section-head">
         <h2>Latest News &amp; Events</h2>
-
-
+        <p>Updates, admissions, research, and campus highlights.</p>
     </div>
 
-    <div class="news-track" id="newsTrack">
-        <article class="news-card">
+    <div class="news-grid">
+        <article class="news-card-modern">
             <div class="news-card-body">
                 <h3>150 Years of Academic Excellence</h3>
                 <p>Celebrating a legacy of innovation, research, and education since 1875.</p>
-                <a class="news-link" href="#">Read more →</a>
+                <a class="news-link" asp-controller="Site" asp-action="About">Read more →</a>
             </div>
         </article>
 
-        <article class="news-card">
+        <article class="news-card-modern">
             <div class="news-card-body">
                 <h3>Admissions Open 2025–2026</h3>
                 <p>Join our diverse community of scholars, innovators, and changemakers.</p>
-                <a class="news-link" href="#">Read more →</a>
+                <a class="news-link" asp-controller="Site" asp-action="Admissions">Read more →</a>
             </div>
         </article>
 
-        <article class="news-card">
+        <article class="news-card-modern">
             <div class="news-card-body">
-                <h3>Join Our Research Teams</br></br></h3>
+                <h3>Join Our Research Teams</h3>
                 <p>Take part in groundbreaking projects across engineering, sciences, and humanities.</p>
-                <a class="news-link" href="#">Read more →</a>
+                <a class="news-link" asp-controller="Site" asp-action="Research">Read more →</a>
             </div>
         </article>
 
-        <article class="news-card">
+        <article class="news-card-modern">
             <div class="news-card-body">
                 <h3>Student Life &amp; Campus Experience</h3>
                 <p>Clubs, events, and activities that make learning a full life experience.</p>
-                <a class="news-link" href="#">Read more →</a>
+                <a class="news-link" asp-controller="Site" asp-action="StudentLife">Read more →</a>
             </div>
         </article>
     </div>
 </section>
 
-<section class="stats-band home-section">
-    <div class="container stats-container">
-        <div class="stat">
-            <h3>100</h3>
-            <p>Students</p>
+<section class="stats-clean home-section" aria-label="University stats">
+    <div class="container">
+        <div class="section-head section-head-compact">
+            <h2>At a Glance</h2>
+            <p>Key numbers that reflect our learning community.</p>
         </div>
-        <div class="stat">
-            <h3>20</h3>
-            <p>Teachers</p>
-        </div>
-        <div class="stat">
-            <h3>20</h3>
-            <p>Researchers</p>
-        </div>
-        <div class="stat">
-            <h3>13</h3>
-            <p>Faculties</p>
+
+        <div class="stats-clean-grid">
+            <div class="stat-clean-card">
+                <div class="stat-clean-top">
+                    <span class="stat-clean-dot"></span>
+                    <span class="stat-clean-kicker">Students</span>
+                </div>
+                <div class="stat-clean-number">100</div>
+                <div class="stat-clean-meta">Active enrolled learners</div>
+            </div>
+
+            <div class="stat-clean-card">
+                <div class="stat-clean-top">
+                    <span class="stat-clean-dot"></span>
+                    <span class="stat-clean-kicker">Teachers</span>
+                </div>
+                <div class="stat-clean-number">20</div>
+                <div class="stat-clean-meta">Dedicated faculty members</div>
+            </div>
+
+            <div class="stat-clean-card">
+                <div class="stat-clean-top">
+                    <span class="stat-clean-dot"></span>
+                    <span class="stat-clean-kicker">Researchers</span>
+                </div>
+                <div class="stat-clean-number">20</div>
+                <div class="stat-clean-meta">Leading innovation teams</div>
+            </div>
+
+            <div class="stat-clean-card">
+                <div class="stat-clean-top">
+                    <span class="stat-clean-dot"></span>
+                    <span class="stat-clean-kicker">Faculties</span>
+                </div>
+                <div class="stat-clean-number">13</div>
+                <div class="stat-clean-meta">Specialized departments</div>
+            </div>
         </div>
     </div>
 </section>
+
+<style>
+    :root {
+        --bg: #ffffff;
+        --surface: #f8fafc;
+        --surface2: #f1f5f9;
+        --textDark: #0f172a;
+        --mutedDark: #475569;
+        --muted2: #64748b;
+        --border: #e5e7eb;
+        --border2: #eef2f7;
+        --shadow: 0 12px 30px rgba(15, 23, 42, .08);
+        --shadowSoft: 0 10px 22px rgba(15, 23, 42, .06);
+        --accent: #2563eb;
+        --accentSoft: rgba(37, 99, 235, .12);
+    }
+
+    .hero-modern {
+        position: relative;
+        min-height: 68vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: #0b1220;
+    }
+
+    .hero-bg-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+
+    .hero-bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.03);
+        filter: saturate(1.02) contrast(1.01);
+    }
+
+    .hero-bg-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(110, 231, 255, .10), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(167, 139, 250, .10), transparent 55%), linear-gradient(180deg, rgba(7, 11, 20, .18), rgba(7, 11, 20, .62));
+        backdrop-filter: blur(1px);
+    }
+
+    .hero-modern-content {
+        position: relative;
+        z-index: 1;
+        padding: 64px 0;
+        max-width: 900px;
+        text-align: left;
+        color: #fff;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.16);
+        color: rgba(255,255,255,.88);
+        font-weight: 600;
+        letter-spacing: .2px;
+        margin-bottom: 18px;
+    }
+
+    .hero-title {
+        margin: 0 0 14px;
+        line-height: 1.05;
+        letter-spacing: -0.6px;
+    }
+
+    .hero-title-big {
+        display: block;
+        font-size: clamp(44px, 5.2vw, 72px);
+        font-weight: 800;
+    }
+
+    .hero-title-small {
+        display: block;
+        margin-top: 10px;
+        font-size: clamp(18px, 2.3vw, 28px);
+        font-weight: 600;
+        color: rgba(255,255,255,.82);
+    }
+
+    .hero-subtitle {
+        margin: 0 0 26px;
+        max-width: 62ch;
+        color: rgba(255,255,255,.80);
+        font-size: 16.5px;
+        line-height: 1.65;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .section-head {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0 0 12px;
+    }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 750;
+            color: var(--textDark);
+            letter-spacing: -0.2px;
+        }
+
+        .section-head p {
+            margin: 0;
+            color: var(--mutedDark);
+            max-width: 70ch;
+            line-height: 1.6;
+        }
+
+    .section-head-compact {
+        margin-bottom: 18px;
+    }
+
+    .news-light {
+        background: var(--surface);
+        padding: 40px 28px;
+        border-radius: 24px;
+        margin: 34px auto 28px;
+        border: 1px solid var(--border2);
+    }
+
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .news-card-modern {
+        grid-column: span 6;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+        .news-card-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadowSoft);
+            border-color: rgba(37, 99, 235, .22);
+        }
+
+        .news-card-modern h3 {
+            font-size: 17px;
+            margin: 0 0 8px;
+            color: var(--textDark);
+            letter-spacing: -0.2px;
+            font-weight: 750;
+        }
+
+        .news-card-modern p {
+            margin: 0 0 12px;
+            color: var(--mutedDark);
+            line-height: 1.6;
+        }
+
+    .news-link {
+        display: inline-block;
+        margin-top: 10px;
+        font-weight: 650;
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+        .news-link:hover {
+            text-decoration: underline;
+        }
+
+    /* ✅ NEW CLEAN STATS */
+    .stats-clean {
+        background: #ffffff;
+        padding: 18px 0 60px;
+    }
+
+    .stats-clean-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+    }
+
+    .stat-clean-card {
+        grid-column: span 3;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 18px 18px 16px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-clean-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(37, 99, 235, .10), transparent 42%);
+            opacity: .65;
+            pointer-events: none;
+        }
+
+        .stat-clean-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadowSoft);
+            border-color: rgba(37, 99, 235, .24);
+        }
+
+    .stat-clean-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .stat-clean-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 0 6px var(--accentSoft);
+        flex: 0 0 auto;
+    }
+
+    .stat-clean-kicker {
+        font-weight: 700;
+        color: var(--mutedDark);
+        letter-spacing: .2px;
+    }
+
+    .stat-clean-number {
+        position: relative;
+        z-index: 1;
+        font-size: 34px;
+        font-weight: 850;
+        letter-spacing: -0.6px;
+        color: var(--textDark);
+        line-height: 1.1;
+    }
+
+    .stat-clean-meta {
+        position: relative;
+        z-index: 1;
+        margin-top: 8px;
+        color: var(--muted2);
+        font-weight: 600;
+        font-size: 13.5px;
+    }
+
+    @@media (max-width: 900px) {
+        .news-card-modern {
+            grid-column: span 12;
+        }
+
+        .stat-clean-card {
+            grid-column: span 6;
+        }
+
+        .hero-modern-content {
+            padding: 52px 0;
+        }
+    }
+
+    @@media (max-width: 520px) {
+        .stat-clean-card {
+            grid-column: span 12;
+        }
+
+        .news-light {
+            padding: 28px 18px;
+            border-radius: 18px;
+        }
+    }
+</style>

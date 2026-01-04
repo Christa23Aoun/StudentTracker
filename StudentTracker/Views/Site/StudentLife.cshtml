@@ -3,245 +3,459 @@
     ViewData["Title"] = "Student Life – WTF University";
 }
 
-<!-- ================== HERO SECTION (KEPT SIMPLE) ================== -->
-<section class="simple-hero">
-    <div class="simple-hero-content">
+<section class="life-hero">
+    <div class="life-hero-bg"></div>
+    <div class="container life-hero-content">
+        <div class="life-badge">Student Life</div>
         <h1>Student Life at WTF University</h1>
-        <p>
-            A vibrant community where students grow academically, socially, and professionally.
-        </p>
+        <p>A vibrant community where students grow academically, socially, and professionally.</p>
     </div>
 </section>
 
-<style>
-    .simple-hero {
-        padding: 80px 20px;
-        text-align: center;
-        background: linear-gradient(135deg, #003c8f, #001f3f);
-        color: white;
-    }
+<section class="container life-wrap">
 
-        .simple-hero h1 {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
+    <div class="life-head">
+        <div class="life-kicker">Life Beyond the Classroom</div>
+        <h2>Explore the experiences that shape your journey.</h2>
+        <p>
+            Activities, leadership, and community initiatives that make the WTF University experience
+            more than just classes.
+        </p>
+    </div>
 
-        .simple-hero p {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-</style>
+    <div class="life-slider" aria-label="Student life slider">
+        <div class="life-track">
 
-<!-- ================== STUDENT LIFE SLIDER ================== -->
-<section class="studentlife-slider-wrapper container">
-    <h2 class="slider-title">Life Beyond the Classroom</h2>
-    <p class="slider-sub">
-        Explore activities, leadership, and community initiatives shaping the WTF University experience.
-    </p>
-
-    <div class="slider-container">
-        <div class="slider-track">
-
-            <!-- CARD 1 -->
-            <div class="slide-card">
-                <i class="fas fa-users fa-3x card-icon"></i>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-users"></i></div>
                 <h3>Student Clubs</h3>
-                <p>Technology, arts, robotics, cultural groups, volunteering & more.</p>
+                <p>Technology, arts, robotics, cultural groups, volunteering &amp; more.</p>
             </div>
 
-            <!-- CARD 2 -->
-            <div class="slide-card">
-                <i class="fas fa-lightbulb fa-3x card-icon"></i>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-lightbulb"></i></div>
                 <h3>Leadership Development</h3>
                 <p>Workshops, mentorships, public speaking, student councils.</p>
             </div>
 
-            <!-- CARD 3 -->
-            <div class="slide-card">
-                <i class="fas fa-calendar-alt fa-3x card-icon"></i>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-calendar-alt"></i></div>
                 <h3>Campus Events</h3>
                 <p>Hackathons, cultural nights, charity events, exhibitions.</p>
             </div>
 
-            <!-- CARD 4 -->
-            <div class="slide-card">
-                <i class="fas fa-volleyball-ball fa-3x card-icon"></i>
-                <h3>Sports & Fitness</h3>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-volleyball-ball"></i></div>
+                <h3>Sports &amp; Fitness</h3>
                 <p>Basketball, volleyball, yoga, fitness club, tournaments.</p>
             </div>
 
-            <!-- CARD 5 -->
-            <div class="slide-card">
-                <i class="fas fa-hand-holding-heart fa-3x card-icon"></i>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-hand-holding-heart"></i></div>
                 <h3>Support Services</h3>
                 <p>Academic advising, psychological support, mentoring.</p>
             </div>
 
-            <!-- CARD 6 -->
-            <div class="slide-card">
-                <i class="fas fa-globe fa-3x card-icon"></i>
+            <div class="life-card">
+                <div class="life-icon"><i class="fas fa-globe"></i></div>
                 <h3>Campus Community</h3>
                 <p>A welcoming environment where everyone feels connected.</p>
             </div>
 
         </div>
+
+        <div class="life-dots" aria-label="Slider navigation"></div>
     </div>
 
-    <!-- DOTS -->
-    <div class="slider-dots"></div>
+    <div class="life-cta">
+        <div class="life-cta-card">
+            <div class="life-cta-kicker">Join the Community</div>
+            <h3>Become Part of Our Campus Life</h3>
+            <p>Your journey starts here. Explore a campus full of creativity and opportunity.</p>
 
-    <div class="join-block">
-        <h3>Become Part of Our Community</h3>
-        <p>Your journey starts here. Explore a campus full of creativity and opportunity.</p>
-        <a asp-controller="Home" asp-action="Index" class="btn btn-success px-4 py-2 fw-semibold" style="border-radius:12px;">
-            Join WTF University
-        </a>
+            <div class="life-cta-actions">
+                <a asp-controller="Home" asp-action="Index" class="life-cta-btn">
+                    Join WTF University
+                </a>
+            </div>
+        </div>
     </div>
 
 </section>
 
-<!-- ================== SLIDER STYLES ================== -->
 <style>
-    .studentlife-slider-wrapper {
-        margin-top: 80px;
-        margin-bottom: 100px;
-        text-align: center;
+    :root {
+        --navy: #0b1b3a;
+        --navy2: #0a2a55;
+        --blue: #2563eb;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
+        --border: #e5e7eb;
+        --surface: #f8fafc;
+        --shadowSoft: 0 10px 22px rgba(15,23,42,.06);
     }
 
-    .slider-title {
-        font-size: 34px;
-        font-weight: 800;
-        color: #003c8f;
-        margin-bottom: 12px;
-    }
-
-    .slider-sub {
-        max-width: 700px;
-        margin: auto;
-        color: #5b7083;
-        margin-bottom: 40px;
-    }
-
-    /* SLIDER WRAPPER */
-    .slider-container {
-        overflow: hidden;
-        width: 100%;
+    .life-hero {
         position: relative;
+        min-height: 44vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg,var(--navy),var(--navy2));
+        color: #fff;
+        padding: 0 16px;
+        margin-bottom: 34px;
+        text-align: left;
     }
 
-    /* TRACK: 6 cards → sliding left */
-    .slider-track {
+    .life-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(37,99,235,.22), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(110,231,255,.14), transparent 55%), linear-gradient(180deg, rgba(7,11,20,.12), rgba(7,11,20,.48));
+        backdrop-filter: blur(1px);
+    }
+
+    .life-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 68px 0;
+        max-width: 980px;
+    }
+
+    .life-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.92);
+        font-weight: 750;
+        letter-spacing: .2px;
+        margin-bottom: 14px;
+    }
+
+    .life-hero-content h1 {
+        margin: 0 0 12px;
+        font-size: clamp(34px,4.5vw,56px);
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        line-height: 1.06;
+    }
+
+    .life-hero-content p {
+        margin: 0;
+        max-width: 88ch;
+        color: rgba(255,255,255,.82);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .life-wrap {
+        padding: 52px 0 92px;
+    }
+
+    .life-head {
+        text-align: center;
+        max-width: 980px;
+        margin: 0 auto 22px;
+        padding: 0 10px;
+    }
+
+    .life-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: .2px;
+        margin-bottom: 10px;
+    }
+
+        .life-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37,99,235,.12);
+        }
+
+    .life-head h2 {
+        margin: 0 0 10px;
+        font-size: 30px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        line-height: 1.16;
+    }
+
+    .life-head p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16.5px;
+        line-height: 1.7;
+        font-weight: 650;
+        max-width: 78ch;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Slider */
+    .life-slider {
+        margin-top: 18px;
+    }
+
+    .life-track {
         display: flex;
-        transition: transform 0.8s ease;
+        gap: 16px;
+        transition: transform .7s ease-in-out;
         will-change: transform;
     }
 
-    /* CARD */
-    .slide-card {
-        flex: 0 0 calc(33.333% - 20px);
-        background: rgba(255,255,255,0.12);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.25);
-        margin: 0 10px;
-        padding: 30px 25px;
+    .life-card {
+        flex: 0 0 calc((100% - (16px * 2)) / 3);
+        background: linear-gradient(180deg,#ffffff,#fbfdff);
+        border: 1px solid var(--border);
         border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        transition: 0.3s ease;
+        padding: 20px;
+        box-shadow: 0 6px 18px rgba(15,23,42,.05);
+        position: relative;
+        overflow: hidden;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        text-align: left;
+        min-height: 190px;
     }
 
-        .slide-card:hover {
-            transform: translateY(-6px);
-            background: rgba(255,255,255,0.18);
+        .life-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(520px 220px at 18% 10%, rgba(37,99,235,.12), transparent 55%);
+            opacity: .9;
+            pointer-events: none;
         }
 
-    .card-icon {
-        color: #003c8f;
-        margin-bottom: 15px;
+        .life-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadowSoft);
+            border-color: rgba(37,99,235,.22);
+        }
+
+    .life-icon {
+        position: relative;
+        z-index: 1;
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(37,99,235,.10);
+        border: 1px solid rgba(37,99,235,.18);
+        color: var(--blue);
+        font-size: 22px;
+        margin-bottom: 14px;
     }
 
-    /* DOTS */
-    .slider-dots {
-        margin-top: 25px;
+    .life-card h3 {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 8px;
+        font-size: 17px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.2px;
+    }
+
+    .life-card p {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        color: var(--muted2);
+        line-height: 1.65;
+        font-weight: 650;
+        font-size: 14.6px;
+    }
+
+    .life-dots {
+        text-align: center;
+        margin-top: 18px;
         display: flex;
         justify-content: center;
         gap: 10px;
     }
 
-    .slider-dot {
-        width: 12px;
-        height: 12px;
-        background: #c3d4e1;
+    .life-dot {
+        width: 10px;
+        height: 10px;
+        background: rgba(37,99,235,.18);
         border-radius: 50%;
         cursor: pointer;
-        transition: 0.3s;
+        transition: .2s ease;
+        border: 1px solid rgba(37,99,235,.25);
     }
 
-        .slider-dot.active {
-            background: #003c8f;
+        .life-dot.active {
+            background: rgba(37,99,235,.90);
             transform: scale(1.25);
         }
 
-    /* MOBILE */
-    @@media (max-width: 900px) {
-        .slide-card
-
-    {
-        flex: 0 0 calc(50% - 20px);
+    /* CTA */
+    .life-cta {
+        margin-top: 32px;
+        padding: 0 6px;
     }
 
+    .life-cta-card {
+        background: linear-gradient(135deg, rgba(11,27,58,.06), rgba(37,99,235,.06));
+        border: 1px solid rgba(37,99,235,.18);
+        border-radius: 22px;
+        padding: 22px;
+        text-align: center;
+    }
+
+    .life-cta-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 900;
+        color: var(--blue);
+        letter-spacing: .2px;
+        margin-bottom: 10px;
+    }
+
+        .life-cta-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37,99,235,.12);
+        }
+
+    .life-cta-card h3 {
+        margin: 0 0 10px;
+        font-size: 24px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.3px;
+    }
+
+    .life-cta-card p {
+        margin: 0 auto 16px;
+        max-width: 80ch;
+        color: var(--muted2);
+        font-weight: 650;
+        line-height: 1.7;
+    }
+
+    .life-cta-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    .life-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 22px;
+        border-radius: 14px;
+        background: linear-gradient(135deg,#16a34a,#15803d);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 900;
+        box-shadow: 0 12px 26px rgba(22,163,74,.20);
+        transition: transform .15s ease, filter .15s ease;
+        white-space: nowrap;
+    }
+
+        .life-cta-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            color: #fff;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 900px) {
+        .life-hero-content {
+            padding: 58px 0;
+        }
+
+        .life-card {
+            flex: 0 0 calc((100% - 16px) / 2);
+        }
     }
 
     @@media (max-width: 600px) {
-        .slide-card
-
-    {
-        flex: 0 0 100%;
-    }
-
-    }
-
-    .join-block {
-        margin-top: 60px;
+        .life-card {
+            flex: 0 0 100%;
+        }
     }
 </style>
 
-<!-- ================== SLIDER SCRIPT ================== -->
 <script>
-    const track = document.querySelector('.slider-track');
-    const dotsContainer = document.querySelector('.slider-dots');
+    (() => {
+        const slider = document.querySelector(".life-slider");
+        const track = document.querySelector(".life-track");
+        const slides = Array.from(document.querySelectorAll(".life-card"));
+        const dotsContainer = document.querySelector(".life-dots");
 
-    const totalCards = 6;
-    const visibleCount = 3;
-    const totalSlides = Math.ceil(totalCards / visibleCount);
+        if (!slider || !track || slides.length === 0 || !dotsContainer) return;
 
-    let currentSlide = 0;
+        let index = 0;
+        let timer = null;
 
-    // ========== Create Dots ==========
-    for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('slider-dot');
-        if (i === 0) dot.classList.add('active');
-        dot.dataset.index = i;
-        dot.onclick = () => goToSlide(i);
-        dotsContainer.appendChild(dot);
-    }
+        const visibleCount = () => {
+            const w = window.innerWidth;
+            if (w <= 600) return 1;
+            if (w <= 900) return 2;
+            return 3;
+        };
 
-    const dots = document.querySelectorAll('.slider-dot');
+        const maxIndex = () => Math.max(0, slides.length - visibleCount());
 
-    // ========== Go To Slide ==========
-    function goToSlide(slideIndex) {
-        currentSlide = slideIndex;
-        const offset = -(slideIndex * 100);
-        track.style.transform = `translateX(${offset}%)`;
+        const clamp = (i) => Math.min(Math.max(i, 0), maxIndex());
 
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[slideIndex].classList.add('active');
-    }
+        const buildDots = () => {
+            dotsContainer.innerHTML = "";
+            for (let i = 0; i <= maxIndex(); i++) {
+                const d = document.createElement("span");
+                d.className = "life-dot" + (i === index ? " active" : "");
+                d.addEventListener("click", () => {
+                    index = i;
+                    update(true);
+                });
+                dotsContainer.appendChild(d);
+            }
+        };
 
-    // ========== Auto Slide ==========
-    setInterval(() => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        goToSlide(currentSlide);
-    }, 8000);
+        const update = (restart = false) => {
+            index = clamp(index);
+
+            const slideW = slides[0].getBoundingClientRect().width;
+            const styles = window.getComputedStyle(track);
+            const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
+
+            const offsetPx = index * (slideW + gap);
+            track.style.transform = `translateX(-${offsetPx}px)`;
+
+            buildDots();
+
+            if (restart) start();
+        };
+
+        const start = () => {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                index = index < maxIndex() ? index + 1 : 0;
+                update(false);
+            }, 6500);
+        };
+
+        window.addEventListener("resize", () => update(false));
+
+        update(false);
+        start();
+    })();
 </script>

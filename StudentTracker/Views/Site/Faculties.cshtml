@@ -6,19 +6,15 @@
     ViewData["Title"] = "Faculties – WTF University";
 }
 
-<!-- ===================== -->
-<!-- ADMIN-STYLE HEADER -->
-<!-- ===================== -->
-<section class="faculty-header">
-    <div class="faculty-header-content container">
-        <h1>Faculties & Departments</h1>
+<section class="faculty-hero">
+    <div class="faculty-hero-bg"></div>
+    <div class="faculty-hero-content container">
+        <div class="faculty-badge">Faculties</div>
+        <h1>Faculties &amp; Departments</h1>
         <p>Explore the academic divisions that shape the leaders of tomorrow.</p>
     </div>
 </section>
 
-<!-- ===================== -->
-<!-- FACULTIES LIST -->
-<!-- ===================== -->
 <section class="faculty-section container">
 
     @if (ViewBag.Error != null)
@@ -32,130 +28,402 @@
     }
     else
     {
-        <div class="faculty-grid">
-            @foreach (var dept in Model)
-            {
-                <div class="faculty-card">
-                    <div class="faculty-card-header">
-                        <h3>@dept.DepartmentName</h3>
-
-                        <span class="status @(dept.IsActive ? "status-active" : "status-inactive")">
-                            @(dept.IsActive ? "Active" : "Inactive")
-                        </span>
+        <div class="faculty-layout">
+            <div class="faculty-rail" aria-label="Faculties overview">
+                <div class="faculty-rail-card">
+                    <div class="rail-kicker">Overview</div>
+                    <div class="rail-title">Browse Departments</div>
+                    <div class="rail-text">
+                        Each department offers structured programs, expert faculty, and career-ready learning.
                     </div>
 
-                    <p class="faculty-description">
-                        Preparing students with quality education, research, and real-world experience.
-                    </p>
+                    <div class="rail-stats">
+                        <div class="rail-stat">
+                            <div class="rail-stat-num">@Model.Count</div>
+                            <div class="rail-stat-label">Departments</div>
+                        </div>
+                        <div class="rail-stat">
+                            <div class="rail-stat-num">@Model.Sum(d => d.CourseCount)</div>
+                            <div class="rail-stat-label">Courses</div>
+                        </div>
+                    </div>
 
-                    <div class="faculty-meta">
-                        <span>Courses:</span>
-                        <strong>@dept.CourseCount</strong>
+                    <div class="rail-note">
+                        Tip: Active departments are highlighted for quick discovery.
                     </div>
                 </div>
-            }
+
+                <div class="faculty-rail-card rail-callout">
+                    <div class="rail-kicker">Need help?</div>
+                    <div class="rail-title">Contact Admissions</div>
+                    <div class="rail-text">
+                        Get guidance on choosing the right faculty, program requirements, and deadlines.
+                    </div>
+                    <a class="rail-link" asp-controller="Site" asp-action="Admissions">Go to Admissions →</a>
+                </div>
+            </div>
+
+            <div class="faculty-list">
+                @foreach (var dept in Model)
+                {
+                    <div class="faculty-row @(dept.IsActive ? "faculty-row-active" : "faculty-row-inactive")">
+                        <div class="faculty-row-left">
+                            <h3 class="faculty-name">@dept.DepartmentName</h3>
+                            <p class="faculty-description">
+                                Preparing students with quality education, research, and real-world experience.
+                            </p>
+                        </div>
+
+                        <div class="faculty-row-right">
+                            <span class="status @(dept.IsActive ? "status-active" : "status-inactive")">
+                                @(dept.IsActive ? "Active" : "Inactive")
+                            </span>
+
+                            <div class="faculty-meta">
+                                <span class="meta-label">Courses</span>
+                                <strong class="meta-value">@dept.CourseCount</strong>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     }
 </section>
 
-<!-- ===================== -->
-<!-- CSS STYLING -->
-<!-- ===================== -->
 <style>
-
-    /* ===== HEADER (ADMIN STYLE) ===== */
-    .faculty-header {
-        background: linear-gradient(135deg, #003c8f, #001e44);
-        padding: 70px 0;
-        text-align: center;
-        color: white;
-        margin-bottom: 40px;
+    :root {
+        --navy: #0b1b3a;
+        --navy2: #0a2a55;
+        --blue: #2563eb;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
+        --border: #e5e7eb;
+        --surface: #f8fafc;
+        --shadowSoft: 0 10px 22px rgba(15, 23, 42, .06);
     }
 
-    .faculty-header-content h1 {
-        font-size: 46px;
-        font-weight: 800;
-        margin-bottom: 10px;
-    }
-
-    .faculty-header-content p {
-        font-size: 18px;
-        opacity: 0.9;
-    }
-
-    /* ===== SECTION SPACING ===== */
-    .faculty-section {
-        padding-bottom: 120px;
-    }
-
-    /* ===== GRID ===== */
-    .faculty-grid {
+    .faculty-hero {
+        position: relative;
+        min-height: 42vh;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 35px;
-        margin-top: 30px;
+        place-items: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--navy), var(--navy2));
+        color: #fff;
+        text-align: left;
+        margin-bottom: 34px;
     }
 
-    /* ===== CARD (ADMIN STYLE) ===== */
-    .faculty-card {
-        background: white;
-        border-radius: 18px;
-        padding: 28px;
-        border: 1px solid #d6e4fa;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.09);
-        transition: 0.3s ease;
+    .faculty-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(900px 520px at 18% 20%, rgba(37, 99, 235, .22), transparent 60%), radial-gradient(780px 520px at 84% 26%, rgba(110, 231, 255, .14), transparent 55%), linear-gradient(180deg, rgba(7, 11, 20, .10), rgba(7, 11, 20, .44));
+        backdrop-filter: blur(1px);
     }
 
-        .faculty-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 14px 32px rgba(0,0,0,0.15);
-        }
+    .faculty-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 62px 0;
+        max-width: 980px;
+    }
 
-    .faculty-card-header {
-        display: flex;
-        justify-content: space-between;
+    .faculty-badge {
+        display: inline-flex;
         align-items: center;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        border: 1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.92);
+        font-weight: 750;
+        letter-spacing: .2px;
+        margin-bottom: 14px;
     }
 
-        .faculty-card-header h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #003c8f;
-            margin: 0;
+    .faculty-hero-content h1 {
+        margin: 0 0 10px;
+        font-size: clamp(30px, 4.2vw, 52px);
+        font-weight: 900;
+        letter-spacing: -0.6px;
+        line-height: 1.08;
+    }
+
+    .faculty-hero-content p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.65;
+        color: rgba(255,255,255,.82);
+        max-width: 72ch;
+    }
+
+    .faculty-section {
+        padding-bottom: 110px;
+    }
+
+    .faculty-layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 22px;
+        align-items: start;
+        margin-top: 18px;
+    }
+
+    .faculty-rail {
+        position: sticky;
+        top: 22px;
+        display: grid;
+        gap: 14px;
+    }
+
+    .faculty-rail-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+    }
+
+    .rail-callout {
+        background: linear-gradient(180deg, rgba(37, 99, 235, .10), rgba(37, 99, 235, .04));
+        border-color: rgba(37, 99, 235, .20);
+    }
+
+    .rail-kicker {
+        font-weight: 850;
+        color: var(--blue);
+        letter-spacing: .2px;
+        margin-bottom: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .rail-kicker::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, .12);
         }
 
-    /* ===== STATUS BADGES ===== */
-    .status {
-        padding: 6px 12px;
-        border-radius: 30px;
-        font-size: 12px;
+    .rail-title {
+        font-weight: 900;
+        color: var(--text);
+        letter-spacing: -0.3px;
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .rail-text {
+        color: var(--muted);
+        line-height: 1.65;
         font-weight: 600;
+        font-size: 14.5px;
+    }
+
+    .rail-stats {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .rail-stat {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+    }
+
+    .rail-stat-num {
+        font-size: 22px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.4px;
+        line-height: 1.1;
+    }
+
+    .rail-stat-label {
+        margin-top: 6px;
+        color: var(--muted2);
+        font-weight: 700;
+        font-size: 12.5px;
+    }
+
+    .rail-note {
+        margin-top: 12px;
+        color: var(--muted2);
+        font-weight: 650;
+        font-size: 13px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+    }
+
+    .rail-link {
+        display: inline-flex;
+        margin-top: 12px;
+        font-weight: 850;
+        color: var(--blue);
+        text-decoration: none;
+    }
+
+        .rail-link:hover {
+            text-decoration: underline;
+        }
+
+    /* ✅ NOT BOXES: row list with separators */
+    .faculty-list {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .faculty-row {
+        display: grid;
+        grid-template-columns: 1fr 220px;
+        gap: 16px;
+        padding: 18px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background .15s ease;
+        position: relative;
+    }
+
+        .faculty-row:last-child {
+            border-bottom: none;
+        }
+
+        .faculty-row:hover {
+            background: #f9fbff;
+        }
+
+    .faculty-row-active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: rgba(37, 99, 235, .80);
+    }
+
+    .faculty-row-inactive::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: rgba(148, 163, 184, .70);
+    }
+
+    .faculty-name {
+        margin: 0 0 6px;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -0.2px;
+        color: var(--text);
+    }
+
+    .faculty-description {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 14.5px;
+        font-weight: 600;
+        max-width: 80ch;
+    }
+
+    .faculty-row-right {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .status {
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        border: 1px solid transparent;
+        white-space: nowrap;
     }
 
     .status-active {
-        background: #d4f6df;
-        color: #157a31;
+        background: rgba(34, 197, 94, .14);
+        color: #15803d;
+        border-color: rgba(34, 197, 94, .22);
     }
 
     .status-inactive {
-        background: #f0f0f0;
-        color: #666;
-    }
-
-    /* ===== DESCRIPTION ===== */
-    .faculty-description {
-        margin: 18px 0;
-        color: #444;
-        font-size: 15px;
-        line-height: 1.7;
+        background: rgba(148, 163, 184, .18);
+        color: #475569;
+        border-color: rgba(148, 163, 184, .26);
     }
 
     .faculty-meta {
-        display: flex;
-        gap: 6px;
-        font-size: 15px;
-        color: #003c8f;
-        margin-top: 10px;
+        display: inline-flex;
+        align-items: baseline;
+        gap: 8px;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 12px;
+        min-width: 170px;
+        justify-content: space-between;
     }
 
+    .meta-label {
+        color: var(--muted2);
+        font-weight: 800;
+        font-size: 12.5px;
+    }
+
+    .meta-value {
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.3px;
+        font-size: 16px;
+    }
+
+    @@media (max-width: 1100px) {
+        .faculty-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .faculty-rail {
+            position: static;
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .faculty-rail {
+            grid-template-columns: 1fr;
+        }
+
+        .faculty-row {
+            grid-template-columns: 1fr;
+        }
+
+        .faculty-row-right {
+            align-items: flex-start;
+        }
+
+        .faculty-meta {
+            min-width: auto;
+            width: fit-content;
+        }
+
+        .faculty-hero-content {
+            padding: 56px 0;
+        }
+    }
 </style>
