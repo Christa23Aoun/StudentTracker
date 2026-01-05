@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Rotativa.AspNetCore;
 using StudentTracker.Models;
 using System;
 using System.Collections.Generic;
@@ -174,6 +175,21 @@ namespace StudentTracker.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ExportAbsencesPdf()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/excessive-absences");
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminExcessiveAbsenceView>>(json) ?? new();
+
+            return new ViewAsPdf("~/Views/Dashboard/ReportAbsences.cshtml", data)
+            {
+                FileName = "Excessive_Absences_Report.pdf",
+                CustomSwitches = "--print-media-type"
+
+            };
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ReportFailing()
         {
             var res = await _client.GetAsync($"{_apiBase}AdminReports/failing-students");
@@ -188,6 +204,21 @@ namespace StudentTracker.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ExportFailingPdf()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/failing-students");
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminFailingStudentView>>(json) ?? new();
+
+            return new ViewAsPdf("~/Views/Dashboard/ReportFailing.cshtml", data)
+            {
+                FileName = "Failing_Students_Report.pdf",
+                CustomSwitches = "--print-media-type"
+
+            };
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ReportExcellent()
         {
             var res = await _client.GetAsync($"{_apiBase}AdminReports/excellent-students");
@@ -199,6 +230,21 @@ namespace StudentTracker.Controllers
             var data = JsonConvert.DeserializeObject<List<AdminExcellentStudentView>>(json) ?? new();
 
             return View("~/Views/Dashboard/ReportExcellent.cshtml", data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportExcellentPdf()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/excellent-students");
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminExcellentStudentView>>(json) ?? new();
+
+            return new ViewAsPdf("~/Views/Dashboard/ReportExcellent.cshtml", data)
+            {
+                FileName = "Excellent_Students_Report.pdf",
+                CustomSwitches = "--print-media-type"
+
+            };
         }
     }
 }

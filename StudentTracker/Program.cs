@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -40,7 +40,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -50,7 +49,6 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddAuthorization();
-
 
 builder.Services.AddHttpClient("API", client =>
 {
@@ -71,6 +69,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
+
 app.UseRouting();
 
 app.Use(async (context, next) =>
@@ -79,9 +79,9 @@ app.Use(async (context, next) =>
 
     var allowed = new[]
     {
-        "/",                 
-        "/home",             
-        "/home/index",       
+        "/",
+        "/home",
+        "/home/index",
         "/auth/loginadmin",
         "/admin/dashboard"
     };
@@ -90,7 +90,6 @@ app.Use(async (context, next) =>
     context.Request.Method == "GET" &&
     !context.Request.Headers.ContainsKey("Referer") &&
     !context.Request.Path.StartsWithSegments("/Grades");
-
 
     if (isDirectRequest && !allowed.Contains(path))
     {
@@ -101,11 +100,9 @@ app.Use(async (context, next) =>
     await next();
 });
 
-
-
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
