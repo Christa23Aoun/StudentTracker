@@ -39,7 +39,6 @@ namespace StudentTracker.Controllers
                     model.Summary.ActiveCourses = data.activeCoursesThisSemester;
                     model.Summary.CurrentAcademicYear = "2024-2025";
                     model.Summary.CurrentSemester = "Fall";
-
                 }
 
                 var deptRes = await _client.GetAsync($"{_apiBase}Departments");
@@ -60,7 +59,6 @@ namespace StudentTracker.Controllers
 
                     model.Summary.PendingGrades = model.PendingGrades.Count;
                 }
-
             }
             catch (Exception ex)
             {
@@ -70,9 +68,6 @@ namespace StudentTracker.Controllers
             return View("~/Views/Dashboard/Admin.cshtml", model);
         }
 
-        // =======================
-        // VALIDATE ALL
-        // =======================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ValidateAllGrades()
@@ -114,9 +109,6 @@ namespace StudentTracker.Controllers
             }
         }
 
-        // =======================
-        // REJECT ALL
-        // =======================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RejectAllGrades()
@@ -159,6 +151,54 @@ namespace StudentTracker.Controllers
                 TempData["Error"] = "Failed to reject all grades.";
                 return RedirectToAction("Dashboard");
             }
+        }
+
+        [HttpGet("/admin/reports")]
+        public IActionResult Reports()
+        {
+            return View("~/Views/Dashboard/Reports.cshtml");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportAbsences()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/excessive-absences");
+
+            if (!res.IsSuccessStatusCode)
+                return View("~/Views/Dashboard/ReportAbsences.cshtml", new List<AdminExcessiveAbsenceView>());
+
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminExcessiveAbsenceView>>(json) ?? new();
+
+            return View("~/Views/Dashboard/ReportAbsences.cshtml", data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportFailing()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/failing-students");
+
+            if (!res.IsSuccessStatusCode)
+                return View("~/Views/Dashboard/ReportFailing.cshtml", new List<AdminFailingStudentView>());
+
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminFailingStudentView>>(json) ?? new();
+
+            return View("~/Views/Dashboard/ReportFailing.cshtml", data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReportExcellent()
+        {
+            var res = await _client.GetAsync($"{_apiBase}AdminReports/excellent-students");
+
+            if (!res.IsSuccessStatusCode)
+                return View("~/Views/Dashboard/ReportExcellent.cshtml", new List<AdminExcellentStudentView>());
+
+            var json = await res.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<List<AdminExcellentStudentView>>(json) ?? new();
+
+            return View("~/Views/Dashboard/ReportExcellent.cshtml", data);
         }
     }
 }

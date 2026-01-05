@@ -72,6 +72,9 @@ builder.Services.AddScoped<TeacherDashboardService>();
 
 builder.Services.AddScoped<TestService>();
 builder.Services.AddScoped<TestGradeService>();
+builder.Services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<IAdminReportsRepository, AdminReportsRepository>();
+builder.Services.AddScoped<IAdminReportsService, AdminReportsService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Academic Reports";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-3">Academic Reports</h2>
+    <p class="text-muted mb-4">Generate administrative academic reports</p>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Excessive Absences</h5>
+                    <p class="card-text">Students with more than 12 absences</p>
+                    <a href="@Url.Action("ReportAbsences", "Admin")" class="btn btn-primary">
+                        Generate Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Failing Students</h5>
+                    <p class="card-text">Students with grades below 50/100</p>
+                    <a href="@Url.Action("ReportFailing", "Admin")" class="btn btn-primary">
+                        Generate Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">High Achievers</h5>
+                    <p class="card-text">Students with grades 95/100 and above</p>
+                    <a href="@Url.Action("ReportExcellent", "Admin")" class="btn btn-primary">
+                        Generate Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

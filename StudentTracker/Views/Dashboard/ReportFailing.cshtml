@@ -1,0 +1,57 @@
+﻿@model List<StudentTracker.Models.AdminFailingStudentView>
+
+@{
+    ViewData["Title"] = "Failing Students";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Failing Students</h2>
+            <p class="text-muted mb-0">Students with final grade below 50 / 100</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Reports"
+           class="btn btn-outline-secondary">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Full Name</th>
+                <th>Course</th>
+                <th>Test</th>
+                <th class="text-center">Final Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        No failing students found.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.FullName</td>
+                        <td>@item.CourseName</td>
+                        <td>@item.TestName</td>
+                        <td class="text-center fw-bold text-danger">
+                            @item.FinalGrade
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>

@@ -57,6 +57,10 @@
                                 <li class="nav-item mx-2">
                                     <a class="nav-link text-white" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
                                 </li>
+
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link text-white" asp-controller="Admin" asp-action="Reports">Reports</a>
+                                </li>
                             }
                             else if (User.IsInRole("Teacher"))
                             {
@@ -72,7 +76,7 @@
                             }
                         }
 
-                        @if (User.Identity?.IsAuthenticated == true)
+                        @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Admin"))
                         {
                             <li class="nav-item mx-2 position-relative">
                                 <a class="nav-link text-white position-relative"
@@ -108,13 +112,13 @@
                                     <button type="submit"
                                             class="btn"
                                             style="background: linear-gradient(135deg, #ff1744, #d50000);
-                                                   border: none;
-                                                   border-radius: 10px;
-                                                   color: white;
-                                                   padding: 8px 18px;
-                                                   font-weight: 600;
-                                                   cursor: pointer;
-                                                   transition: all 0.3s ease;">
+                                                       border: none;
+                                                       border-radius: 10px;
+                                                       color: white;
+                                                       padding: 8px 18px;
+                                                       font-weight: 600;
+                                                       cursor: pointer;
+                                                       transition: all 0.3s ease;">
                                         Logout
                                     </button>
                                 </form>

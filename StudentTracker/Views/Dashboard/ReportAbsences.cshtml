@@ -1,0 +1,55 @@
+﻿@model List<StudentTracker.Models.AdminExcessiveAbsenceView>
+
+@{
+    ViewData["Title"] = "Students with Excessive Absences";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Students with Excessive Absences</h2>
+            <p class="text-muted mb-0">Students who exceeded 12 absences</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Reports"
+           class="btn btn-outline-secondary">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Full Name</th>
+                <th>Course</th>
+                <th class="text-center">Total Absences</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-muted">
+                        No students exceed the absence limit.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.FullName</td>
+                        <td>@item.CourseName</td>
+                        <td class="text-center fw-bold text-danger">
+                            @item.TotalAbsences
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
