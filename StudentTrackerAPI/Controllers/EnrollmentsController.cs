@@ -41,8 +41,9 @@ namespace StudentTrackerAPI.Controllers
             if (dto == null || dto.StudentID <= 0 || dto.CourseID <= 0)
                 return BadRequest("Invalid unenroll request.");
 
-            var result = await _studentCourseService.DeleteAsync(0);
-            return result > 0
+            var rows = await _studentCourseService.UnenrollAsync(dto.StudentID, dto.CourseID);
+
+            return rows > 0
                 ? Ok(new { message = "Unenrolled successfully." })
                 : BadRequest(new { message = "Unenroll failed." });
         }

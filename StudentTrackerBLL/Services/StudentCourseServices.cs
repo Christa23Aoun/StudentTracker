@@ -42,6 +42,8 @@ namespace StudentTrackerBLL.Services
         {
             throw new NotSupportedException();
         }
+       
+
 
         public Task<int> DeleteAsync(int id)
         {
@@ -87,6 +89,12 @@ namespace StudentTrackerBLL.Services
             );
 
             return true;
+
         }
+        public async Task<int> UnenrollAsync(int userId, int courseId)
+        {
+            return await _enrollmentRepository.UnenrollAsync(userId, courseId);
+        }
+
     }
 }

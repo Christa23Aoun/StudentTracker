@@ -12,9 +12,9 @@ namespace StudentTrackerCOMMON.Interfaces.Services
         Task<int> UpdateAsync(StudentCourse model);
         Task<int> DeleteAsync(int id);
 
-        // Extra methods for logic
         Task<IEnumerable<StudentCourse>> GetCoursesByStudentAsync(int userId);
         Task<IEnumerable<StudentCourse>> GetByCourseAsync(int courseId);
         Task<bool> EnrollAsync(int userId, int courseId);
+        Task<int> UnenrollAsync(int userId, int courseId);
     }
 }
